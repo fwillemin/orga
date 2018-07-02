@@ -1,0 +1,14 @@
+{
+	"description": "Gestion de chantiers",
+	"name": "Organibat",
+	"type": "project",
+	"homepage": "https://www.organibat.com",
+	"license": "MIT",	
+	"require": {
+		"php": ">=7.0.0",
+		"twbs/bootstrap": "4.1.1"                
+	},	
+	"require-dev": {		
+		"phpunit/phpunit": "4.* || 5.*"
+	}
+}
