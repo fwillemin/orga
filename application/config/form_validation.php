@@ -120,6 +120,65 @@ $config = array(
             'label' => 'Taux horaire moyen de l\'établissement',
             'rules' => 'trim|numeric'
         )
+    ),
+    /* Get Utilisateur */
+    'getUtilisateur' => array(
+        array(
+            'field' => 'userId',
+            'label' => 'ID de l\'utilisateur',
+            'rules' => 'required|callback_existUtilisateur'
+        )
+    ),
+    /* Add Etablissement */
+    'addUtilisateur' => array(
+        array(
+            'field' => 'addUserId',
+            'label' => 'ID de l\'utilisateur',
+            'rules' => 'callback_existUtilisateur'
+        ),
+        array(
+            'field' => 'addUserNom',
+            'label' => 'Nom de l\'utilisateur',
+            'rules' => 'required|trim'
+        ),
+        array(
+            'field' => 'addUserPrenom',
+            'label' => 'Prénom de l\'utilisateur',
+            'rules' => 'required|trim'
+        ),
+        array(
+            'field' => 'addUserEmail',
+            'label' => 'Email de l\'utilisateur',
+            'rules' => 'required|trim|valid_email'
+        ),
+        array(
+            'field' => 'addUserPassword',
+            'label' => 'Mot de passe de l\'utilisateur',
+            'rules' => 'trim|min_length[8]|matches[addUserPasswordConfirm]|callback_passwordCheck'
+        ),
+        array(
+            'field' => 'addUserPasswordConfirm',
+            'label' => 'Confirmation',
+            'rules' => 'trim'
+        )
+    ),
+    /* Modification des droits d'acces */
+    'modAcces' => array(
+        array(
+            'field' => 'userId',
+            'label' => 'ID de l\'utilisateur',
+            'rules' => 'required|callback_existUtilisateur'
+        ),
+        array(
+            'field' => 'groupeId',
+            'label' => 'ID Groupe',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'acces',
+            'label' => 'Etat',
+            'rules' => 'required|in_list[0,1]'
+        )
     )
 );
 ?>

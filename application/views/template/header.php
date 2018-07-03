@@ -17,21 +17,25 @@
         <link rel="stylesheet" href="<?= base_url('assets/MegaNavbarBS4/assets/css/MegaNavbarBS4.css'); ?>">
         <link rel="stylesheet" href="<?= base_url('assets/MegaNavbarBS4/assets/css/skins/navbar-dark.css'); ?>">
 
-        <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/dataTables.css'); ?>" >
+        <link rel="stylesheet" type="text/css" href="<?= base_url('assets/dataTable/datatables.min.css'); ?>" >
 
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/jqueryConfirm/jquery-confirm.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/organibat.css'); ?>" >
 
+
+        <!-- reload gulp --><script src="//localhost:35729/livereload.js"></script>
     </head>
 
     <body>
 
         <?php if ($this->ion_auth->logged_in()): ?>
 
-            <nav class="navbar navbar-inverse navbar-expand-xl fixed-onscroll" id="main_navbar" role="navigation">
+            <nav class="navbar navbar-dark navbar-expand-xl fixed-onscroll" id="main_navbar" role="navigation">
                 <div class="container pl-0">
                     <!-- MegaNavbar BS4 brand -->
-                    <a class="navbar-brand" href="#"><i class="fa fa-home"></i> MegaNavbar BS4 </a>
+                    <a class="navbar-brand" href="#">
+                        <img src="<?= base_url('assets/img/logo_white.png'); ?>" height="40">
+                    </a>
                     <!-- MegaNavbar BS4 toggler -->
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
@@ -236,6 +240,7 @@
                             <div class="nav-divider"></div>
                         </div>
                         <div class="nav navbar-nav navbar-right">
+
                             <form class="form-inline mr-0" >
                                 <input class="form-control form-control-sm mr-sm-2 " type="search" placeholder="Placeholder" aria-label="Search">
                                 <button class="btn btn-default btn-sm my-2 my-sm-0" type="submit">Button</button>
@@ -248,140 +253,27 @@
                                 <div class="dropdown-menu col-sm-9 col-lg-8"  role="menu" id="id_shop3">
                                     <div class="d-flex">
                                         <div class="col-12 col-md-8">
-                                            <div class="row" style="background: #000;">
+                                            <div class="row" style="background: #000; margin-top:5px;">
                                                 <div class="col p-2">
-                                                    <div id="carouselExampleSlidesOnly" class="carousel slide carousel-fade" data-interval="3000" data-ride="carousel">
-                                                        <div class="carousel-inner">
-                                                            <div class="carousel-item active">
-                                                                <h4 class="text-center mb-0" style="color: #caff00;">Free shipping.</h4>
-                                                                <p class="text-center mb-0"><small>But not for too long!</small></p>
-                                                            </div>
-                                                            <div class="carousel-item">
-                                                                <h4 class="text-center mb-0" style="color: #FF9800;">Refund or Change.</h4>
-                                                                <p class="text-center mb-0"><small>For 12 months!</small></p>
-                                                            </div>
-                                                            <div class="carousel-item">
-                                                                <h4 class="text-center mb-0" style="color: #35c7ff;">Secure payment.</h4>
-                                                                <p class="text-center mb-0"><small>Payment with encrypted data!</small></p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col pt-2 pb-2" style="overflow-y: auto;">
-                                                    <div class="row mb-2">
-                                                        <div class="col-2">
-                                                            <img data-src="holder.js/50x75?auto=yes&amp;bg=FF9800&amp;fg=666&amp;text=image" alt=meganavbar>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <div class="row mb-0">
-                                                                <div class="col-4 p-0">
-                                                                    <p class="m-0"><b>Product Name</b></p>
-                                                                    <a href="#"><small class="text-white-50">Product link</small></a>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <p class="m-0"><small>SIZE:<br>42</small></p>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <p class="m-0"><small>QTY.:<br>1</small></p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <p class="m-0"><small class="text-muted">Here you can insert a brief description of the selected product, a link to the product page, a reference code, etc.</small></p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-2">
-                                                            PRICE<br>
-                                                            <b>$65.95</b>
-                                                        </div>
-                                                    </div>
-                                                    <div class="dropdown-divider"></div>
-                                                    <div class="row mb-2">
-                                                        <div class="col-2">
-                                                            <img data-src="holder.js/50x75?auto=yes&amp;bg=caff00&amp;fg=666&amp;text=image" alt=meganavbar>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <div class="row mb-0">
-                                                                <div class="col-4 p-0">
-                                                                    <p class="m-0"><b>Product Name</b></p>
-                                                                    <a href="#"><small class="text-white-50">Product link</small></a>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <p class="m-0"><small>SIZE:<br>42</small></p>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <p class="m-0"><small>QTY.:<br>2</small></p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <p class="m-0"><small class="text-muted">Here you can insert a brief description of the selected product, a link to the product page, a reference code, etc.</small></p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-2">
-                                                            PRICE<br>
-                                                            <b>$50.00</b>
-                                                        </div>
-                                                    </div>
-                                                    <div class="dropdown-divider"></div>
+                                                    Bonjour <?= $this->session->userdata('utilisateurPrenom'); ?>,
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-4 py-3" style="background: #333;">
-                                            <form>
-                                                <div class="form-group">
-                                                    <label for="exampleInputZip"><small>Enter your zip code</small></label>
-                                                    <div class="input-group mb-1">
-                                                        <input type="text" class="form-control" placeholder="Zip code" aria-label="Zip code" aria-describedby="zipHelp" >
-                                                        <div class="input-group-append">
-                                                            <button class="btn btn-default btn-outline-secondary" type="button">Apply</button>
-                                                        </div>
+                                            <div class="row">
+                                                <?php if ($this->ion_auth->in_group(array(10, 11))): ?>
+                                                    <div class="col-12" style="min-height: 25px;">
+                                                        <a href="<?= site_url('utilisateurs/liste'); ?>" style="color: lightsteelblue;">
+                                                            <i class="fas fa-users"></i> Utilisateurs
+                                                        </a>
                                                     </div>
-                                                    <small id="zipHelp" class="form-text"><a class="text-muted text-white" href="#">What is my zip code?</a></small>
+                                                <?php endif; ?>
+                                                <div class="col-12">
+                                                    <a href="<?= site_url('organibat/deconnexion'); ?>" style="color: orangered;">
+                                                        <i class="fas fa-sign-out-alt"></i> Quitter
+                                                    </a>
                                                 </div>
-                                                <div class="dropdown-divider"></div>
-                                                <div class="form-group ml-1 mt-2 mb-0">
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input" data-toggle="collapse" data-target="#promoCode" aria-expanded="false" aria-controls="promoCode"  id="customCheck5">
-                                                        <label class="custom-control-label" for="customCheck5" style="font-size: small; line-height: 24px;">Got a promo code?</label>
-                                                    </div>
-                                                </div>
-                                                <div class="collapse" id="promoCode">
-                                                    <div class="py-2" >
-                                                        <div class="form-group m-0">
-                                                            <div class="input-group">
-                                                                <input type="text" class="form-control" placeholder="Promo code" aria-label="Promo code" aria-describedby="PromoHelp" >
-                                                                <div class="input-group-append">
-                                                                    <button class="btn btn-default btn-outline-secondary" type="button">Apply</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="dropdown-divider"></div>
-                                                <div>
-                                                    <small class="text-muted">
-                                                        <div class="row">
-                                                            <div class="col-8">SUBTOTAL</div>
-                                                            <div class="col text-right"><b>$115.95</b></div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-8">DELIVERY COSTS</div>
-                                                            <div class="col text-right"><b>$0.00</b></div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-8">SALES TAX</div>
-                                                            <div class="col text-right"><b>$0.00</b></div>
-                                                        </div>
-                                                    </small>
-                                                </div>
-                                                <div class="dropdown-divider"></div>
-                                                <div class="row mb-3" style="color: orange;">
-                                                    <div class="col"><b>TOTAL</b></div>
-                                                    <div class="col text-right"><b>$115.95</b></div>
-                                                </div>
-                                                <button type="button" class="btn btn-primary btn-md btn-block">Check out</button>
-                                            </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

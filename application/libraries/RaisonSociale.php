@@ -6,9 +6,6 @@
  *
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  */
-/*
-
- */
 class RaisonSociale {
 
     protected $rsId;

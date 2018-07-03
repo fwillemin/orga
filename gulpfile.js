@@ -1,6 +1,6 @@
 var gulp = require('gulp'),
+        livereload = require('gulp-livereload'),
         compass = require('gulp-compass'),
-        browserSync = require('browser-sync').create(),
         useref = require('gulp-useref');
 
 gulp.task('compass', function () {
@@ -15,16 +15,14 @@ gulp.task('compass', function () {
 });
 
 gulp.task('default', ['compass'], function () {
-    
+
 });
 
 gulp.task('watch', function () {
 
-    browserSync.init({
-        proxy: "localhost/organibat2/"
-    });
+    livereload.listen();
 
     gulp.watch(['assets/styles/scss/*.scss'], ['compass']);
-    gulp.watch(['application/**/*.php', 'assets/js/*.js', 'assets/css/*.css']).on('change', browserSync.reload);
+    gulp.watch(['application/**/*.php', 'assets/js/*.js', 'assets/css/*.css', '!application/logs/*.php'], function(){ gulp.src(['application/**/*.php', 'assets/js/*.js', 'assets/css/*.css', '!application/logs/*.php']).pipe(livereload())});
 
 });

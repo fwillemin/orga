@@ -37,7 +37,11 @@
     <script defer type="text/javascript" src="<?= base_url('assets/MegaNavbarBS4/assets/js/MegaNavbarBS4.js'); ?>"></script>
     <!--<script defer type="text/javascript" src="<?= base_url('assets/bootstrap3.3.7/js/bootstrap-datepicker.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/bootstrap3.3.7/js/bootstrap-datepicker.fr.min.js'); ?>"></script>-->
-    <script defer type="text/javascript" src="<?= base_url('assets/js/dataTables.js'); ?>"></script>
+
+    <!--    <script defer type="text/javascript" src="<?= base_url('assets/dataTable/pdfmake.min.js'); ?>"></script>
+        <script defer type="text/javascript" src="<?= base_url('assets/dataTable/vfs_fonts.js'); ?>"></script>-->
+    <script defer type="text/javascript" src="<?= base_url('assets/dataTable/datatables.min.js'); ?>"></script>
+
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-select.min.js'); ?>"></script>
     <!--<script defer type="text/javascript" src="<?= base_url('assets/js/date.format.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/jquery-ui/jquery-ui.min.js'); ?>"></script>-->

@@ -71,10 +71,10 @@ class Model_etablissements extends MY_model {
      * @param integer $etablissementId ID de l'raisonSociale
      * @return \Etablissement|boolean
      */
-    public function getEtablissementById($rsId, $type = 'object') {
+    public function getEtablissementById($etablissementId, $type = 'object') {
         $query = $this->db->select('*')
                 ->from($this->table)
-                ->where('rsId', $rsId)
+                ->where('etablissementId', $etablissementId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
     }

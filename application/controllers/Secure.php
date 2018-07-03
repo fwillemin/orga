@@ -9,7 +9,7 @@ class Secure extends CI_Controller {
         $this->viewFolder = strtolower(__CLASS__);
 
         if ($this->ion_auth->logged_in()) :
-            redirect('organibat/');
+            redirect('organibat/board');
             exit;
         endif;
     }
@@ -34,6 +34,22 @@ class Secure extends CI_Controller {
         else :
             /* On teste la demande de connexion */
             if ($this->ion_auth->login($this->input->post('login'), $this->input->post('pass'), 0)) :
+
+                $user = $this->managerUtilisateurs->getUtilisateurById($this->session->userdata('user_id'));
+                foreach ($this->ion_auth->get_users_groups($user->getId())->result() as $group):
+                    $groups[] = $group->id;
+                endforeach;
+                $etablissement = $this->managerEtablissements->getEtablissementById($user->getUserEtablissementId());
+                $this->session->set_userdata(
+                        array(
+                            'utilisateurPrenom' => $user->getUserPrenom(),
+                            'utilisateurNom' => $user->getUserNom(),
+                            'etablissementId' => $user->getUserEtablissementId(),
+                            'etablissementGPS' => $etablissement->getEtablissementGps(),
+                            'droits' => $groups
+                        )
+                );
+
                 echo json_encode(array('type' => 'success'));
             else :
                 log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' MAUVAIS ID DE CONNEXION');
@@ -42,22 +58,4 @@ class Secure extends CI_Controller {
         endif;
     }
 
-//    public function addAdminUser() {
-//
-//        $email = 'rudy@test.fr';
-//        $identity = 'rudy';
-//        $password = 'rfed2017';
-//
-//        $additional_data = array(
-//            'first_name' => 'Rudy',
-//            'last_name' => '',
-//            'company' => '',
-//            'phone' => '0651731808',
-//        );
-//
-//        /* Admin */
-//        $group = array('1');
-//
-//        $this->ion_auth->register($identity, $password, $email, $additional_data, $group);
-//    }
 }
