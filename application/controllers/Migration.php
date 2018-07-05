@@ -62,7 +62,7 @@ class Migration extends CI_Controller {
                 );
                 /* Admin */
                 if ($idEta != $etablissement->etablissementId):
-                    $group = array('1');
+                    $group = array('1, 10, 11');
                     $idEta = $etablissement->etablissementId;
                 else:
                     $group = array('2');
@@ -130,12 +130,28 @@ class Migration extends CI_Controller {
           `horaireDim` float(4,2) GENERATED ALWAYS AS ((`horaireDimAM` + `horaireDimPM`)) STORED,
           `horaireTotal` float(4,2) GENERATED ALWAYS AS ((`horaireLun` + `horaireMar` + `horaireMer` + `horaireJeu` + `horaireVen` + `horaireSam` + `horaireDim`)) STORED
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+         * ALTER TABLE `horaires` ADD PRIMARY KEY(`horaireId`);
+         * ALTER TABLE `horaires` CHANGE `horaireId` `horaireId` INT(11) NOT NULL AUTO_INCREMENT;
+         * ALTER TABLE `horaires` ADD INDEX(`horaireEtablissementId`);
+
          *
          * Importer uniquement les données de la table Horaires de la V1 dans cette table
          */
 
 
         /* Migration du personnel */
+        /*
+         * Copier la table de la V1 puis :
+         * ALTER TABLE `personnels` CHANGE `id` `personnelId` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `id_etablissement` `personnelEtablissementId` INT(11) NOT NULL, CHANGE `nom` `personnelNom` VARCHAR(120) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `prenom` `personnelPrenom` VARCHAR(120) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `qualif` `personnelQualif` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `actif` `personnelActif` TINYINT(2) NOT NULL DEFAULT '1' COMMENT '1=actif, 0=inactif 2 = auto', CHANGE `code` `personnelCode` VARCHAR(4) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `message` `personnelMessage` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+         * ALTER TABLE `personnels` DROP `personnelType`;
+         * ALTER TABLE `personnels` ADD `personnelEquipeId` INT NULL AFTER `personnelHoraireId` DEFAULT NULL, ADD INDEX (`personnelEquipeId`);
+         * ALTER TABLE `personnels` CHANGE `personnelHoraireId` `personnelHoraireId` INT(11) NULL;
+         * UPDATE `personnels` SET `personnelHoraireId` = null WHERE `personnelHoraireId` = 0
+         * ALTER TABLE `personnels` ADD FOREIGN KEY (`personnelHoraireId`) REFERENCES `horaires`(`horaireId`) ON DELETE SET NULL ON UPDATE CASCADE;
+         * ALTER TABLE `personnels` ADD FOREIGN KEY (`personnelEquipeId`) REFERENCES `equipes`(`equipeId`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+
+         */
     }
 
 }

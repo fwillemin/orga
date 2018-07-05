@@ -1,16 +1,21 @@
 var chemin = 'http://192.168.0.1/organibat2/index.php/';
 
 $(document).ready(function () {
-    
+
     /* Affichage de la session avec ESP+ESC */
-    $(document).on('keydown',function(e){
-        if(e.keyCode == 32){ hold = true;}
+    $(document).on('keydown', function (e) {
+        if (e.keyCode == 32) {
+            hold = true;
+        }
     });
-    $(document).on('keydown',function(e){
-        if(e.keyCode == 27 && hold === true){
+    $(document).on('keydown', function (e) {
+        if (e.keyCode == 27 && hold === true) {
             $('#modalSession').modal('show');
         }
     });
+
+    $('.selectpicker').selectpicker();
+
 
 //    $('.organisable').sortable({
 //

@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    $('#tableUtilisateurs').DataTable({
+    $('#tableHoraires').DataTable({
         language: {
             "sProcessing": "Traitement en cours...",
             "sSearch": "Rechercher&nbsp;:",
@@ -32,22 +32,22 @@ $(document).ready(function () {
         }
     });
 
-    $('#tableUtilisateurs').on('click', 'tbody tr', function () {
-        window.location.assign(chemin + 'utilisateurs/ficheUtilisateur/' + $(this).attr('data-userid'));
+    $('#tableHoraires').on('click', 'tbody tr', function () {
+        window.location.assign(chemin + 'horaires/ficheHoraire/' + $(this).attr('data-horaireid'));
     });
 
-    $('#btnModUtilisateur').on('click', function () {
-        $('#containerModUtilisateur').slideDown(700);
+    $('#btnModHoraire').on('click', function () {
+        $('#containerModHoraire').slideDown(700);
     });
 
     $('.formClose').on('click', function () {
         $(this).closest('.inPageForm').slideUp(300);
     })
 
-    $('#formAddUtilisateur').on('submit', function (e) {
+    $('#formAddHoraire').on('submit', function (e) {
         e.preventDefault();
         var donnees = $(this).serialize();
-        $.post(chemin + 'utilisateurs/addUtilisateur', donnees, function (retour) {
+        $.post(chemin + 'horaires/addHoraire', donnees, function (retour) {
             switch (retour.type) {
                 case 'error':
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
@@ -58,27 +58,9 @@ $(document).ready(function () {
             }
         }, 'json');
     });
-
-    $('.changeAcces').on('change', function () {
-        if ($(this).prop('checked') === true) {
-            var acces = 1;
-        } else {
-            var acces = 0;
-        }
-        $.post(chemin + 'utilisateurs/modifierAcces', {userId: $('#addUserId').val(), groupeId: $(this).val(), acces: acces}, function(retour){
-            switch (retour.type) {
-                case 'error':
-                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
-                    break;
-                case 'success':
-                    $.toaster({priority: 'success', title: '<strong><i class="fas fa-check"></i> OK</strong>', message: '<br>' + 'Accès modifié'});                    
-                    break;
-            }
-        }, 'json');
-    });
     
-    $('#btnAddUtilisateur').on('click', function(){
-        $('#modalAddUser').modal('show');
+    $('#btnAddHoraire').on('click', function(){
+        $('#modalAddHoraire').modal('show');
     });
 
 });

@@ -42,11 +42,15 @@ table {
 .close {
     color: lightgreen;
 }
-
+.badge {
+    margin: 0px;
+}
 .ligneClikable {
     cursor: pointer;
 }
-
+.form-row label {
+    margin: 6px 0px 0px 0px;
+}
 .inPageForm{
     border-top : 3px solid $noir;
     border-bottom : 1px solid $noir;

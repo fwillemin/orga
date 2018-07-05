@@ -12,6 +12,7 @@
         <link rel="icon" type="image/png" href="<?= base_url('assets/img/favicon.png'); ?>" >
 
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap.min.css'); ?>" >
+        <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-select.min.css'); ?>" >
 
 
         <link rel="stylesheet" href="<?= base_url('assets/MegaNavbarBS4/assets/css/MegaNavbarBS4.css'); ?>">
@@ -52,19 +53,20 @@
                             <!--div class="nav-item active"><a class="nav-link" href="#">Active</a></div>
                               <div class="nav-divider"></div-->
                             <div class="nav-item dropdown active">
-                                <a class="dropdown-toggle collapsed" href="#id_content" data-toggle="collapse" aria-haspopup="true" aria-expanded="false">Active item</a>
-                                <div class="dropdown-menu col-xl-2 collapse animated" id="id_content" style="max-width: 230px;">
-                                    <div class="dropdown-header">Submenu header <span class="description">and some description</span> </div>
+                                <a class="dropdown-toggle collapsed" href="#id_content" data-toggle="collapse" aria-haspopup="true" aria-expanded="false">Personnels</a>
+                                <div class="dropdown-menu col-xl-2 collapse animated" id="id_content" style="max-width: 280px;">
+                                    <div class="dropdown-header">Gestion du personnel de chantier</div>
                                     <div class="dropdown-divider m-0"></div>
-                                    <div class="dropdown-text "><small>This is .dropdown-text content,  for adding strings of text to the submenu.</small></div>
-                                    <div class="dropdown-divider m-0"></div>
-                                    <a class="dropdown-link" href="#" title="dropdown-link">Regular link<span class="description">Regular link description</span></a>
-                                    <div class="dropdown-item"><a href="#">Default item <span class="description">Default item description</span></a></div>
-                                    <div class="dropdown-item disabled"><a href="#">Disabled item<span class="description">Disabled item description</span></a></div>
-                                    <div class="dropdown-item active"><a href="#">Active item<span class="description">Active item description</span></a></div>
-                                    <div class="dropdown-separator"></div>
-                                    <div class="dropdown-divider m-0"></div>
-                                    <div class="dropdown-text"><i class="fa fa-arrow-up" aria-hidden="true"></i> <small>Separator above this item</small></div>
+                                    <div class="dropdown-item">
+                                        <a href="<?= site_url('personnels/liste/ajouter'); ?>">
+                                            <i class="fas fa-plus-square"></i> Ajouter du personnel
+                                        </a>
+                                    </div>
+                                    <div class="dropdown-item">
+                                        <a href="<?= site_url('personnels/liste'); ?>">
+                                            <i class="fas fa-list"></i> Liste
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="nav-divider"></div>
@@ -253,9 +255,10 @@
                                 <div class="dropdown-menu col-sm-9 col-lg-8"  role="menu" id="id_shop3">
                                     <div class="d-flex">
                                         <div class="col-12 col-md-8">
-                                            <div class="row" style="background: #000; margin-top:5px;">
+                                            <div class="row" style="background: #000;">
                                                 <div class="col p-2">
-                                                    Bonjour <?= $this->session->userdata('utilisateurPrenom'); ?>,
+                                                    <h2>Bonjour <?= $this->session->userdata('utilisateurPrenom'); ?>,</h2>
+                                                    <small class="form-text text-muted">Dernière connexion le <?= $this->own->dateFrancais($this->session->userdata('old_last_login')); ?></small>
                                                 </div>
                                             </div>
                                         </div>
@@ -265,6 +268,13 @@
                                                     <div class="col-12" style="min-height: 25px;">
                                                         <a href="<?= site_url('utilisateurs/liste'); ?>" style="color: lightsteelblue;">
                                                             <i class="fas fa-users"></i> Utilisateurs
+                                                        </a>
+                                                    </div>
+                                                <?php endif; ?>
+                                                <?php if ($this->ion_auth->in_group(array(20, 21))): ?>
+                                                    <div class="col-12" style="min-height: 25px;">
+                                                        <a href="<?= site_url('horaires/liste'); ?>" style="color: lightsteelblue;">
+                                                            <i class="fas fa-clock"></i> Horaires
                                                         </a>
                                                     </div>
                                                 <?php endif; ?>

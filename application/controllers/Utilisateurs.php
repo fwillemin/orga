@@ -13,8 +13,6 @@ class Utilisateurs extends My_Controller {
         if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(10, 11)))) :
             redirect('organibat/board');
         endif;
-
-        $this->lang->load('calendar_lang', 'french');
     }
 
     public function liste() {

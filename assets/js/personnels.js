@@ -1,6 +1,9 @@
 $(document).ready(function () {
+    
+    $('#modalAddPersonnel').modal();
 
-    $('#tableUtilisateurs').DataTable({
+    $('#tablePersonnels').DataTable({
+        pageLength: 50,
         language: {
             "sProcessing": "Traitement en cours...",
             "sSearch": "Rechercher&nbsp;:",
@@ -32,22 +35,27 @@ $(document).ready(function () {
         }
     });
 
-    $('#tableUtilisateurs').on('click', 'tbody tr', function () {
-        window.location.assign(chemin + 'utilisateurs/ficheUtilisateur/' + $(this).attr('data-userid'));
+//    console.log(window.location.pathname);
+//    if (window.location.pathname == '/organibat2/index.php/personnels/liste/ajouter') {
+//        $('#modalAddPersonnel').modal('show');
+//    };
+
+    $('#tablePersonnels').on('click', 'tbody tr', function () {
+        window.location.assign(chemin + 'personnels/fichePersonnel/' + $(this).attr('data-personnelid'));
     });
 
-    $('#btnModUtilisateur').on('click', function () {
-        $('#containerModUtilisateur').slideDown(700);
+    $('#btnModPersonnel').on('click', function () {
+        $('#containerModPersonnel').slideDown(700);
     });
 
     $('.formClose').on('click', function () {
         $(this).closest('.inPageForm').slideUp(300);
     })
 
-    $('#formAddUtilisateur').on('submit', function (e) {
+    $('#formAddPersonnel').on('submit', function (e) {
         e.preventDefault();
         var donnees = $(this).serialize();
-        $.post(chemin + 'utilisateurs/addUtilisateur', donnees, function (retour) {
+        $.post(chemin + 'personnels/addPersonnel', donnees, function (retour) {
             switch (retour.type) {
                 case 'error':
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
@@ -59,27 +67,15 @@ $(document).ready(function () {
         }, 'json');
     });
 
-    $('.changeAcces').on('change', function () {
-        if ($(this).prop('checked') === true) {
-            var acces = 1;
-        } else {
-            var acces = 0;
-        }
-        $.post(chemin + 'utilisateurs/modifierAcces', {userId: $('#addUserId').val(), groupeId: $(this).val(), acces: acces}, function(retour){
-            switch (retour.type) {
-                case 'error':
-                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
-                    break;
-                case 'success':
-                    $.toaster({priority: 'success', title: '<strong><i class="fas fa-check"></i> OK</strong>', message: '<br>' + 'Accès modifié'});                    
-                    break;
-            }
-        }, 'json');
+    $('#btnAddPersonnel').on('click', function () {
+        $('#modalAddPersonnel').modal('show');
+    });
+    $('#btnDelMessage').on('click', function () {
+        console.log('click');
+        $('#addPersonnelMessage').val('');        
     });
     
-    $('#btnAddUtilisateur').on('click', function(){
-        $('#modalAddUser').modal('show');
-    });
+    
 
 });
 

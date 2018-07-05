@@ -179,6 +179,99 @@ $config = array(
             'label' => 'Etat',
             'rules' => 'required|in_list[0,1]'
         )
-    )
+    ),
+    /* get Horaire */
+    'getHoraire' => array(
+        array(
+            'field' => 'horaireId',
+            'label' => 'ID de l\'horaire',
+            'rules' => 'required|callback_existHoraire'
+        )
+    ),
+    /* Add Horaire */
+    'addHoraire' => array(
+        array(
+            'field' => 'addHoraireId',
+            'label' => 'ID de l\'horaire',
+            'rules' => 'callback_existHoraire'
+        ),
+        array(
+            'field' => 'addHoraireNom',
+            'label' => 'Nom de l\'horaire',
+            'rules' => 'trim|required'
+        )
+    ),
+    /* get Equipe */
+    'getEquipe' => array(
+        array(
+            'field' => 'equipeId',
+            'label' => 'ID de l\'équipe',
+            'rules' => 'required|callback_existEquipe'
+        )
+    ),
+    /* Add Equipe */
+    'addEquipe' => array(
+        array(
+            'field' => 'addEquipeId',
+            'label' => 'ID de l\'équipe',
+            'rules' => 'callback_existEquipe'
+        ),
+        array(
+            'field' => 'addEquipeNom',
+            'label' => 'Nom de l\'équipe',
+            'rules' => 'trim|required'
+        )
+    ),
+    /* get Personnel */
+    'getPersonnel' => array(
+        array(
+            'field' => 'personnelId',
+            'label' => 'ID du personnel',
+            'rules' => 'required|callback_existPersonnel'
+        )
+    ),
+    /* Add Equipe */
+    'addPersonnel' => array(
+        array(
+            'field' => 'addPersonnelId',
+            'label' => 'ID du personnel',
+            'rules' => 'callback_existPersonnel'
+        ),
+        array(
+            'field' => 'addPersonnelNom',
+            'label' => 'Nom du personnel',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addPersonnelPrenom',
+            'label' => 'Prenom du personnel',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addPersonnelQualif',
+            'label' => 'Qualification du personnel',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addPersonnelCode',
+            'label' => 'code personnel',
+            'rules' => 'trim|numeric|exact_length[4]'
+        ),
+        array(
+            'field' => 'addPersonnelMessage',
+            'label' => 'Message personnel',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addPersonnelEquipeId',
+            'label' => 'Equipe du personnel',
+            'rules' => 'trim|callback_existEquipe'
+        ),
+        array(
+            'field' => 'addPersonnelHoraireId',
+            'label' => 'Horaire du personnel',
+            'rules' => 'trim|callback_existHoraire'
+        )
+    ),
 );
 ?>

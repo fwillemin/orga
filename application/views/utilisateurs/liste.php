@@ -29,7 +29,7 @@
                         foreach ($user->getUserGroups() as $group):
                             echo $group->name . ', ';
                         endforeach;
-                        echo '</td></td>';
+                        echo '</td></tr>';
                     endforeach;
                 endif;
                 ?>

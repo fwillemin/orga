@@ -28,9 +28,10 @@
 
 <script defer type="text/javascript" src="<?= base_url('assets/js/jquery.min.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/jqueryConfirm/jquery-confirm.min.js'); ?>"></script>
-<script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap.min.js'); ?>"></script>
-<script defer type="text/javascript" src="<?= base_url('assets/js/toaster.js'); ?>"></script>
-<!--<script defer type="text/javascript" src="<?= base_url('assets/js/fontawesome.js'); ?>"></script>-->
+<script defer type="text/javascript" src="<?= base_url('assets/js/popper.min.js'); ?>"></script>
+<script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap.bundle.min.js'); ?>"></script>
+<!--<script defer type="text/javascript" src="<?= base_url('assets/js/toaster.js'); ?>"></script>
+<script defer type="text/javascript" src="<?= base_url('assets/js/fontawesome.js'); ?>"></script>-->
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
 
 <?php if ($this->ion_auth->logged_in()): ?>
@@ -38,8 +39,8 @@
     <!--<script defer type="text/javascript" src="<?= base_url('assets/bootstrap3.3.7/js/bootstrap-datepicker.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/bootstrap3.3.7/js/bootstrap-datepicker.fr.min.js'); ?>"></script>-->
 
-    <!--    <script defer type="text/javascript" src="<?= base_url('assets/dataTable/pdfmake.min.js'); ?>"></script>
-        <script defer type="text/javascript" src="<?= base_url('assets/dataTable/vfs_fonts.js'); ?>"></script>-->
+                    <!--    <script defer type="text/javascript" src="<?= base_url('assets/dataTable/pdfmake.min.js'); ?>"></script>
+                        <script defer type="text/javascript" src="<?= base_url('assets/dataTable/vfs_fonts.js'); ?>"></script>-->
     <script defer type="text/javascript" src="<?= base_url('assets/dataTable/datatables.min.js'); ?>"></script>
 
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-select.min.js'); ?>"></script>
