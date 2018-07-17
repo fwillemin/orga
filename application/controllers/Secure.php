@@ -44,6 +44,7 @@ class Secure extends CI_Controller {
                         array(
                             'utilisateurPrenom' => $user->getUserPrenom(),
                             'utilisateurNom' => $user->getUserNom(),
+                            'rsId' => $etablissement->getEtablissementRsId(),
                             'etablissementId' => $user->getUserEtablissementId(),
                             'etablissementGPS' => $etablissement->getEtablissementGps(),
                             'droits' => $groups

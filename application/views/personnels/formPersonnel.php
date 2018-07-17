@@ -48,7 +48,7 @@
     <div class="col">
         <label for="addPersonnelMessage">Message personnel</label>
         <div class="input-group">
-            <textarea name="addPersonnelMessage" id="addPersonnelMessage" rows="3" class="form-control form-control-sm"><?= !empty($personnel) ? nl2br($personnel->getPersonnelMessage()) : ''; ?></textarea>
+            <textarea name="addPersonnelMessage" id="addPersonnelMessage" rows="3" class="form-control form-control-sm"><?= !empty($personnel) ? $personnel->getPersonnelMessage() : ''; ?></textarea>
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button" id="btnDelMessage"><i class="fas fa-trash"></i></button>
             </div>

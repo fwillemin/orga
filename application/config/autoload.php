@@ -63,7 +63,8 @@ $autoload['packages'] = array();
  */
 
 $autoload['libraries'] = array('session', 'database', 'form_validation', 'email', 'ion_auth', 'own',
-    'raisonSociale', 'etablissement', 'Utilisateur', 'Horaire', 'Personnel', 'Equipe'
+    'raisonSociale', 'etablissement', 'Utilisateur', 'Horaire', 'Personnel', 'Equipe', 'TauxHoraire', 'Client', 'Maps', 'Place',
+    'Affaire', 'Categorie'
 );
 
 
@@ -148,5 +149,10 @@ $autoload['model'] = array(
     'Model_utilisateurs' => 'managerUtilisateurs',
     'Model_horaires' => 'managerHoraires',
     'Model_personnels' => 'managerPersonnels',
-    'Model_equipes' => 'managerEquipes'
+    'Model_equipes' => 'managerEquipes',
+    'Model_tauxhoraires' => 'managerTauxHoraires',
+    'Model_clients' => 'managerClients',
+    'Model_places' => 'managerPlaces',
+    'Model_affaires' => 'managerAffaires',
+    'Model_categories' => 'managerCategories'
 );

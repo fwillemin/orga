@@ -1,4 +1,6 @@
-var chemin = 'http://192.168.0.1/organibat2/index.php/';
+var path = 'http://192.168.0.1/organibat2';
+var chemin = path + '/index.php/';
+var cheminJs = path + '/assets/js/';
 
 $(document).ready(function () {
 

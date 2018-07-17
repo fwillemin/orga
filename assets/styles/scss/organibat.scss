@@ -48,6 +48,10 @@ table {
 .ligneClikable {
     cursor: pointer;
 }
+.ligneSelectionnee {
+    background-color: $fondSelection;
+    color: darken($fondSelection, 70);
+}
 .form-row label {
     margin: 6px 0px 0px 0px;
 }

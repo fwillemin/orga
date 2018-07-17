@@ -23,6 +23,8 @@ class Personnel {
     protected $personnelHoraire;
     protected $personnelEquipeId;
     protected $personnelEquipe;
+    protected $personnelTauxHoraire;
+    protected $personnelTauxHoraireHistorique;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -36,6 +38,18 @@ class Personnel {
             if (method_exists($this, $method))
                 $this->$method($value);
         endforeach;
+        $CI = & get_instance();
+        $listeTaux = $CI->managerTauxHoraires->getTauxHoraires(array('tauxHorairePersonnelId' => $this->personnelId));
+        if (!empty($listeTaux)):
+            $this->personnelTauxHoraire = $listeTaux[0]->getTauxHoraire();
+        else:
+            $this->personnelTauxHoraire = 0;
+        endif;
+    }
+
+    public function hydrateTauxHoraires() {
+        $CI = & get_instance();
+        $this->personnelTauxHoraireHistorique = $CI->managerTauxHoraires->getTauxHoraires(array('tauxHorairePersonnelId' => $this->personnelId));
     }
 
     public function hydrateHoraire() {
@@ -142,6 +156,22 @@ class Personnel {
 
     function setPersonnelEquipe($personnelEquipe) {
         $this->personnelEquipe = $personnelEquipe;
+    }
+
+    function getPersonnelTauxHoraire() {
+        return $this->personnelTauxHoraire;
+    }
+
+    function getPersonnelTauxHoraireHistorique() {
+        return $this->personnelTauxHoraireHistorique;
+    }
+
+    function setPersonnelTauxHoraire($personnelTauxHoraire) {
+        $this->personnelTauxHoraire = $personnelTauxHoraire;
+    }
+
+    function setPersonnelTauxHoraireHistorique($personnelTauxHoraireHistorique) {
+        $this->personnelTauxHoraireHistorique = $personnelTauxHoraireHistorique;
     }
 
 }

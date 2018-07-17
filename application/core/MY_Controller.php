@@ -54,4 +54,49 @@ class My_Controller extends CI_Controller {
         endif;
     }
 
+    public function existTauxHoraire($tauxId) {
+        $this->form_validation->set_message('existTauxHoraire', 'Ce taux horaire est introuvable.');
+        if ($this->managerTauxHoraires->count(array('tauxHoraireId' => $tauxId)) == 1 || !$tauxId) :
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
+    public function existClient($clientId) {
+        $this->form_validation->set_message('existClient', 'Ce client est introuvable.');
+        if ($this->managerClients->count(array('clientId' => $clientId)) == 1 || !$clientId) :
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
+    public function existPlace($placeId) {
+        $this->form_validation->set_message('existPlace', 'Cette place est introuvable.');
+        if ($this->managerPlaces->count(array('placeId' => $placeId)) == 1 || !$placeId) :
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
+    public function existCategorie($categorieId) {
+        $this->form_validation->set_message('existCategorie', 'Cette catégorie est introuvable.');
+        if ($this->managerCategories->count(array('categorieId' => $categorieId)) == 1 || !$categorieId) :
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
+    public function isPortable($numero) {
+        $this->form_validation->set_message('isPortable', 'Le numéro de portable doit commencer par 06 ou 07 ou +336 ou +337');
+        if (preg_match("/^((\+|00)33\s?|0)[67](\s?\d{2}){4}$/", $numero) || !$numero):
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
 }

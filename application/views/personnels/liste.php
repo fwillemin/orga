@@ -16,7 +16,8 @@
                     <td style="width: 30px;"></td>
                     <td>Nom</td>
                     <td>Qualification</td>
-                    <td>Equipe</td>
+                    <td style="text-align: center;">T. Horaire</td>
+                    <td style="text-align: center;">Equipe</td>
                     <td>Actuellement</td>
                 </tr>
             </thead>
@@ -28,7 +29,8 @@
                         . '<td style="text-align:center; font-size:15px;">' . ($personnel->getPersonnelActif() ? '<label class="badge badge-info">Actif</label>' : '<label class="badge badge-secondary">Inactif</label>') . '</td>'
                         . '<td>' . $personnel->getPersonnelNom() . ' ' . $personnel->getPersonnelPrenom() . '</td>'
                         . '<td>' . $personnel->getPersonnelQualif() . '</td>'
-                        . '<td>' . ($personnel->getPersonnelEquipeId() ? $personnel->getPersonnelEquipe()->getEquipeNom() : '') . '</td>'
+                        . '<td style="text-align: center;">' . ($personnel->getPersonnelTauxHoraire() ?: '<span class="badge badge-warning">NR</span>') . '</td>'
+                        . '<td style="text-align: center;">' . ($personnel->getPersonnelEquipeId() ? $personnel->getPersonnelEquipe()->getEquipeNom() : '') . '</td>'
                         . '<td></td></tr>';
                     endforeach;
                     unset($personnel);
