@@ -10,7 +10,7 @@ class Personnels extends My_Controller {
         parent::__construct();
         $this->viewFolder = strtolower(__CLASS__) . '/';
 
-        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(20, 21)))) :
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(25, 26)))) :
             redirect('organibat/board');
         endif;
     }
@@ -68,6 +68,10 @@ class Personnels extends My_Controller {
     }
 
     public function addPersonnel() {
+
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(26)))) :
+            redirect('organibat/board');
+        endif;
 
         if (!$this->form_validation->run('addPersonnel')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
@@ -140,6 +144,10 @@ class Personnels extends My_Controller {
 
     public function addEquipe() {
 
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(26)))) :
+            redirect('organibat/board');
+        endif;
+
         if (!$this->form_validation->run('addEquipe')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
             exit;
@@ -162,6 +170,11 @@ class Personnels extends My_Controller {
     }
 
     public function delEquipe() {
+
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(26)))) :
+            redirect('organibat/board');
+        endif;
+
         if (!$this->form_validation->run('getEquipe')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
@@ -174,6 +187,10 @@ class Personnels extends My_Controller {
     }
 
     public function affectationPersonnelEquipe() {
+
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(26)))) :
+            redirect('organibat/board');
+        endif;
 
         if ($this->form_validation->run('getEquipe') && $this->form_validation->run('getPersonnel')):
 
@@ -191,6 +208,10 @@ class Personnels extends My_Controller {
     }
 
     public function addTauxHoraire() {
+
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(26)))) :
+            redirect('organibat/board');
+        endif;
 
         if (!$this->form_validation->run('addTauxHoraire')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
@@ -216,6 +237,11 @@ class Personnels extends My_Controller {
     }
 
     public function delTauxHoraire() {
+
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(26)))) :
+            redirect('organibat/board');
+        endif;
+
         if (!$this->form_validation->run('getTauxHoraire')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:

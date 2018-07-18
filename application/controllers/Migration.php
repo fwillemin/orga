@@ -327,6 +327,19 @@ class Migration extends My_Controller {
                 $categorie = null;
             endif;
 
+            /* Etat des dossiers */
+            switch ($dossier->dossierEtat):
+                case 'Termine':
+                    $etat = 3;
+                    break;
+                case 'Encours':
+                    $etat = 2;
+                    break;
+                case 'Devis':
+                    $etat = 1;
+                    break;
+            endswitch;
+
             /* Creation d'une affaire */
             $arrayAffaire = array(
                 'affaireEtablissementId' => $etablissement,
@@ -339,7 +352,7 @@ class Migration extends My_Controller {
                 'affaireObjet' => $dossier->dossierObjet,
                 'affaireDateSignature' => $dossier->date_signature ?: null,
                 'affaireDateCloture' => $dossier->date_solde ?: null,
-                'affaireEtat' => $dossier->dossierEtat,
+                'affaireEtat' => $etat,
                 'affaireCouleur' => $dossier->dossierCouleur,
                 'affaireRemarque' => $dossier->dossierRemarque
             );

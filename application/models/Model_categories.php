@@ -70,7 +70,7 @@ class Model_categories extends MY_model {
     public function getCategorieById($categorieId, $type = 'object') {
         $query = $this->db->select('*')
                 ->from($this->table)
-                ->where('categorieRsId', $this->session->userdata('rsId'))
+                //->where('categorieRsId', $this->session->userdata('rsId'))
                 ->where('categorieId', $categorieId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);

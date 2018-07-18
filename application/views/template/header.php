@@ -37,7 +37,7 @@
                 <div class="container pl-0">
                     <!-- MegaNavbar BS4 brand -->
                     <a class="navbar-brand" href="#">
-                        <img src="<?= base_url('assets/img/logo_white.png'); ?>" height="40">
+                        <img src="<?= base_url('assets/img/logo_white.png'); ?>" height="40" style="padding-right: 30px;">
                     </a>
                     <!-- MegaNavbar BS4 toggler -->
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,33 +46,31 @@
                     <div class="collapse navbar-collapse" id="navbar">
                         <div class="nav navbar-nav">
                             <div class="nav-divider"></div>
-                            <div class="navbar-text"><i class="fa fa-h-square"></i> Text</div>
+                            <div class="nav-item">
+                                <a class="nav-link" href="#"  style="color: lightsteelblue; font-weight: bold; font-size:16px;">
+                                    <i class="fas fa-calendar-alt"></i> Planning
+                                </a>
+                            </div>
                             <div class="nav-divider"></div>
-                            <div class="nav-item"><a class="nav-link" href="#"><i class="fa fa-link"></i> Link</a></div>
-                            <div class="nav-divider"></div>
-                            <div class="nav-item disabled"><a class="nav-link" href="#">Disabled</a></div>
-                            <div class="nav-divider"></div>
-                            <!--div class="nav-item active"><a class="nav-link" href="#">Active</a></div>
-                              <div class="nav-divider"></div-->
                             <div class="nav-item dropdown">
-                                <a class="dropdown-toggle collapsed" href="#menu_personels" data-toggle="collapse" aria-haspopup="true" aria-expanded="false">Personnels</a>
+                                <a class="dropdown-toggle collapsed" href="#menu_personels" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-file-signature"></i> Affaires</a>
                                 <div class="dropdown-menu col-xl-2 collapse animated" id="menu_personels" style="max-width: 280px;">
-                                    <div class="dropdown-header">Gestion du personnel de chantier</div>
+                                    <div class="dropdown-header">Gestion de vos affaires</div>
                                     <div class="dropdown-divider m-0"></div>
                                     <div class="dropdown-item">
-                                        <a href="<?= site_url('personnels/liste/ajouter'); ?>">
-                                            <i class="fas fa-plus-square"></i> Ajouter du personnel
+                                        <a href="<?= site_url('affaires/liste/ajouter'); ?>">
+                                            <i class="fas fa-plus-square"></i> Ajouter une affaire
                                         </a>
                                     </div>
                                     <div class="dropdown-item">
-                                        <a href="<?= site_url('personnels/liste'); ?>">
+                                        <a href="<?= site_url('affaires/liste'); ?>">
                                             <i class="fas fa-list"></i> Liste
                                         </a>
                                     </div>
                                 </div>
                             </div>
                             <div class="nav-item dropdown">
-                                <a class="dropdown-toggle collapsed" href="#menu_clients" data-toggle="collapse" aria-haspopup="true" aria-expanded="false">Clients</a>
+                                <a class="dropdown-toggle collapsed" href="#menu_clients" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user-tie"></i> Clients</a>
                                 <div class="dropdown-menu col-xl-2 collapse animated" id="menu_clients" style="max-width: 280px;">
                                     <div class="dropdown-header">Gestion des clients</div>
                                     <div class="dropdown-divider m-0"></div>
@@ -89,6 +87,12 @@
                                 </div>
                             </div>
                             <div class="nav-divider"></div>
+                            <div class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="fas fa-hourglass-end"></i> Pointages
+                                </a>
+                            </div>
+                            <div class="nav-divider"></div>
 
                         </div>
                         <div class="nav navbar-nav navbar-right">
@@ -101,8 +105,8 @@
 
                             <!--SHOPPING CART-->
                             <div class="nav-item dropdown mega-md">
-                                <a data-toggle="collapse" href="#id_shop3" class="dropdown-toggle collapsed"><i class="fa fa-shopping-cart"></i><span class="d-expanded-none"> Shoping cart</span></a>
-                                <div class="dropdown-menu col-sm-9 col-lg-8"  role="menu" id="id_shop3">
+                                <a data-toggle="collapse" href="#parametrages" class="dropdown-toggle collapsed"><i class="fa fa-cog fa-spin" style="font-size:20px; color: lightslategray;"></i><span class="d-expanded-none"> Paramètres</span></a>
+                                <div class="dropdown-menu col-sm-9 col-lg-8"  role="menu" id="parametrages">
                                     <div class="d-flex">
                                         <div class="col-12 col-md-8">
                                             <div class="row" style="background: #000;">
@@ -114,30 +118,37 @@
                                         </div>
                                         <div class="col-12 col-md-4 py-3" style="background: #333;">
                                             <div class="row">
+                                                <?php if ($this->ion_auth->in_group(array(25, 26))): ?>
+                                                    <div class="col-12" style="min-height: 25px;">
+                                                        <a href="<?= site_url('personnels/liste'); ?>" style="color: lightsteelblue;">
+                                                            <div style="width:25px; float: left;"><i class="fas fa-user-ninja"></i></div> Personnels de chantier
+                                                        </a>
+                                                    </div>
+                                                <?php endif; ?>
                                                 <?php if ($this->ion_auth->in_group(array(10, 11))): ?>
                                                     <div class="col-12" style="min-height: 25px;">
                                                         <a href="<?= site_url('utilisateurs/liste'); ?>" style="color: lightsteelblue;">
-                                                            <i class="fas fa-users"></i> Utilisateurs
+                                                            <div style="width:25px; float: left;"><i class="fas fa-user-edit"></i></div> Utilisateurs administratifs
                                                         </a>
                                                     </div>
                                                 <?php endif; ?>
                                                 <?php if ($this->ion_auth->in_group(array(40))): ?>
                                                     <div class="col-12" style="min-height: 25px;">
                                                         <a href="<?= site_url('categories/liste'); ?>" style="color: lightsteelblue;">
-                                                            <i class="fas fa-object-group"></i> Catégories de chantiers
+                                                            <div style="width:25px; float: left;"><i class="fas fa-object-group"></i></div> Catégories de chantiers
                                                         </a>
                                                     </div>
                                                 <?php endif; ?>
                                                 <?php if ($this->ion_auth->in_group(array(20, 21))): ?>
                                                     <div class="col-12" style="min-height: 25px;">
                                                         <a href="<?= site_url('horaires/liste'); ?>" style="color: lightsteelblue;">
-                                                            <i class="fas fa-clock"></i> Horaires
+                                                            <div style="width:25px; float: left;"><i class="fas fa-clock"></i></div> Horaires
                                                         </a>
                                                     </div>
                                                 <?php endif; ?>
                                                 <div class="col-12">
                                                     <a href="<?= site_url('organibat/deconnexion'); ?>" style="color: orangered;">
-                                                        <i class="fas fa-sign-out-alt"></i> Quitter
+                                                        <div style="width:25px; float: left;"><i class="fas fa-sign-out-alt"></i></div> Quitter
                                                     </a>
                                                 </div>
                                             </div>

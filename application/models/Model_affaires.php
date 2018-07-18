@@ -72,7 +72,7 @@ class Model_affaires extends MY_model {
      * @param array $tri Critères de tri des raisonSociales
      * @return array Liste d'objets de la classe Affaire
      */
-    public function getAffaires($where = array(), $tri = 'affaireNom ASC', $type = 'object') {
+    public function getAffaires($where = array(), $tri = 'affaireCreation ASC', $type = 'object') {
         $query = $this->db->select('*')
                 ->from($this->table)
                 ->where('affaireEtablissementId', $this->session->userdata('etablissementId'))

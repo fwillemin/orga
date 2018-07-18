@@ -26,6 +26,7 @@ class Affaire {
     protected $affaireDateSignature;
     protected $affaireDateCloture;
     protected $affaireEtat;
+    protected $affaireEtatHtml;
     protected $affaireCouleur;
     protected $affaireRemarque;
 
@@ -41,6 +42,33 @@ class Affaire {
             if (method_exists($this, $method))
                 $this->$method($value);
         endforeach;
+        $CI = & get_instance();
+        $categorie = $CI->managerCategories->getCategorieById($this->affaireCategorieId);
+        $this->affaireCategorie = $categorie ? $categorie->getCategorieNom() : '<span class="badge badge-warning">Non classé</span>';
+        switch ($this->affaireEtat):
+            case 1:
+                $this->affaireEtatHtml = '<span class="badge badge-info">Devis</span>';
+                break;
+            case 2:
+                $this->affaireEtatHtml = '<span class="badge badge-success">En cours</span>';
+                break;
+            case 3:
+                $this->affaireEtatHtml = '<span class="badge badge-secondary">Clôturée</span>';
+                break;
+        endswitch;
+    }
+
+    public function hydrateClient() {
+        $CI = & get_instance();
+        $this->affaireClient = $CI->managerClients->getClientById($this->affaireClientId);
+    }
+
+    function getAffaireEtatHtml() {
+        return $this->affaireEtatHtml;
+    }
+
+    function setAffaireEtatHtml($affaireEtatHtml) {
+        $this->affaireEtatHtml = $affaireEtatHtml;
     }
 
     function getAffaireCreation() {
