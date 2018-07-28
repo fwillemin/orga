@@ -13,6 +13,7 @@
 
         <!--<link rel="stylesheet" type="text/css" href="<?= base_url('assets/leaflet/leaflet.css'); ?>" >-->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+        <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-colorpicker.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-select.min.css'); ?>" >
 

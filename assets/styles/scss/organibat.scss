@@ -72,3 +72,40 @@ table {
     color: grey;
     cursor: pointer;
 }
+
+.affectation {
+    height:40px;
+    border: 1px solid;
+    border-color: grey;
+    padding:4px;
+    font-size:12px;
+    @include border-radius(4px, 4px);
+}
+
+.cadre {
+    border: 1px solid $noir;
+    border-top: 4px solid $noir;
+    padding: 5px 15px;
+    background-color: $grisClair;
+    & h5 {
+        margin : 6px 0px;
+        color: steelblue;
+    }
+}
+
+.cadre2 {
+    padding: 5px 15px;
+    background-color: steelblue;
+    color: #FFF;
+}
+
+small{
+    line-height: 75%;    
+    &.light{
+        color: lightsteelblue;
+    }
+    &.danger{
+        color: orangered;
+    }
+}
+

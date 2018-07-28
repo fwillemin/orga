@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-sm-8 offset-sm-2 fond" style="padding-top: 20px;">
+    <div class="col-12 col-lg-8 offset-lg-2 fond" style="padding-top: 20px;">
         <h2>
             Gestion de vos équipes
         </h2>

@@ -40,6 +40,18 @@ class Model_utilisateurs extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function getCommerciaux($where = array(), $tri = 'userNom DESC', $type = 'object') {
+        $query = $this->db->select('u.*')
+                ->from($this->table . ' u')
+                ->join('users_groups ug', 'ug.user_id = u.id', 'left')
+                ->where('u.userEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('ug.group_id', 3)
+                ->where($where)
+                ->order_by($tri)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
     /**
      * Retourne un objet de la classe Utilisateur correspondant à l'id
      * @param integer $utilisateurId ID de l'raisonSociale

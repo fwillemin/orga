@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-sm-10 offset-sm-1 fond">
+    <div class="col-12 col-lg-8 offset-lg-2 fond">
         <div class="row">
             <div class="col-12">
                 <br>
@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-12 col-sm-5">
+            <div class="col-12 col-sm-6">
                 <div id="containerModClient" class="inPageForm" style="display: none; padding: 10px; margin-bottom:10px;">
                     <?php include('formClient.php'); ?>
                     <i class="formClose fas fa-times"></i>
@@ -103,8 +103,8 @@
                                 . '<td>' . $this->own->dateFrancais($affaire->getAffaireDateSignature(), 'DMA') . '</td>'
                                 . '<td>' . $affaire->getAffaireObjet() . '</td>'
                                 . '<td style="text-align: right;">' . $affaire->getAffairePrix() . '€</td>'
-                                . '<td style="text-align: center;">' . $affaire->getAffaireEtat() . '</td>'
-                                . '<td style="text-align: center;"><i class="fas fa-link" style="color: steelblue; cursor: pointer;" title="' . $affaire->getAffaireId() . '"></i></td>'
+                                . '<td style="text-align: center;">' . $affaire->getAffaireEtatHtml() . '</td>'
+                                . '<td style="text-align: center;"><a href="' . site_url('affaires/ficheAffaire/' . $affaire->getAffaireId()) . '"><i class="fas fa-link" style="color: steelblue; cursor: pointer;" title="' . $affaire->getAffaireId() . '"></i></td>'
                                 . '</tr>';
                             endforeach;
 

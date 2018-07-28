@@ -30,6 +30,9 @@ class Affaires extends My_Controller {
         endif;
 
         $data = array(
+            'commerciaux' => $this->managerUtilisateurs->getCommerciaux(),
+            'categories' => $this->managerCategories->getCategories(),
+            'clients' => $this->managerClients->getClients(),
             'affaires' => $affaires,
             'title' => 'Affaires',
             'description' => 'Liste des affaires',
@@ -56,13 +59,22 @@ class Affaires extends My_Controller {
             redirect('affaires/liste');
         endif;
 
+        $clients = $this->managerClients->getClients();
+
+
         $affaire = $this->managerAffaires->getAffaireById($affaireId);
-        $affaire->hydratePlaces();
-        $affaire->hydrateAffaires();
+        $affaire->hydrateClient();
+        $affaire->getAffaireClient()->hydratePlaces();
+        $affaire->hydrateCommercial();
+        $affaire->hydrateChantiers();
+        $affaire->hydratePlace();
 
         $data = array(
+            'commerciaux' => $this->managerUtilisateurs->getCommerciaux(),
+            'clients' => $clients,
+            'categories' => $this->managerCategories->getCategories(),
             'affaire' => $affaire,
-            'title' => $affaire->getAffaireNom(),
+            'title' => 'Fiche Affaire',
             'description' => 'Fiche affaire',
             'content' => $this->viewFolder . '/' . __FUNCTION__
         );
@@ -77,140 +89,46 @@ class Affaires extends My_Controller {
 
             if ($this->input->post('addAffaireId')):
                 $affaire = $this->managerAffaires->getAffaireById($this->input->post('addAffaireId'));
-                $affaire->setAffaireNom(mb_strtoupper($this->input->post('addAffaireNom')));
-                $affaire->setAffaireAdresse(ucfirst($this->input->post('addAffaireAdresse')));
-                $affaire->setAffaireCp($this->input->post('addAffaireCp'));
-                $affaire->setAffairePays(strtoupper($this->input->post('addAffairePays')));
-                $affaire->setAffaireVille(ucfirst($this->input->post('addAffaireVille')));
-                $affaire->setAffaireFixe($this->input->post('addAffaireFixe'));
-                $affaire->setAffairePortable($this->input->post('addAffairePortable'));
-                $affaire->setAffaireEmail($this->input->post('addAffaireEmail'));
+                $affaire->setAffaireCommercialId($this->input->post('addAffaireCommercialId') ?: null);
+                $affaire->setAffairePlaceId($this->input->post('addAffairePlaceId') ?: null);
+                $affaire->setAffaireClientId($this->input->post('addAffaireClientId'));
+                $affaire->setAffaireCategorieId($this->input->post('addAffaireCategorieId') ?: null);
+                $affaire->setAffaireDevis(strtoupper($this->input->post('addAffaireDevis')));
+                $affaire->setAffaireObjet(ucfirst($this->input->post('addAffaireObjet')));
+                $affaire->setAffairePrix($this->input->post('addAffairePrix'));
+                $affaire->setAffaireDateSignature($this->input->post('addAffaireDateSignature') ? $this->own->mktimeFromInputDate($this->input->post('addAffaireDateSignature')) : null);
+                $affaire->setAffaireCouleur($this->input->post('addAffaireCouleur'));
+                $affaire->setAffaireCouleurSecondaire($this->couleurSecondaire($this->input->post('addAffaireCouleur')));
+                $affaire->setAffaireRemarque($this->input->post('addAffaireRemarque'));
                 $this->managerAffaires->editer($affaire);
 
             else:
 
                 $dataAffaire = array(
-                    'affaireEtablissementId' => $this->session->userdata('etablissementId'),
-                    'affaireNom' => mb_strtoupper($this->input->post('addAffaireNom')),
-                    'affaireAdresse' => ucfirst($this->input->post('addAffaireAdresse')),
-                    'affaireCp' => $this->input->post('addAffaireCp'),
-                    'affaireVille' => $this->input->post('addAffaireVille'),
-                    'affairePays' => strtoupper($this->input->post('addAffaireMessage')),
-                    'affaireFixe' => $this->input->post('addAffaireFixe'),
-                    'affairePortable' => $this->input->post('addAffairePortable'),
-                    'affaireEmail' => $this->input->post('addAffaireEmail')
+                    'affaireClientId' => $this->input->post('addAffaireClientId'),
+                    'affairePlaceId' => $this->input->post('addAffairePlaceId'),
+                    'affaireCommercialId' => $this->input->post('addAffaireCommercialId') ?: null,
+                    'affaireCategorieId' => $this->input->post('addAffaireCategorieId') ?: null,
+                    'affaireDevis' => strtoupper($this->input->post('addAffaireDevis')),
+                    'affaireObjet' => ucfirst($this->input->post('addAffaireObjet')),
+                    'affairePrix' => $this->input->post('addAffairePrix'),
+                    'affaireDateSignature' => $this->input->post('addAffaireDateSignature') ? $this->own->mktimeFromInputDate($this->input->post('addAffaireDateSignature')) : null,
+                    'affaireCouleur' => $this->input->post('addAffaireCouleur'),
+                    'affaireCouleurSecondaire' => $this->couleurSecondaire($this->input->post('addAffaireCouleur')),
+                    'affaireRemarque' => $this->input->post('addAffaireRemarque'),
+                    'affaireEtat' => 1
                 );
                 $affaire = new Affaire($dataAffaire);
                 $this->managerAffaires->ajouter($affaire);
 
-                /* On insere une place */
-                $result = $this->maps->geocode(urlencode($this->input->post('addAffaireAdresse') . ' ' . $this->input->post('addAffaireCp') . ' ' . $this->input->post('addAffaireVille') . ' ' . $this->input->post('addAffairePays')));
-                if ($result):
-
-                    $volOiseau = $this->maps->distanceVolOiseau(explode(',', $this->session->userdata('etablissementGPS'))[0], explode(',', $this->session->userdata('etablissementGPS'))[1], $result['latitude'], $result['longitude']);
-                    $zone = floor($volOiseau / 10000) + 1;
-                    if ($zone > 6):
-                        $zone = 6;
-                    endif;
-
-                    $arrayPlace = array(
-                        'placeAffaireId' => $affaire->getAffaireId(),
-                        'placeEtablissementId' => $this->session->userdata('etablissementid'),
-                        'placeLat' => $result['latitude'],
-                        'placeLon' => $result['longitude'],
-                        'placeAdresse' => $result['adresse'],
-                        'placeGoogleId' => $result['placeGoogleId'],
-                        'placeDistance' => $result['distance'],
-                        'placeDuree' => $result['duree'],
-                        'placeZone' => $zone,
-                        'placeVolOiseau' => $volOiseau
-                    );
-
-                    $place = new Place($arrayPlace);
-                    $this->managerPlaces->ajouter($place);
-
-                else:
-                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
-                endif;
             endif;
 
-            echo json_encode(array('type' => 'success'));
-
+            echo json_encode(array('type' => 'success', 'affaireId' => $affaire->getAffaireId()));
         endif;
     }
 
-    public function addPlace() {
+    public function clotureAffaire() {
 
-        if (!$this->form_validation->run('addPlace')):
-            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur AddPlace');
-            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
-        else:
-
-            $result = $this->maps->geocode(urlencode($this->input->post('addPlaceAdresse') . ' FRANCE'));
-            if ($result):
-
-                $volOiseau = $this->maps->distanceVolOiseau(explode(',', $this->session->userdata('etablissementGPS'))[0], explode(',', $this->session->userdata('etablissementGPS'))[1], $result['latitude'], $result['longitude']);
-                $zone = floor($volOiseau / 10000) + 1;
-                if ($zone > 6):
-                    $zone = 6;
-                endif;
-
-            else:
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
-                echo json_encode(array('type' => 'error', 'message' => 'Erreur lors de l\'encodage de l\'adresse'));
-            endif;
-
-            if ($this->input->post('addPlaceId')):
-                $place = $this->managerPlaces->getPlaceById($this->input->post('addPlaceId'));
-                $place->setPlaceLat($result['latitude']);
-                $place->setPlaceLon($result['longitude']);
-                $place->setPlaceAdresse($result['adresse']);
-                $place->setPlaceGoogleId($result['placeGoogleId']);
-                $place->setPlacDistance($result['distance']);
-                $place->setPlacDistance($result['duree']);
-                $place->setPlacDistance($zone);
-                $place->setPlacDistance($volOiseau);
-
-                $this->managerPlaces->editer($place);
-
-            else:
-
-                $arrayPlace = array(
-                    'placeAffaireId' => $this->input->post('addPlaceAffaireId'),
-                    'placeEtablissementId' => $this->session->userdata('etablissementid'),
-                    'placeLat' => $result['latitude'],
-                    'placeLon' => $result['longitude'],
-                    'placeAdresse' => $result['adresse'],
-                    'placeGoogleId' => $result['placeGoogleId'],
-                    'placeDistance' => $result['distance'],
-                    'placeDuree' => $result['duree'],
-                    'placeZone' => $zone,
-                    'placeVolOiseau' => $volOiseau
-                );
-
-                $place = new Place($arrayPlace);
-                $this->managerPlaces->ajouter($place);
-
-            endif;
-            echo json_encode(array('type' => 'success'));
-
-        endif;
-    }
-
-    public function delPlace() {
-
-        if (!$this->form_validation->run('getPlace')):
-            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
-            exit;
-        endif;
-        $place = $this->managerPlaces->getPlaceById($this->input->post('placeId'));
-//        $place->hydrateUtilisations();
-//        if ($place->getPlaceUtilisations() > 0):
-//            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
-//        else:
-        $this->managerPlaces->delete($place);
-        echo json_encode(array('type' => 'success'));
-//        endif;
     }
 
 }

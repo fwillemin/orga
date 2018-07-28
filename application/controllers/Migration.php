@@ -213,7 +213,8 @@ class Migration extends My_Controller {
 
       ALTER TABLE `places`
       ADD CONSTRAINT `places_ibfk_1` FOREIGN KEY (`placeClientId`) REFERENCES `clients` (`clientId`) ON DELETE CASCADE;
-     * ALTER TABLE `places` ADD FOREIGN KEY (`placeEtablissementId`) REFERENCES `etablissements`(`etablissementId`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+      ALTER TABLE `places` ADD FOREIGN KEY (`placeEtablissementId`) REFERENCES `etablissements`(`etablissementId`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
 
      */
 
@@ -223,13 +224,13 @@ class Migration extends My_Controller {
       ALTER TABLE `categories` ADD FOREIGN KEY (`categorieRsId`) REFERENCES `raisonsSociales`(`rsId`) ON DELETE CASCADE ON UPDATE RESTRICT;
      */
 
-
     /* Intégration des affaires
      * Copier la table dossiers de la V1 en "dossiersV1"
      * créer la table affaires avec :
 
       CREATE TABLE `affaires` (
       `affaireId` int(11) NOT NULL,
+      `affaireOriginId` int(11) NOT NULL,
       `affaireEtablissementId` int(11) NOT NULL,
       `affaireCommercialId` int(11) DEFAULT NULL COMMENT 'Id du user commercial lié',
       `affaireClientId` int(11) NOT NULL,
@@ -253,16 +254,18 @@ class Migration extends My_Controller {
 
       ALTER TABLE `affaires`
       MODIFY `affaireId` int(11) NOT NULL AUTO_INCREMENT;
+      ALTER TABLE `affaires` ADD `affaireCouleurSecondaire` VARCHAR(7) NOT NULL AFTER `affaireCouleur`;
 
       ALTER TABLE `affaires`
       ADD CONSTRAINT `affaires_ibfk_1` FOREIGN KEY (`affaireEtablissementId`) REFERENCES `etablissements` (`etablissementId`) ON DELETE CASCADE,
       ADD CONSTRAINT `affaires_ibfk_2` FOREIGN KEY (`affaireCategorieId`) REFERENCES `categories` (`categorieId`) ON DELETE SET NULL;
-     *
+      ALTER TABLE `affaires` ADD `affairePlaceId` INT NULL DEFAULT NULL AFTER `affaireEtablissementId`, ADD INDEX (`affairePlaceId`);
+
      */
 
     public function migrationDossiers() {
 
-        foreach ($this->db->select('*')->from('dossiersV1')->get()->result() as $dossier):
+        foreach ($this->db->select('*')->from('dossiersV1')->where(array('id_etablissement' => 2))->order_by('dossierId DESC')->limit(50, 0)->get()->result() as $dossier):
 
             /* On garde l'établissement du dossier pour créer le client, les places et les affaires */
             $etablissement = $dossier->id_etablissement;
@@ -342,11 +345,13 @@ class Migration extends My_Controller {
 
             /* Creation d'une affaire */
             $arrayAffaire = array(
+                'affaireOriginId' => $dossier->dossierId,
                 'affaireEtablissementId' => $etablissement,
                 'affaireCreation' => $creation,
                 'affaireClientId' => $client->getClientId(),
                 'affaireCategorieId' => $categorie,
                 'affaireCommercialId' => $dossier->id_commercial,
+                'affairePlaceId' => $place ? $place->getPlaceId() : null,
                 'affaireDevis' => $dossier->devis,
                 'affairePrix' => $dossier->dossierPrix,
                 'affaireObjet' => $dossier->dossierObjet,
@@ -354,6 +359,7 @@ class Migration extends My_Controller {
                 'affaireDateCloture' => $dossier->date_solde ?: null,
                 'affaireEtat' => $etat,
                 'affaireCouleur' => $dossier->dossierCouleur,
+                'affaireCouleurSecondaire' => $this->own->getCouleurSecondaire($dossier->dossierCouleur, 30),
                 'affaireRemarque' => $dossier->dossierRemarque
             );
 
@@ -366,6 +372,83 @@ class Migration extends My_Controller {
     }
 
     /**
+     * Copier la table organibat_chantier de la V1 puis
+     *
+     *
+      CREATE TABLE `chantiers` (
+      `chantierId` int(11) NOT NULL,
+      `chantierOriginId` int(11) NOT NULL COMMENT 'Id du chantier d''origine',
+      `chantierAffaireId` int(11) NOT NULL,
+      `chantierObjet` varchar(255) NOT NULL,
+      `chantierCategorieId` int(11) DEFAULT NULL,
+      `chantierPrix` decimal(10,2) NOT NULL,
+      `chantierCouleur` varchar(7) NOT NULL,
+      `chantierCouleurSecondaire` varchar(7) NOT NULL,
+      `chantierEtat` tinyint(1) NOT NULL,
+      `chantierDateCloture` int(11) DEFAULT NULL,
+      `chantierHeuresPrevues` decimal(6,2) NOT NULL,
+      `chantierBudgetAchats` decimal(10,2) NOT NULL,
+      `chantierFraisGeneraux` decimal(4,2) NOT NULL,
+      `chantierTauxHoraireMoyen` decimal(5,2) NOT NULL,
+      `chantierRemarque` text NOT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+      ALTER TABLE `chantiers`
+      ADD PRIMARY KEY (`chantierId`),
+      ADD KEY `chantierAffaireId` (`chantierAffaireId`),
+      ADD KEY `chantierCategorieId` (`chantierCategorieId`);
+
+      ALTER TABLE `chantiers`
+      MODIFY `chantierId` int(11) NOT NULL AUTO_INCREMENT;
+
+      ALTER TABLE `chantiers`
+      ADD CONSTRAINT `chantiers_ibfk_1` FOREIGN KEY (`chantierAffaireId`) REFERENCES `affaires` (`affaireId`) ON DELETE CASCADE,
+      ADD CONSTRAINT `chantiers_ibfk_2` FOREIGN KEY (`chantierCategorieId`) REFERENCES `categories` (`categorieId`) ON DELETE SET NULL;
+      ALTER TABLE `chantiers` ADD `chantierPlaceId` INT NULL DEFAULT NULL AFTER `chantierAffaireId`, ADD INDEX (`chantierPlaceId`);
+      ALTER TABLE `chantiers` ADD FOREIGN KEY (`affairePlaceId`) REFERENCES `places`(`placeId`) ON DELETE SET NULL ON UPDATE RESTRICT;
+
+     */
+    public function migrationChantiers() {
+        foreach ($this->db->select('*')->from('organibat_chantier')->where('dossier_id > ', 2457)->get()->result() as $chant):
+
+            /* Recherche de l'affaire avec le originId du dossier du chantier */
+            $affaire = $this->managerAffaires->getAffaireByOriginId($chant->dossier_id);
+            if ($affaire):
+
+                /* Evite les soucis de catégories fantômes */
+                if ($chant->id_categorie != 0 && $this->existCategorie($chant->id_categorie)):
+                    $categorie = $chant->id_categorie;
+                else:
+                    $categorie = null;
+                endif;
+
+                $dataChantier = array(
+                    'chantierAffaireId' => $affaire->getAffaireId(),
+                    'chantierPlaceId' => $affaire->getAffairePlaceId(),
+                    'chantierOriginId' => $chant->id,
+                    'chantierCategorieId' => $categorie,
+                    'chantierObjet' => $chant->objet,
+                    'chantierPrix' => $chant->prix,
+                    'chantierEtat' => $chant->etat == 'Termine' ? 2 : 1,
+                    'chantierDateCloture' => $chant->cloture,
+                    'chantierHeuresPrevues' => $chant->nb_heures_prev,
+                    'chantierBudgetAchats' => $chant->budgetAchat,
+                    'chantierFraisGeneraux' => $chant->chantierFraisGeneraux,
+                    'chantierTauxHoraireMoyen' => $chant->chantierTxHoraireMoyen,
+                    'chantierRemarque' => $chant->remarque,
+                    'chantierCouleur' => $chant->couleur,
+                    'chantierCouleurSecondaire' => $this->couleurSecondaire($chant->couleur)
+                );
+                $chantier = new Chantier($dataChantier);
+                $this->managerChantiers->ajouter($chantier);
+            endif;
+        endforeach;
+    }
+
+    /**
+     * Vérifier les couleurs de chantier qui ne seraient pas au format #FFFFFF (2 dans les tables de test)
+     *
+     *
      * Passer les affaires et les chantiers de la categorie NC de la RS à Null et supprimer le champs raisonSociale->rsCategorieNC
      */
     /**

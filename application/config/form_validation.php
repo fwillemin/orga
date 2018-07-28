@@ -406,6 +406,143 @@ $config = array(
             'label' => 'Nom de la catégorie',
             'rules' => 'required|trim'
         )
+    ),
+    /* get Affaire */
+    'getAffaire' => array(
+        array(
+            'field' => 'affaireId',
+            'label' => 'ID de la affaire',
+            'rules' => 'required|callback_existAffaire'
+        )
+    ),
+    /* Add Affaire */
+    'addAffaire' => array(
+        array(
+            'field' => 'addAffaireId',
+            'label' => 'ID de l\'affaire',
+            'rules' => 'callback_existAffaire'
+        ),
+        array(
+            'field' => 'addAffairePlaceId',
+            'label' => 'Localisation',
+            'rules' => 'callback_existPlace'
+        ),
+        array(
+            'field' => 'addAffaireClientId',
+            'label' => 'ID du client',
+            'rules' => 'required|callback_existClient'
+        ),
+        array(
+            'field' => 'addAffaireCategorieId',
+            'label' => 'Catégorie de l\' affaire',
+            'rules' => 'callback_existCategorie'
+        ),
+        array(
+            'field' => 'addAffaireCommercialId',
+            'label' => 'ID du commercial',
+            'rules' => 'callback_existUtilisateur'
+        ),
+        array(
+            'field' => 'addAffaireDevis',
+            'label' => 'N° Devis associé',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addAffaireObjet',
+            'label' => 'Objet de l\'affaire',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addAffairePrix',
+            'label' => 'Prix',
+            'rules' => 'trim|numeric'
+        ),
+        array(
+            'field' => 'addAffaireDateSignature',
+            'label' => 'Date de signature du devis',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addAffaireCouleur',
+            'label' => 'Couleur de l\'affaire',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addAffaireRemarque',
+            'label' => 'Informations',
+            'rules' => 'trim'
+        )
+    ),
+    /* get Chantier */
+    'getChantier' => array(
+        array(
+            'field' => 'chantierId',
+            'label' => 'ID du chantier',
+            'rules' => 'required|callback_existChantier'
+        )
+    ),
+    /* Add Chantier */
+    'addChantier' => array(
+        array(
+            'field' => 'addChantierId',
+            'label' => 'ID du chantier',
+            'rules' => 'callback_existChantier'
+        ),
+        array(
+            'field' => 'addChantierPlaceId',
+            'label' => 'Localisation',
+            'rules' => 'callback_existPlace'
+        ),
+        array(
+            'field' => 'addChantierAffaireId',
+            'label' => 'ID de l\'affaire',
+            'rules' => 'required|callback_existAffaire'
+        ),
+        array(
+            'field' => 'addChantierCategorieId',
+            'label' => 'Catégorie du chantier',
+            'rules' => 'callback_existCategorie'
+        ),
+        array(
+            'field' => 'addChantierObjet',
+            'label' => 'Objet du chantier',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addChantierPrix',
+            'label' => 'Prix',
+            'rules' => 'trim|numeric'
+        ),
+        array(
+            'field' => 'addChantierCouleur',
+            'label' => 'Couleur du chantier',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addChantierRemarque',
+            'label' => 'Informations',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addChantierHeuresPrevues',
+            'label' => 'Nombres d\'heures prévues',
+            'rules' => 'trim|numeric|required'
+        ),
+        array(
+            'field' => 'addChantierBudgetAchats',
+            'label' => 'Budget achats pour ce chantier',
+            'rules' => 'trim|numeric|required'
+        ),
+        array(
+            'field' => 'addChantierFraisGeneraux',
+            'label' => 'Taux de frais généraux',
+            'rules' => 'trim|numeric|required'
+        ),
+        array(
+            'field' => 'addChantierTauxHoraireMoyen',
+            'label' => 'Taux horaire moyen',
+            'rules' => 'trim|numeric|required'
+        )
     )
 );
 ?>

@@ -15,8 +15,12 @@ class Model_affaires extends MY_model {
      */
     public function ajouter(Affaire $affaire) {
         $this->db
-                ->set('affaireEtablissementId', $this->session->userdata('etablissementId'))
+                //->set('affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->set('affaireEtablissementId', $affaire->getAffaireEtablissementId())
+                ->set('affaireOriginId', $affaire->getAffaireOriginId())
+                ->set('affaireCreation', $affaire->getAffaireCreation())
                 ->set('affaireClientId', $affaire->getAffaireClientId())
+                ->set('affairePlaceId', $affaire->getAffairePlaceId())
                 ->set('affaireCommercialId', $affaire->getAffaireCommercialId())
                 ->set('affaireCategorieId', $affaire->getAffaireCategorieId())
                 ->set('affaireDevis', $affaire->getAffaireDevis())
@@ -26,6 +30,7 @@ class Model_affaires extends MY_model {
                 ->set('affaireDateCloture', $affaire->getAffaireDateCloture())
                 ->set('affaireEtat', $affaire->getAffaireEtat())
                 ->set('affaireCouleur', $affaire->getAffaireCouleur())
+                ->set('affaireCouleurSecondaire', $affaire->getAffaireCouleurSecondaire())
                 ->set('affaireRemarque', $affaire->getAffaireRemarque())
                 ->insert($this->table);
         $affaire->setAffaireId($this->db->insert_id());
@@ -41,6 +46,7 @@ class Model_affaires extends MY_model {
                 ->set('affaireClientId', $affaire->getAffaireClientId())
                 ->set('affaireCommercialId', $affaire->getAffaireCommercialId())
                 ->set('affaireCategorieId', $affaire->getAffaireCategorieId())
+                ->set('affairePlaceId', $affaire->getAffairePlaceId())
                 ->set('affaireDevis', $affaire->getAffaireDevis())
                 ->set('affaireObjet', $affaire->getAffaireObjet())
                 ->set('affairePrix', $affaire->getAffairePrix())
@@ -48,6 +54,7 @@ class Model_affaires extends MY_model {
                 ->set('affaireDateCloture', $affaire->getAffaireDateCloture())
                 ->set('affaireEtat', $affaire->getAffaireEtat())
                 ->set('affaireCouleur', $affaire->getAffaireCouleur())
+                ->set('affaireCouleurSecondaire', $affaire->getAffaireCouleurSecondaire())
                 ->set('affaireRemarque', $affaire->getAffaireRemarque())
                 ->where('affaireId', $affaire->getAffaireId())
                 ->update($this->table);
@@ -92,6 +99,14 @@ class Model_affaires extends MY_model {
                 ->from($this->table)
                 ->where('affaireEtablissementId', $this->session->userdata('etablissementId'))
                 ->where('affaireId', $affaireId)
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getAffaireByOriginId($originId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where('affaireOriginId', $originId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
     }

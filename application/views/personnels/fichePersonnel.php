@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-sm-10 offset-sm-1 fond">
+    <div class="col-12 col-lg-8 offset-lg-2 fond">
         <div class="row">
             <div class="col-12">
                 <br>

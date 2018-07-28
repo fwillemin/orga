@@ -100,7 +100,7 @@ class Clients extends My_Controller {
 
                     $arrayPlace = array(
                         'placeClientId' => $client->getClientId(),
-                        'placeEtablissementId' => $this->session->userdata('etablissementid'),
+                        'placeEtablissementId' => $this->session->userdata('etablissementId'),
                         'placeLat' => $result['latitude'],
                         'placeLon' => $result['longitude'],
                         'placeAdresse' => $result['adresse'],
@@ -119,7 +119,11 @@ class Clients extends My_Controller {
                 endif;
             endif;
 
-            echo json_encode(array('type' => 'success'));
+            echo json_encode(array(
+                'type' => 'success',
+                'client' => $client ? $this->managerClients->getClientById($client->getClientId(), 'array') : false,
+                'place' => $place ? $this->managerPlaces->getPlaceById($place->getPlaceId(), 'array') : false
+            ));
 
         endif;
     }
@@ -162,7 +166,7 @@ class Clients extends My_Controller {
 
                 $arrayPlace = array(
                     'placeClientId' => $this->input->post('addPlaceClientId'),
-                    'placeEtablissementId' => $this->session->userdata('etablissementid'),
+                    'placeEtablissementId' => $this->session->userdata('etablissementId'),
                     'placeLat' => $result['latitude'],
                     'placeLon' => $result['longitude'],
                     'placeAdresse' => $result['adresse'],
@@ -174,10 +178,14 @@ class Clients extends My_Controller {
                 );
 
                 $place = new Place($arrayPlace);
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($place, true));
                 $this->managerPlaces->ajouter($place);
 
             endif;
-            echo json_encode(array('type' => 'success'));
+            echo json_encode(array(
+                'type' => 'success',
+                'place' => $place ? $this->managerPlaces->getPlaceById($place->getPlaceId(), 'array') : false
+            ));
 
         endif;
     }
@@ -196,6 +204,15 @@ class Clients extends My_Controller {
         $this->managerPlaces->delete($place);
         echo json_encode(array('type' => 'success'));
 //        endif;
+    }
+
+    public function getPlacesClient() {
+        if (!$this->form_validation->run('getClient')):
+            echo json_encode(array('type' => 'error', 'message' => 'Client introuvable'));
+            exit;
+        endif;
+        $places = $this->managerPlaces->getPlaces(array('placeClientId' => $this->input->post('clientId')), 'placeId ASC', 'array');
+        echo json_encode(array('type' => 'success', 'places' => $places));
     }
 
 }

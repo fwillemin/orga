@@ -12,7 +12,10 @@
 class Affaire {
 
     protected $affaireId;
+    protected $affaireOriginId;
     protected $affaireEtablissementId;
+    protected $affairePlaceId;
+    protected $affairePlace;
     protected $affaireCreation;
     protected $affaireClientId;
     protected $affaireClient;
@@ -28,7 +31,10 @@ class Affaire {
     protected $affaireEtat;
     protected $affaireEtatHtml;
     protected $affaireCouleur;
+    protected $affaireCouleurSecondaire;
     protected $affaireRemarque;
+    protected $affaireChantiers;
+    protected $affairePrixNonAttribue; /* affairePrix - SOMME(chantierPrix) */
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -58,33 +64,71 @@ class Affaire {
         endswitch;
     }
 
+    public function hydratePlace() {
+        $CI = & get_instance();
+        $this->affairePlace = $CI->managerPlaces->getPlaceById($this->affairePlaceId);
+    }
+
+    function hydrateChantiers() {
+        $CI = & get_instance();
+        $this->affaireChantiers = $CI->managerChantiers->getChantiersByAffaireId($this->affaireId);
+        $this->affairePrixNonAttribue = $this->affairePrix;
+        if (!empty($this->affaireChantiers)):
+            foreach ($this->affaireChantiers as $chantier):
+                $this->affairePrixNonAttribue -= $chantier->getChantierPrix();
+            endforeach;
+        endif;
+    }
+
+    public function cloturer($dateCloture) {
+        $this->affaireEtat = 3;
+        $this->affaireDateCloture = $dateCloture;
+    }
+
+    public function reouvrir() {
+        $this->affaireEtat = 2;
+    }
+
     public function hydrateClient() {
         $CI = & get_instance();
         $this->affaireClient = $CI->managerClients->getClientById($this->affaireClientId);
     }
 
-    function getAffaireEtatHtml() {
-        return $this->affaireEtatHtml;
+    public function hydrateCommercial() {
+        $CI = & get_instance();
+        $this->affaireCommercial = $CI->managerUtilisateurs->getUtilisateurById($this->affaireCommercialId);
     }
 
-    function setAffaireEtatHtml($affaireEtatHtml) {
-        $this->affaireEtatHtml = $affaireEtatHtml;
+    function getAffairePrixNonAttribue() {
+        return $this->affairePrixNonAttribue;
     }
 
-    function getAffaireCreation() {
-        return $this->affaireCreation;
-    }
-
-    function setAffaireCreation($affaireCreation) {
-        $this->affaireCreation = $affaireCreation;
+    function setAffairePrixNonAttribue($affairePrixNonAttribue) {
+        $this->affairePrixNonAttribue = $affairePrixNonAttribue;
     }
 
     function getAffaireId() {
         return $this->affaireId;
     }
 
+    function getAffaireOriginId() {
+        return $this->affaireOriginId;
+    }
+
     function getAffaireEtablissementId() {
         return $this->affaireEtablissementId;
+    }
+
+    function getAffairePlaceId() {
+        return $this->affairePlaceId;
+    }
+
+    function getAffairePlace() {
+        return $this->affairePlace;
+    }
+
+    function getAffaireCreation() {
+        return $this->affaireCreation;
     }
 
     function getAffaireClientId() {
@@ -135,20 +179,48 @@ class Affaire {
         return $this->affaireEtat;
     }
 
+    function getAffaireEtatHtml() {
+        return $this->affaireEtatHtml;
+    }
+
     function getAffaireCouleur() {
         return $this->affaireCouleur;
+    }
+
+    function getAffaireCouleurSecondaire() {
+        return $this->affaireCouleurSecondaire;
     }
 
     function getAffaireRemarque() {
         return $this->affaireRemarque;
     }
 
+    function getAffaireChantiers() {
+        return $this->affaireChantiers;
+    }
+
     function setAffaireId($affaireId) {
         $this->affaireId = $affaireId;
     }
 
+    function setAffaireOriginId($affaireOriginId) {
+        $this->affaireOriginId = $affaireOriginId;
+    }
+
     function setAffaireEtablissementId($affaireEtablissementId) {
         $this->affaireEtablissementId = $affaireEtablissementId;
+    }
+
+    function setAffairePlaceId($affairePlaceId) {
+        $this->affairePlaceId = $affairePlaceId;
+    }
+
+    function setAffairePlace($affairePlace) {
+        $this->affairePlace = $affairePlace;
+    }
+
+    function setAffaireCreation($affaireCreation) {
+        $this->affaireCreation = $affaireCreation;
     }
 
     function setAffaireClientId($affaireClientId) {
@@ -199,12 +271,24 @@ class Affaire {
         $this->affaireEtat = $affaireEtat;
     }
 
+    function setAffaireEtatHtml($affaireEtatHtml) {
+        $this->affaireEtatHtml = $affaireEtatHtml;
+    }
+
     function setAffaireCouleur($affaireCouleur) {
         $this->affaireCouleur = $affaireCouleur;
     }
 
+    function setAffaireCouleurSecondaire($affaireCouleurSecondaire) {
+        $this->affaireCouleurSecondaire = $affaireCouleurSecondaire;
+    }
+
     function setAffaireRemarque($affaireRemarque) {
         $this->affaireRemarque = $affaireRemarque;
+    }
+
+    function setAffaireChantiers($affaireChantiers) {
+        $this->affaireChantiers = $affaireChantiers;
     }
 
 }

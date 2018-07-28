@@ -15,7 +15,8 @@ class Model_places extends MY_model {
      */
     public function ajouter(Place $place) {
         $this->db
-                ->set('placeEtablissementId', $this->session->userdata('etablissementId'))
+                //->set('placeEtablissementId', $this->session->userdata('etablissementId'))
+                ->set('placeEtablissementId', $place->getPlaceEtablissementId())
                 ->set('placeClientId', $place->getPlaceClientId())
                 ->set('placeAdresse', $place->getPlaceAdresse())
                 ->set('placeLat', $place->getPlaceLat())

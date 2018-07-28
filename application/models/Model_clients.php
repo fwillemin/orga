@@ -15,7 +15,8 @@ class Model_clients extends MY_model {
      */
     public function ajouter(Client $client) {
         $this->db
-                ->set('clientEtablissementId', $this->session->userdata('etablissementId'))
+                //->set('clientEtablissementId', $this->session->userdata('etablissementId'))
+                ->set('clientEtablissementId', $client->getClientEtablissementId())
                 ->set('clientNom', $client->getClientNom())
                 ->set('clientAdresse', $client->getClientAdresse())
                 ->set('clientCp', $client->getClientCp())

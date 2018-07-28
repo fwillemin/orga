@@ -44,7 +44,7 @@
 </div>
 
 <center>
-    <button type="submit" class="btn btn-outline-primary btn-sm" style="margin:5px;">
+    <button type="submit" class="btn btn-outline-primary btn-sm" style="margin:5px;" id="btnSubmitFormClient">
         <?= !empty($client) ? '<i class="fas fa-edit"></i> Modifier' : '<i class="fas fa-plus-square"></i> Ajouter'; ?>
     </button
     <i class="fas fa-circle-notch fa-spin formloader" id="loaderAddClient"></i>

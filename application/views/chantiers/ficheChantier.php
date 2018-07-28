@@ -4,17 +4,16 @@
             <div class="col-12" style="margin-bottom: 30px;">
                 <br>
                 <h2>
-                    <a href="<?= site_url('affaires/liste'); ?>" style="text-decoration: none;">
+                    <a href="<?= site_url('affaires/ficheAffaire/' . $affaire->getAffaireId()); ?>" style="text-decoration: none;">
                         <i class="fas fa-chevron-circle-left" style="color: grey;"></i>
                     </a>
                     <?php
-                    $client = $affaire->getAffaireClient();
-                    echo $client->getClientNom() . '<span style="color:grey; font-size:12px; position: absolute; top:60px; left: 55px;">[Affaire ' . $affaire->getAffaireId() . ']</span> ';
+                    $client = $chantier->getChantierClient();
+                    echo '<small class=light>Chantier : </small>' . $chantier->getChantierObjet() . '<span style="color:grey; font-size:12px; position: absolute; top:60px; left: 55px;">[Affaire ' . $affaire->getAffaireId() . '] [client : ' . $client->getClientNom() . ']</span> ';
                     ?>
-                    <h4 style="margin-top: 15px;"><?= $affaire->getAffaireObjet(); ?></h4>
                 </h2>
                 <div style="position : absolute; bottom: 5px; right: 10px; text-align: right; font-size:14px;">
-                    <?= $affaire->getAffairePlace() ? $affaire->getAffairePlace()->getPlaceAdresse() : '<small class="danger">Aucune place renseignée</small>'; ?>
+                    <?= $chantier->getChantierPlace() ? $chantier->getChantierPlace()->getPlaceAdresse() : '<small class="danger">Aucune place renseignée</small>'; ?>
                 </div>
             </div>
         </div>
@@ -221,3 +220,4 @@ Ajout de "Chantier" à la fin des id des champs pour les différencier-->
         </div>
     </div>
 </div>
+
