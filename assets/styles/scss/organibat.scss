@@ -109,3 +109,12 @@ small{
     }
 }
 
+.nav-link {
+    color: lighten(grey, 20);   
+    &:hover {
+    color: darken(grey, 20);   
+    }
+}
+.nav-tabs .nav-link.active {
+    color: #009999;
+    }

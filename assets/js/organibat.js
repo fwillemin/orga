@@ -17,8 +17,7 @@ $(document).ready(function () {
     });
 
     $('.selectpicker').selectpicker();
-    $('.formloader').hide();
-    
+    $('.formloader').hide();   
 
     $(document).on('show.bs.modal', '.modal', function (event) {
         var zIndex = 1040 + (10 * $('.modal:visible').length);

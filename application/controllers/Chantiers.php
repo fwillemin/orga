@@ -15,7 +15,7 @@ class Chantiers extends My_Controller {
         endif;
     }
 
-    public function ficheChantier($chantierId = null) {
+    public function ficheChantier($chantierId = null, $action = null) {
         if (!$this->ion_auth->in_group(array(53, 54))):
             redirect('affaires/liste');
         endif;
@@ -27,10 +27,9 @@ class Chantiers extends My_Controller {
 
         $chantier = $this->managerChantiers->getChantierById($chantierId);
         $chantier->hydratePlace();
+        $chantier->hydrateAchats();
         $chantier->hydrateClient(); /* hydrate aussi l'affaire */
         $chantier->getChantierClient()->hydratePlaces();
-
-        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($chantier, true));
 
         $data = array(
             'categories' => $this->managerCategories->getCategories(),
@@ -40,6 +39,20 @@ class Chantiers extends My_Controller {
             'description' => 'Fiche chantier',
             'content' => $this->viewFolder . '/' . __FUNCTION__
         );
+
+        if ($action):
+            $actionObjet = substr($action, 0, 1);
+            $actionRef = substr($action, 1);
+            switch ($actionObjet):
+                case 'a':
+                    if ($this->ion_auth->in_group(array(55))):
+                        /* Selection d'un achat à modifier dans la fiche chantier */
+                        $data['achat'] = $this->managerAchats->getAchatById($actionRef);
+                    endif;
+                    break;
+            endswitch;
+        endif;
+
         $this->load->view('template/content', $data);
     }
 
@@ -67,8 +80,8 @@ class Chantiers extends My_Controller {
                 $chantier->setChantierRemarque($this->input->post('addChantierRemarque'));
                 $chantier->setChantierHeuresPrevues($this->input->post('addChantierHeuresPrevues'));
                 $chantier->setChantierBudgetAchats($this->input->post('addChantierBudgetAchats'));
-                $chantier->setChantierBudgetFraisGeneraux($this->input->post('addChantierFraisGeneraux'));
-                $chantier->setChantierBudgetTauxHoraireMoyen($this->input->post('addChantierTauxHoraireMoyen'));
+                $chantier->setChantierFraisGeneraux($this->input->post('addChantierFraisGeneraux'));
+                $chantier->setChantierTauxHoraireMoyen($this->input->post('addChantierTauxHoraireMoyen'));
                 $this->managerChantiers->editer($chantier);
 
             else:
@@ -100,6 +113,74 @@ class Chantiers extends My_Controller {
 
     public function clotureChantier() {
 
+    }
+
+    public function delChantier() {
+
+        if (!$this->ion_auth->in_group(54) || !$this->form_validation->run('getChantier')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $chantier = $this->managerChantiers->getChantierById($this->input->post('chantierId'));
+            $this->managerChantiers->delete($chantier);
+            echo json_encode(array('type' => 'success'));
+        endif;
+    }
+
+    public function addAchat() {
+
+        if (!$this->ion_auth->in_group(55)):
+            redirect('chantiers/ficheChantier/' . $this->input->post('addAchatChantierId'));
+            exit;
+        endif;
+
+        if (!$this->form_validation->run('addAchat')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+
+            if ($this->input->post('addAchatId')):
+                $achat = $this->managerAchats->getAchatById($this->input->post('addAchatId'));
+                $achat->setAchatDate($this->own->mktimeFromInputDate($this->input->post('addAchatDate')));
+                $achat->setAchatDescription($this->input->post('addAchatDescription'));
+                $achat->setAchatType($this->input->post('addAchatType'));
+                $achat->setAchatQte($this->input->post('addAchatQte'));
+                $achat->setAchatQtePrevisionnel($this->input->post('addAchatQtePrevisionnel'));
+                $achat->setAchatPrix($this->input->post('addAchatPrix'));
+                $achat->setAchatPrixPrevisionnel($this->input->post('addAchatPrixPrevisionnel'));
+                $this->managerAchats->editer($achat);
+            else:
+
+                $dataAchat = array(
+                    'achatChantierId' => $this->input->post('addAchatChantierId'),
+                    'achatDate' => $this->own->mktimeFromInputDate($this->input->post('addAchatDate')),
+                    'achatDescription' => $this->input->post('addAchatDescription'),
+                    'achatType' => $this->input->post('addAchatType'),
+                    'achatQte' => $this->input->post('addAchatQte'),
+                    'achatQtePrevisionnel' => $this->input->post('addAchatQtePrevisionnel'),
+                    'achatprix' => $this->input->post('addAchatPrix'),
+                    'achatPrixPrevisionnel' => $this->input->post('addAchatPrixPrevisionnel')
+                );
+                $achat = new Achat($dataAchat);
+                $this->managerAchats->ajouter($achat);
+            endif;
+            echo json_encode(array('type' => 'success'));
+
+        endif;
+    }
+
+    public function delAchat() {
+
+        if (!$this->ion_auth->in_group(55)):
+            redirect('chantiers/ficheChantier/' . $this->input->post('addAchatChantierId'));
+            exit;
+        endif;
+
+        if (!$this->form_validation->run('getAchat')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $achat = $this->managerAchats->getAchatById($this->input->post('achatId'));
+            $this->managerAchats->delete($achat);
+            echo json_encode(array('type' => 'success'));
+        endif;
     }
 
 }

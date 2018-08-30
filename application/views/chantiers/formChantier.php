@@ -57,7 +57,7 @@
     <div class="col">
         <label for="addChantierPrix">Prix vendu</label>
         <div class="input-group input-group-sm">
-            <input type="nuemric" class="form-control form-control-sm text-right" id="addChantierPrix" name="addChantierPrix" placeholder="Valeur du chantier" value="<?= $affaire->getAffairePrixNonAttribue(); ?>">
+            <input type="numeric" class="form-control form-control-sm text-right" id="addChantierPrix" name="addChantierPrix" placeholder="Valeur du chantier" value="<?= !empty($chantier) ? $chantier->getChantierPrix() : $affaire->getAffairePrixNonAttribue(); ?>">
             <div class="input-group-append">
                 <span class="input-group-text">€</span>
             </div>

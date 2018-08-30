@@ -115,4 +115,12 @@ class Model_chantiers extends MY_model {
         return $this->retourne($query, $type, self::classe, true);
     }
 
+    public function getChantierByOriginId($chantierId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where('chantierOriginId', $chantierId)
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
 }

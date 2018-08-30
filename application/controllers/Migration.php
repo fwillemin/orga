@@ -450,7 +450,52 @@ class Migration extends My_Controller {
      *
      *
      * Passer les affaires et les chantiers de la categorie NC de la RS à Null et supprimer le champs raisonSociale->rsCategorieNC
+     *
+     *
+     * Migration des couts
+     * Copier la table Couts de la V1 puis lancer le script
      */
+    public function migrationCouts() {
+        foreach ($this->db->select('*')->from('organibat_cout')->where('coutChantierId >=', 3440)->get()->result() as $cout):
+
+            $chantier = $this->managerChantiers->getChantierByOriginId($cout->coutChantierId);
+            if (!$chantier):
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Impossible de trouver le chantier Origin ' . $cout->coutChantierId);
+                continue;
+            endif;
+
+            switch ($cout->coutType):
+                case 0:
+                    $type = 1;
+                    break;
+                case 1:
+                case 2:
+                    $type = 2;
+                    break;
+                case 3:
+                    $type = 3;
+                    break;
+            endswitch;
+
+            $dataAchat = array(
+                'achatChantierId' => $chantier->getChantierId(),
+                'achatDate' => $cout->coutDate,
+                'achatDescription' => $cout->coutDescription,
+                'achatType' => $type,
+                'achatQte' => $cout->coutPrevisionnel ? 0 : $cout->coutQuantite,
+                'achatQtePrevisionnel' => $cout->coutQuantite,
+                'achatprix' => round($cout->coutPrix / $cout->coutQuantite, 2),
+                'achatPrixPrevisionnel' => round($cout->coutPrix / $cout->coutQuantite, 2)
+            );
+            $achat = new Achat($dataAchat);
+            $this->managerAchats->ajouter($achat);
+
+        endforeach;
+        $this->db->query('DROP TABLE organibat_cout');
+
+        echo 'Migration des achats terminée';
+    }
+
     /**
      *
      * A DEVELOPPER

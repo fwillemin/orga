@@ -14,7 +14,7 @@ $(document).ready(function () {
             $('#demoAffaire').css('color', retour.couleur);
         }, 'json');
     });
-    
+
     $('#selectCouleurChantier').colorpicker({
         color: $('#addAffaireCouleur').val(),
         container: true,
@@ -27,9 +27,8 @@ $(document).ready(function () {
             $('#demoChantier').css('color', retour.couleur);
         }, 'json');
     });
-    
-    $('#btnResetCouleurChantier').on('click', function(){
-        console.log($('#demoChantier').attr('data-couleuraffaire'));
+
+    $('#btnResetCouleurChantier').on('click', function () {        
         $('#selectCouleurChantier').colorpicker('setValue', $('#demoChantier').attr('data-couleuraffaire'));
         $('#selectCouleurChantier').colorpicker('update');
     });
@@ -117,6 +116,25 @@ $(document).ready(function () {
         }, 'json');
     });
 
+    $('#formAddChantier').on('submit', function (e) {
+        $('#loaderAddChantier').show();
+        $('#btnSubmitFormChantier').hide();
+        e.preventDefault();
+        var donnees = $(this).serialize();
+        $.post(chemin + 'chantiers/addChantier', donnees, function (retour) {
+            switch (retour.type) {
+                case 'error':
+                    $('#loaderAddChantier').hide();
+                    $('#btnSubmitFormChantier').show();
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    window.location.assign(chemin + 'chantiers/ficheChantier/' + retour.chantierId);
+                    break;
+            }
+        }, 'json');
+    });
+
     $('#btnAddAffaire').on('click', function () {
         $('#modalAddAffaire').modal('show');
     });
@@ -170,7 +188,7 @@ $(document).ready(function () {
         $('#addPlaceClientIdAffaire').val($('#addAffaireClientId').val());
         $('#addPlaceAdresseAffaire').val('');
         $('#modalAddPlaceAffaire').modal('show');
-    });   
+    });
 
     $('#formAddPlaceAffaire').on('submit', function (e) {
         e.preventDefault();
@@ -193,13 +211,13 @@ $(document).ready(function () {
             }
         }, 'json');
     });
-    
+
 //    Ajouter une place depuis le formulaire d'un chantier
-    $('#btnAddPlaceChantier').on('click', function () {        
+    $('#btnAddPlaceChantier').on('click', function () {
         $('#addPlaceAdresseChantier').val('');
         $('#modalAddPlaceChantier').modal('show');
     });
-    
+
     $('#formAddPlaceChantier').on('submit', function (e) {
         e.preventDefault();
         $('#btnSubmitFormPlaceChantier').hide();
@@ -230,8 +248,38 @@ $(document).ready(function () {
         }
     });
 
-    $('#btnAddChantier').on('click', function(){
+    $('#btnAddChantier').on('click', function () {
         $('#modalAddChantier').modal('show');
+    });
+    
+    $('#btnDelAffaire').confirm({
+        title: 'Suppression de cette affaire ?',
+        content: 'Êtes-vous sûr de vouloir supprimer cette affaire ?',
+        type: 'blue',
+        theme: 'material',
+        buttons: {
+            confirm: {
+                btnClass: 'btn-green',
+                text: 'Supprimer',
+                action: function () {
+                    $.post(chemin + 'affaires/delAffaire', {affaireId: $('#addAffaireId').val()}, function (retour) {
+                        switch (retour.type) {
+                            case 'error':
+                                $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                                break;
+                            case 'success':
+                                window.location.assign(chemin + 'affaires/liste');
+                                break;
+                        }
+                    }, 'json');
+                }
+
+            },
+            cancel: {
+                btnClass: 'btn-red',
+                text: 'Annuler'
+            }
+        }
     });
 
 });

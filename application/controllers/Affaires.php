@@ -51,7 +51,7 @@ class Affaires extends My_Controller {
     }
 
     public function ficheAffaire($affaireId = null) {
-        if (!$this->ion_auth->in_group(21)):
+        if (!$this->ion_auth->in_group(50)):
             redirect('affaires/liste');
         endif;
 
@@ -82,6 +82,10 @@ class Affaires extends My_Controller {
     }
 
     public function addAffaire() {
+
+        if (!$this->ion_auth->in_group(51)):
+            redirect('affaires/liste');
+        endif;
 
         if (!$this->form_validation->run('addAffaire')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
@@ -129,6 +133,16 @@ class Affaires extends My_Controller {
 
     public function clotureAffaire() {
 
+    }
+
+    public function delAffaire() {
+        if (!$this->ion_auth->in_group(57) || !$this->form_validation->run('getAffaire')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $affaire = $this->managerAffaires->getAffaireById($this->input->post('affaireId'));
+            $this->managerAffaires->delete($affaire);
+            echo json_encode(array('type' => 'success'));
+        endif;
     }
 
 }

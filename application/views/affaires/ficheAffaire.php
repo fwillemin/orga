@@ -32,7 +32,9 @@
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#modAffaire"><i class="fas fa-edit"></i> Modifier</a>
             </li>
-
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#deleteAffaire"><i class="fas fa-trash"></i></a>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -42,11 +44,35 @@
                 <i class="formClose fas fa-times"></i>
             </div>
 
+            <div class="tab-pane" id="deleteAffaire" style="border-left: 4px solid red; font-size:14px; padding:10px;">
+
+                <?php if ($this->ion_auth->in_group(57)): ?>
+                    <i class="fas fa-sad-tear" style="font-size:40px; color: #900b22;"></i>
+                    <br><br><span style="color: #900b22; font-size: 15px; font-weight: bold;">Supprimer une affaire est irréversible.</span>
+                    <br>Voici les actions qui se produiront à la suppression de l'affaire :
+                    <ul>
+                        <li>Suppression de tous les chantiers</li>
+                        <li>Suppression de toutes les affectations et des documents liés aux chantiers</li>
+                        <li>Suppression des livraisons fournisseurs</li>
+                        <li>Suppression de toutes les heures saisies et donc des fiches de pointages</li>
+                        <li>Suppression de tous les achats</li>
+                        <li>Recalcul des analyses de votre activité</li>
+                    </ul>
+                    <button type="button" id="btnDelAffaire" class="btn btn-secondary">
+                        <i class="fas fa-trash"></i> Supprimer définitivement l'affaire
+                    </button>
+                    <?php
+                else:
+                    echo '<div class="alert alert-danger"><i class="fas fa-ban"></i> Vous n\'avez pas les droits nécéssaires pour supprimer une affaire</div>';
+                endif;
+                ?>
+            </div>
+
             <div class="tab-pane cadre2" id="infosAffaire">
                 <div class="row">
                     <div class="col-12 col-md-8">
                         Commercial de l'affaire : <?= $affaire->getAffaireCommercial() ? $affaire->getAffaireCommercial()->getUserPrenom() . ' ' . $affaire->getAffaireCommercial()->getUserNom() : '<small class="light">Non attribué</small>'; ?>
-                        <br>Tarif : <?= number_format($affaire->getAffairePrix(), 2, ',', '') . '€ HT'; ?>
+                        <br>Tarif : <?= number_format($affaire->getAffairePrix(), 2, ',', ' ') . '€ HT'; ?>
                         <br>Liée au devis : <?= $affaire->getAffaireDevis(); ?>
                         <hr>
                         Signée le <?= $affaire->getAffaireDateSignature() ? $this->own->dateFrancais($affaire->getAffaireDateSignature()) : '<small class="light">--</small>'; ?>
@@ -138,7 +164,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <?php include('formChantier.php'); ?>
+                <?php include('application/views/chantiers/formChantier.php'); ?>
             </div>
         </div>
     </div>

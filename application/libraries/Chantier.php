@@ -31,6 +31,10 @@ class Chantier {
     protected $chantierFraisGeneraux;
     protected $chantierTauxHoraireMoyen;
     protected $chantierRemarque;
+    protected $chantierAchats;
+    /* TRIGGERED */
+    protected $chantierBudgetPrevu; /* Somme des achats prévus */
+    protected $chantierBudgetConsomme; /* Somme des achats réalisés */
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -76,52 +80,9 @@ class Chantier {
         $this->chantierClient = $CI->managerClients->getClientById($this->chantierAffaire->getAffaireClientId());
     }
 
-    function getChantierPlace() {
-        return $this->chantierPlace;
-    }
-
-    function getChantierAffaire() {
-        return $this->chantierAffaire;
-    }
-
-    function getChantierClient() {
-        return $this->chantierClient;
-    }
-
-    function setChantierPlace($chantierPlace) {
-        $this->chantierPlace = $chantierPlace;
-    }
-
-    function setChantierAffaire($chantierAffaire) {
-        $this->chantierAffaire = $chantierAffaire;
-    }
-
-    function setChantierClient($chantierClient) {
-        $this->chantierClient = $chantierClient;
-    }
-
-    function getChantierPlaceId() {
-        return $this->chantierPlaceId;
-    }
-
-    function setChantierPlaceId($chantierPlaceId) {
-        $this->chantierPlaceId = $chantierPlaceId;
-    }
-
-    function getChantierCategorie() {
-        return $this->chantierCategorie;
-    }
-
-    function setChantierCategorie($chantierCategorie) {
-        $this->chantierCategorie = $chantierCategorie;
-    }
-
-    function getChantierOriginId() {
-        return $this->chantierOriginId;
-    }
-
-    function setChantierOriginId($chantierOriginId) {
-        $this->chantierOriginId = $chantierOriginId;
+    public function hydrateAchats() {
+        $CI = & get_instance();
+        $this->chantierAchats = $CI->managerAchats->getAchats($this->chantierId);
     }
 
     public function cloturer($dateCloture) {
@@ -137,12 +98,36 @@ class Chantier {
         return $this->chantierId;
     }
 
+    function getChantierOriginId() {
+        return $this->chantierOriginId;
+    }
+
+    function getChantierPlaceId() {
+        return $this->chantierPlaceId;
+    }
+
+    function getChantierPlace() {
+        return $this->chantierPlace;
+    }
+
     function getChantierAffaireId() {
         return $this->chantierAffaireId;
     }
 
+    function getChantierAffaire() {
+        return $this->chantierAffaire;
+    }
+
+    function getChantierClient() {
+        return $this->chantierClient;
+    }
+
     function getChantierCategorieId() {
         return $this->chantierCategorieId;
+    }
+
+    function getChantierCategorie() {
+        return $this->chantierCategorie;
     }
 
     function getChantierObjet() {
@@ -189,16 +174,44 @@ class Chantier {
         return $this->chantierRemarque;
     }
 
+    function getChantierAchats() {
+        return $this->chantierAchats;
+    }
+
     function setChantierId($chantierId) {
         $this->chantierId = $chantierId;
+    }
+
+    function setChantierOriginId($chantierOriginId) {
+        $this->chantierOriginId = $chantierOriginId;
+    }
+
+    function setChantierPlaceId($chantierPlaceId) {
+        $this->chantierPlaceId = $chantierPlaceId;
+    }
+
+    function setChantierPlace($chantierPlace) {
+        $this->chantierPlace = $chantierPlace;
     }
 
     function setChantierAffaireId($chantierAffaireId) {
         $this->chantierAffaireId = $chantierAffaireId;
     }
 
+    function setChantierAffaire($chantierAffaire) {
+        $this->chantierAffaire = $chantierAffaire;
+    }
+
+    function setChantierClient($chantierClient) {
+        $this->chantierClient = $chantierClient;
+    }
+
     function setChantierCategorieId($chantierCategorieId) {
         $this->chantierCategorieId = $chantierCategorieId;
+    }
+
+    function setChantierCategorie($chantierCategorie) {
+        $this->chantierCategorie = $chantierCategorie;
     }
 
     function setChantierObjet($chantierObjet) {
@@ -243,6 +256,26 @@ class Chantier {
 
     function setChantierRemarque($chantierRemarque) {
         $this->chantierRemarque = $chantierRemarque;
+    }
+
+    function setChantierAchats($chantierAchats) {
+        $this->chantierAchats = $chantierAchats;
+    }
+
+    function getChantierBudgetPrevu() {
+        return $this->chantierBudgetPrevu;
+    }
+
+    function getChantierBudgetConsomme() {
+        return $this->chantierBudgetConsomme;
+    }
+
+    function setChantierBudgetPrevu($chantierBudgetPrevu) {
+        $this->chantierBudgetPrevu = $chantierBudgetPrevu;
+    }
+
+    function setChantierBudgetConsomme($chantierBudgetConsomme) {
+        $this->chantierBudgetConsomme = $chantierBudgetConsomme;
     }
 
 }

@@ -543,6 +543,62 @@ $config = array(
             'label' => 'Taux horaire moyen',
             'rules' => 'trim|numeric|required'
         )
+    ),
+    /* get Achat */
+    'getAchat' => array(
+        array(
+            'field' => 'achatId',
+            'label' => 'ID achat',
+            'rules' => 'required|callback_existAchat'
+        )
+    ),
+    /* Add Achat */
+    'addAchat' => array(
+        array(
+            'field' => 'addAchatId',
+            'label' => 'ID Achat',
+            'rules' => 'callback_existAchat'
+        ),
+        array(
+            'field' => 'addAchatChantierId',
+            'label' => 'ID Chantier',
+            'rules' => 'callback_existChantier'
+        ),
+        array(
+            'field' => 'addAchatDate',
+            'label' => 'Date',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addAchatDescription',
+            'label' => 'Description',
+            'rules' => 'required|trim'
+        ),
+        array(
+            'field' => 'addAchatType',
+            'label' => 'Type achat',
+            'rules' => 'required|in_list[1,2,3,4]'
+        ),
+        array(
+            'field' => 'addAchatQtePrevisionnel',
+            'label' => 'Quantité prévisionnelle',
+            'rules' => 'numeric'
+        ),
+        array(
+            'field' => 'addAchatPrixPrevisionnel',
+            'label' => 'Prix unitaire prévisionnel',
+            'rules' => 'numeric'
+        ),
+        array(
+            'field' => 'addAchatQte',
+            'label' => 'Quantité',
+            'rules' => 'numeric'
+        ),
+        array(
+            'field' => 'addAchatPrix',
+            'label' => 'Prix unitaire',
+            'rules' => 'numeric'
+        )
     )
 );
 ?>
