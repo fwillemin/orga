@@ -15,7 +15,9 @@ class Model_personnels extends MY_model {
      */
     public function ajouter(Personnel $personnel) {
         $this->db
-                ->set('personnelEtablissementId', $this->session->userdata('etablissementId'))
+                ->set('personnelOriginId', $personnel->getPersonnelOriginId() ?: '')
+                /* Pour l'import des personnels existants, ensuite uniquement la valeur de session pour l'établissement */
+                ->set('personnelEtablissementId', $this->session->userdata('etablissementId') ?: $personnel->getPersonnelEtablissementId())
                 ->set('personnelNom', $personnel->getPersonnelNom())
                 ->set('personnelPrenom', $personnel->getPersonnelPrenom())
                 ->set('personnelQualif', $personnel->getPersonnelQualif())
@@ -88,6 +90,15 @@ class Model_personnels extends MY_model {
                 ->where('personnelId', $personnelId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getPersonnelsMigration($where = array(), $tri = 'personnelActif DESC, personnelNom ASC', $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where($where)
+                ->order_by($tri)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
     }
 
 }

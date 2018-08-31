@@ -9,6 +9,7 @@
 class Horaire {
 
     protected $horaireId;
+    protected $horaireOriginId;
     protected $horaireEtablissementId;
     protected $horaireNom;
     protected $horaireLun1;
@@ -498,6 +499,14 @@ class Horaire {
 
     function setHoraireTotal($horaireTotal) {
         $this->horaireTotal = $horaireTotal;
+    }
+
+    function getHoraireOriginId() {
+        return $this->horaireOriginId;
+    }
+
+    function setHoraireOriginId($horaireOriginId) {
+        $this->horaireOriginId = $horaireOriginId;
     }
 
 }

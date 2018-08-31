@@ -15,12 +15,23 @@ class Model_etablissements extends MY_model {
      */
     public function ajouter(Etablissement $etablissement) {
         $this->db
-                ->set('rsNom', $etablissement->getRsNom())
-                ->set('rsInscription', $etablissement->getRsInscription())
-                ->set('rsMoisFiscal', $etablissement->getRsMoisFiscal())
-                ->set('rsCategorieNC', $etablissement->getRsCategorieNC())
+                ->set('etablissementOriginId', $etablissement->getEtablissementOriginId() ?: null)
+                ->set('etablissementRsId', $etablissement->getEtablissementRsId())
+                ->set('etablissementNom', $etablissement->getEtablissementNom())
+                ->set('etablissementAdresse', $etablissement->getEtablissementAdresse())
+                ->set('etablissementCp', $etablissement->getEtablissementCp())
+                ->set('etablissementVille', $etablissement->getEtablissementVille())
+                ->set('etablissementTelephone', $etablissement->getEtablissementTelephone())
+                ->set('etablissementContact', $etablissement->getEtablissementContact())
+                ->set('etablissementEmail', $etablissement->getEtablissementEmail())
+                ->set('etablissementGps', $etablissement->getEtablissementGps())
+                ->set('etablissementStatut', $etablissement->getEtablissementStatut())
+                ->set('etablissementChantierDiversId', $etablissement->getEtablissementChantierDiversId())
+                ->set('etablissementMessage', $etablissement->getEtablissementMessage())
+                ->set('etablissementTauxFraisGeneraux', $etablissement->getEtablissementTauxFraisGeneraux())
+                ->set('etablissementTauxHoraireMoyen', $etablissement->getEtablissementTauxHoraireMoyen())
                 ->insert($this->table);
-        $etablissement->setRsId($this->db->insert_id());
+        $etablissement->setEtablissementId($this->db->insert_id());
     }
 
     /**
@@ -30,11 +41,21 @@ class Model_etablissements extends MY_model {
      */
     public function editer(Etablissement $etablissement) {
         $this->db
-                ->set('rsNom', $etablissement->getRsNom())
-                ->set('rsInscription', $etablissement->getRsInscription())
-                ->set('rsMoisFiscal', $etablissement->getRsMoisFiscal())
-                ->set('rsCategorieNC', $etablissement->getRsCategorieNC())
-                ->where('rsId', $etablissement->getEtablissementId())
+                ->set('etablissementRsId', $etablissement->getEtablissementRsId())
+                ->set('etablissementNom', $etablissement->getEtablissementNom())
+                ->set('etablissementAdresse', $etablissement->getEtablissementAdresse())
+                ->set('etablissementCp', $etablissement->getEtablissementCp())
+                ->set('etablissementVille', $etablissement->getEtablissementVille())
+                ->set('etablissementTelephone', $etablissement->getEtablissementTelephone())
+                ->set('etablissementContact', $etablissement->getEtablissementContact())
+                ->set('etablissementEmail', $etablissement->getEtablissementEmail())
+                ->set('etablissementGps', $etablissement->getEtablissementGps())
+                ->set('etablissementStatut', $etablissement->getEtablissementStatut())
+                ->set('etablissementChantierDiversId', $etablissement->getEtablissementChantierDiversId())
+                ->set('etablissementMessage', $etablissement->getEtablissementMessage())
+                ->set('etablissementTauxFraisGeneraux', $etablissement->getEtablissementTauxFraisGeneraux())
+                ->set('etablissementTauxHoraireMoyen', $etablissement->getEtablissementTauxHoraireMoyen())
+                ->where('etablissementId', $etablissement->getEtablissementId())
                 ->update($this->table);
         return $this->db->affected_rows();
     }
@@ -57,7 +78,7 @@ class Model_etablissements extends MY_model {
      * @param array $tri Critères de tri des raisonSociales
      * @return array Liste d'objets de la classe Etablissement
      */
-    public function liste($where = array(), $tri = 'rsNom DESC', $type = 'object') {
+    public function getEtablissements($where = array(), $tri = '', $type = 'object') {
         $query = $this->db->select('*')
                 ->from($this->table)
                 ->where($where)

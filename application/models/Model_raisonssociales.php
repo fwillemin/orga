@@ -15,6 +15,7 @@ class Model_raisonssociales extends MY_model {
      */
     public function ajouter(RaisonSociale $raisonSociale) {
         $this->db
+                ->set('rsOriginId', $raisonSociale->getRsOriginId() ?: null)
                 ->set('rsNom', $raisonSociale->getRsNom())
                 ->set('rsInscription', $raisonSociale->getRsInscription())
                 ->set('rsMoisFiscal', $raisonSociale->getRsMoisFiscal())

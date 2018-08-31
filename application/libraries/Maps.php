@@ -8,7 +8,7 @@ class Maps {
 
     }
 
-    public function geocode($adresse) {
+    public function geocode($adresse, Etablissement $etablissement = null) {
 
         $url = "https://maps.googleapis.com/maps/api/geocode/json?address=" . $adresse . "&key=" . self::key;
         $response = json_decode(file_get_contents($url));
@@ -22,7 +22,7 @@ class Maps {
 
             if ($latitude && $longitude && $adresseFormatee):
                 $CI = & get_instance();
-                $distance = $this->distance($CI->session->userdata('etablissementGPS'), ($latitude . ',' . $longitude));
+                $distance = $this->distance(($etablissement ? $etablissement->getEtablissementGps() : $CI->session->userdata('etablissementGPS')), ($latitude . ',' . $longitude));
 
                 return array('latitude' => $latitude, 'longitude' => $longitude, 'adresse' => $adresseFormatee, 'placeGoogleId' => $placeGoogleId, 'distance' => $distance['distance'], 'duree' => $distance['duree']);
             else:
@@ -32,7 +32,7 @@ class Maps {
     }
 
     public function distance($origine, $destination) {
-        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=" . $origine . "&destinations=" . $destination . "&key=" . self::key;
+        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=" . str_replace(' ', '', $origine) . "&destinations=" . $destination . "&key=" . self::key;
         $response = json_decode(file_get_contents($url));
 
         if ($response->status == 'OK') {

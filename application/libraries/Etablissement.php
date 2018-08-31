@@ -12,6 +12,7 @@
 class Etablissement {
 
     protected $etablissementId;
+    protected $etablissementOriginId;
     protected $etablissementRsId;
     protected $etablissementNom;
     protected $etablissementAdresse;
@@ -159,6 +160,14 @@ class Etablissement {
 
     function setEtablissementTauxHoraireMoyen($etablissementTauxHoraireMoyen) {
         $this->etablissementTauxHoraireMoyen = $etablissementTauxHoraireMoyen;
+    }
+
+    function getEtablissementOriginId() {
+        return $this->etablissementOriginId;
+    }
+
+    function setEtablissementOriginId($etablissementOriginId) {
+        $this->etablissementOriginId = $etablissementOriginId;
     }
 
 }

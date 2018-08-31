@@ -12,6 +12,7 @@
 class Categorie {
 
     protected $categorieId;
+    protected $categorieOriginId;
     protected $categorieRsId;
     protected $categorieNom;
 
@@ -51,6 +52,14 @@ class Categorie {
 
     function setCategorieNom($categorieNom) {
         $this->categorieNom = $categorieNom;
+    }
+
+    function getCategorieOriginId() {
+        return $this->categorieOriginId;
+    }
+
+    function setCategorieOriginId($categorieOriginId) {
+        $this->categorieOriginId = $categorieOriginId;
     }
 
 }

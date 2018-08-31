@@ -12,6 +12,7 @@
 class Personnel {
 
     protected $personnelId;
+    protected $personnelOriginId;
     protected $personnelEtablissementId;
     protected $personnelNom;
     protected $personnelPrenom;
@@ -172,6 +173,14 @@ class Personnel {
 
     function setPersonnelTauxHoraireHistorique($personnelTauxHoraireHistorique) {
         $this->personnelTauxHoraireHistorique = $personnelTauxHoraireHistorique;
+    }
+
+    function getPersonnelOriginId() {
+        return $this->personnelOriginId;
+    }
+
+    function setPersonnelOriginId($personnelOriginId) {
+        $this->personnelOriginId = $personnelOriginId;
     }
 
 }

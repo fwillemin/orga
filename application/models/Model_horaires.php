@@ -15,8 +15,10 @@ class Model_horaires extends MY_model {
      */
     public function ajouter(Horaire $horaire) {
         $this->db
+                ->set('horaireOriginId', $horaire->getHoraireOriginId() ?: null)
                 ->set('horaireNom', $horaire->getHoraireNom())
-                ->set('horaireEtablissementId', $this->session->userdata('etablissementId'))
+                /* Pour l'import des clients existants, ensuite uniquement la valeur de session pour l'établissement */
+                ->set('horaireEtablissementId', $this->session->userdata('etablissementId') ?: $horaire->getHoraireEtablissementId())
                 ->set('horaireLun1', $horaire->getHoraireLun1())
                 ->set('horaireLun2', $horaire->getHoraireLun2())
                 ->set('horaireLun3', $horaire->getHoraireLun3())
@@ -116,6 +118,14 @@ class Model_horaires extends MY_model {
                 ->from($this->table)
                 ->where('horaireId', $horaireId)
                 ->where('horaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getHoraireByIdMigration($horaireId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where('horaireOriginId', $horaireId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
     }

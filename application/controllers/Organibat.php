@@ -40,4 +40,14 @@ class Organibat extends My_Controller {
         $this->load->view('template/content', $data);
     }
 
+    public function parametres() {
+
+        $data = array(
+            'title' => 'Paramètres',
+            'description' => 'Faites un Organibat qui vous ressemble',
+            'content' => $this->viewFolder . '/' . __FUNCTION__
+        );
+        $this->load->view('template/content', $data);
+    }
+
 }

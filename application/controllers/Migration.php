@@ -13,6 +13,110 @@ class Migration extends My_Controller {
         $this->view_folder = strtolower(__CLASS__) . '/';
     }
 
+    /* Avant de lancer le script, il est imperatif de copier toutes les tables de la V1 (hors licences et transactions) avec le préfixe V1 dans la BDD de la V2
+     * - Etre déconnecté !!!!!!!
+     * - Vérifier que l'etablissement à un email valide avec un domaine qui lui est propre
+     *
+     */
+
+    public function resetDB() {
+        $this->db->query("DELETE FROM `raisonsSociales`");
+        $this->db->query("ALTER TABLE `raisonsSociales` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `etablissements` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `users` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `users_groups` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `horaires` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `personnels` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `tauxHoraires` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `categories` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `clients` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `places` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `affaires` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `chantiers` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `achats` auto_increment = 1;");
+    }
+
+    public function migrerRS($rsId = null) {
+
+        $this->resetDB();
+
+        if (!$rsId):
+            echo 'Vous devez renseigner un ID RS valide;';
+        else:
+
+            $rs = $this->importRS($rsId);
+            $etablissement = $this->importEtablissement($rs);
+            $this->db->set('parametreEtablissementId', $etablissement->getEtablissementId())->insert('parametres');
+
+            /* Utilisateurs administratifs */
+            $this->importUsers($etablissement);
+
+            $this->importHoraires($etablissement);
+            $this->importPersonnels($etablissement);
+            $this->importTauxHoraire($etablissement);
+            $this->importCategories($rs);
+            $this->importDossiers($etablissement);
+            $this->migrationChantiers($etablissement);
+
+            echo 'Import terminé avec succès !';
+
+        endif;
+    }
+
+    private function importRS($rsId) {
+        $rsOLD = $this->db->select('*')->from('V1_raison_sociale')->where('id', $rsId)->get()->result()[0];
+        if (empty($rsOLD)):
+            echo 'Echec : Cette raison sociale est introuvable dans la V1';
+            exit;
+        else:
+            $arrayRs = array(
+                'rsOriginId' => $rsOLD->id,
+                'rsNom' => $rsOLD->nom,
+                'rsInscription' => $rsOLD->rs_inscription,
+                'rsMoisFiscal' => $rsOLD->rs_mois_fiscal,
+                'rsCategorieNC' => $rsOLD->rs_categorieNC
+            );
+            $rs = new RaisonSociale($arrayRs);
+            $this->managerRaisonsSociales->ajouter($rs);
+            return $rs;
+        endif;
+    }
+
+    private function importEtablissement(RaisonSociale $rs) {
+        $etaOLD = $this->db->select('*')->from('V1_etablissement')->where('id_rs', $rs->getRsOriginId())->get()->result()[0];
+        if (empty($etaOLD)):
+            echo 'Echec : Cette raison sociale n\'a aucun établissement';
+            exit;
+        else:
+            $arrayEta = array(
+                'etablissementOriginId' => $etaOLD->id,
+                'etablissementRsId' => $rs->getRsId(),
+                'etablissementNom' => $etaOLD->nom,
+                'etablissementAdresse' => $etaOLD->adresse,
+                'etablissementCp' => $etaOLD->cp,
+                'etablissementVille' => $etaOLD->ville,
+                'etablissementContact' => $etaOLD->contact,
+                'etablissementTelephone' => $etaOLD->tel,
+                'etablissementEmail' => $etaOLD->email,
+                'etablissementGps' => $etaOLD->gps,
+                'etablissementStatut' => $etaOLD->statut,
+                'etablissementChantierDiversId' => $etaOLD->id_chantier_divers,
+                'etablissementMessage' => $etaOLD->msg,
+                'etablissementTauxFraisGeneraux' => $etaOLD->fraisGeneraux,
+                'etablissementTauxHoraireMoyen' => $etaOLD->txHoraireMoyen
+            );
+            $etablissement = new Etablissement($arrayEta);
+            $this->managerEtablissements->ajouter($etablissement);
+            return $etablissement;
+        endif;
+    }
+
+    private function getPassword($length = 8) {
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
+        $password = substr(str_shuffle($chars), 0, $length);
+        return $password;
+    }
+
     /* GLOBAL
      *
      * Copier la table organibat_raison_sociale de la v1 en raisonsSociales puis
@@ -22,8 +126,9 @@ class Migration extends My_Controller {
      * ALTER TABLE `etablissements` DROP `periodicite_hs`, DROP `limit_hs`, DROP `nb_rtt_annuel`, DROP `majoration_hs`;
      * ALTER TABLE `etablissements` CHANGE `id` `etablissementId` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `id_rs` `etablissementRsId` INT(11) NOT NULL, CHANGE `nom` `etablissementNom` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `adresse` `etablissementAdresse` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `cp` `etablissementCp` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `ville` `etablissementVille` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `contact` `etablissementContact` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `tel` `etablissementTelephone` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `email` `etablissementEmail` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `gps` `etablissementGps` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_general_ci NULL, CHANGE `statut` `etablissementStatut` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '1=principal 2=secondaire', CHANGE `id_chantier_divers` `etablissementChantierDiversId` INT(11) NULL, CHANGE `msg` `etablissementMessage` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'message diffusé sur la page de saisie des heures par les salariés', CHANGE `fraisGeneraux` `etablissementTauxFraisGeneraux` DECIMAL(5,2) NOT NULL DEFAULT '0', CHANGE `txHoraireMoyen` `etablissementTauxHoraireMoyen` DECIMAL(5,2) NOT NULL DEFAULT '0';
      * ALTER TABLE `etablissements` ADD FOREIGN KEY (`etablissementRsId`) REFERENCES `raisonsSociales`(`rsId`) ON DELETE CASCADE ON UPDATE RESTRICT;
+     */
 
-     *
+    /*
      * Copier la table user de la v1 en usersV1
      * ALTER TABLE `users` DROP `first_name`, DROP `last_name`, DROP `company`, DROP `phone`;
      * ALTER TABLE `users` ADD `userNom` VARCHAR(120) NOT NULL AFTER `password`, ADD `userPrenom` VARCHAR(120) NOT NULL AFTER `userNom`, ADD `userEtablissementId` INT NOT NULL AFTER `userPrenom`, ADD `userClairMdp` VARCHAR(120) NOT NULL AFTER `userEtablissementId`, ADD INDEX (`userEtablissementId`);
@@ -32,43 +137,35 @@ class Migration extends My_Controller {
 
      */
 
-    private function getPassword($length = 8) {
-        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
-        $password = substr(str_shuffle($chars), 0, $length);
-        return $password;
-    }
+    private function importUsers(Etablissement $etablissement) {
 
-    public function migrationUsers() {
-
-        $idEta = 0;
-        foreach ($this->db->select('*')->from('usersV1')->order_by('id_etablissement')->get()->result() as $user):
+        $domaine = strtolower(explode('@', $etablissement->getEtablissementEmail())[1]);
+        $i = 1;
+        foreach ($this->db->select('*')->from('V1_user')->where('id_etablissement', $etablissement->getEtablissementOriginId())->get()->result() as $user):
 
             if ($user->niveau != 5):
-
-                $etablissement = $this->db->select('*')->from('etablissements')->where('etablissementId', $user->id_etablissement)->get()->result()[0];
-                $domaine = strtolower(explode('@', $etablissement->etablissementEmail)[1]);
-
                 $email = str_replace(array(' ', 'é', 'è'), array('', 'e', 'e'), strtolower($user->nom) . '.' . strtolower($user->prenom)) . '@' . $domaine;
-                $identity = str_replace(array(' ', 'é', 'è'), array('', 'e', 'e'), strtolower($user->nom) . '.' . strtolower($user->prenom)) . '@' . $domaine;
+//                $identity = str_replace(array(' ', 'é', 'è'), array('', 'e', 'e'), strtolower($user->nom) . '.' . strtolower($user->prenom)) . '@' . $domaine;
                 $mdp = $this->getPassword();
-                $password = $mdp;
 
                 $additional_data = array(
                     'userNom' => $user->nom,
                     'userPrenom' => $user->prenom,
-                    'userEtablissementId' => $etablissement->etablissementId,
+                    'userEtablissementId' => $etablissement->getEtablissementId(),
                     'userClairMdp' => $mdp,
                     'userCode' => 0000
                 );
                 /* Admin */
-                if ($idEta != $etablissement->etablissementId):
-                    $group = array('1, 10, 11');
-                    $idEta = $etablissement->etablissementId;
+                if ($i == 1):
+                    $groups = $this->db->select('id')->from('groups')->where('id <> ', 2)->get()->result();
+                    foreach ($groups as $g):
+                        $group[] = $g->id;
+                    endforeach;
                 else:
                     $group = array('2');
                 endif;
-
-                $this->ion_auth->register($identity, $password, $email, $additional_data, $group);
+                $this->ion_auth->register($email, $mdp, $email, $additional_data, $group);
+                $i++;
             endif;
 
         endforeach;
@@ -139,6 +236,48 @@ class Migration extends My_Controller {
      * Importer uniquement les données de la table Horaires de la V1 dans cette table
      */
 
+    private function importHoraires(Etablissement $etablissement) {
+
+        foreach ($this->db->select('*')->from('V1_horaires')->where('horaireEtablissementId', $etablissement->getEtablissementOriginId())->get()->result() as $horaire):
+
+            $arrayHoraire = array(
+                'horaireOriginId' => $horaire->horaireId,
+                'horaireEtablissementId' => $etablissement->getEtablissementId(),
+                'horaireNom' => $horaire->horaireNom,
+                'horaireLun1' => $horaire->horaireLun1,
+                'horaireLun2' => $horaire->horaireLun2,
+                'horaireLun3' => $horaire->horaireLun3,
+                'horaireLun4' => $horaire->horaireLun4,
+                'horaireMar1' => $horaire->horaireMar1,
+                'horaireMar2' => $horaire->horaireMar2,
+                'horaireMar3' => $horaire->horaireMar3,
+                'horaireMar4' => $horaire->horaireMar4,
+                'horaireMer1' => $horaire->horaireMer1,
+                'horaireMer2' => $horaire->horaireMer2,
+                'horaireMer3' => $horaire->horaireMer3,
+                'horaireMer4' => $horaire->horaireMer4,
+                'horaireJeu1' => $horaire->horaireJeu1,
+                'horaireJeu2' => $horaire->horaireJeu2,
+                'horaireJeu3' => $horaire->horaireJeu3,
+                'horaireJeu4' => $horaire->horaireJeu4,
+                'horaireVen1' => $horaire->horaireVen1,
+                'horaireVen2' => $horaire->horaireVen2,
+                'horaireVen3' => $horaire->horaireVen3,
+                'horaireVen4' => $horaire->horaireVen4,
+                'horaireSam1' => $horaire->horaireSam1,
+                'horaireSam2' => $horaire->horaireSam2,
+                'horaireSam3' => $horaire->horaireSam3,
+                'horaireSam4' => $horaire->horaireSam4,
+                'horaireDim1' => $horaire->horaireDim1,
+                'horaireDim2' => $horaire->horaireDim2,
+                'horaireDim3' => $horaire->horaireDim3,
+                'horaireDim4' => $horaire->horaireDim4
+            );
+            $horaireNew = new Horaire($arrayHoraire);
+            $this->managerHoraires->ajouter($horaireNew);
+
+        endforeach;
+    }
 
     /* Migration du personnel */
     /*
@@ -152,6 +291,29 @@ class Migration extends My_Controller {
      * ALTER TABLE `personnels` ADD FOREIGN KEY (`personnelEquipeId`) REFERENCES `equipes`(`equipeId`) ON DELETE SET NULL ON UPDATE CASCADE;
      */
 
+    private function importPersonnels(Etablissement $etablissement) {
+        foreach ($this->db->select('*')->from('V1_personnel')->where('id_etablissement', $etablissement->getEtablissementOriginId())->get()->result() as $perso):
+
+            $horaire = $this->managerHoraires->getHoraireByIdMigration($perso->personnelHoraireId);
+
+            $arrayPersonnel = array(
+                'personnelOriginId' => $perso->id,
+                'personnelId' => $perso->id,
+                'personnelEtablissementId' => $etablissement->getEtablissementId(),
+                'personnelNom' => $perso->nom,
+                'personnelPrenom' => $perso->prenom,
+                'personnelQualif' => $perso->qualif,
+                'personnelActif' => $perso->actif,
+                'personnelMessage' => $perso->message,
+                'personnelCode' => $perso->code,
+                'personnelHoraireId' => $horaire ? $horaire->getHoraireId() : null,
+                'personnelEquipeId' => null
+            );
+            $personnel = new Personnel($arrayPersonnel);
+            $this->managerPersonnels->ajouter($personnel);
+        endforeach;
+    }
+
     /* Migration des taux horaire
      * Copier la table de la V1 en ajoutant un "s" puis :
      *
@@ -159,6 +321,25 @@ class Migration extends My_Controller {
      * ALTER TABLE `tauxHoraires` CHANGE `tauxHoraire` `tauxHoraire` DECIMAL(5,2) NOT NULL;
      * ALTER TABLE `tauxHoraires` CHANGE `tauxId` `tauxHoraireId` INT(11) NOT NULL AUTO_INCREMENT, CHANGE `tauxPersonnelId` `tauxHorairePersonnelId` INT(11) NOT NULL, CHANGE `tauxDate` `tauxHoraireDate` INT(11) NOT NULL;
      */
+
+    private function importTauxHoraire(Etablissement $etablissement) {
+
+        $personnels = $this->managerPersonnels->getPersonnelsMigration(array('personnelEtablissementId' => $etablissement->getEtablissementId()));
+
+        foreach ($personnels as $personnel):
+            foreach ($this->db->select('*')->from('V1_tauxHoraire')->where('tauxPersonnelId', $personnel->getPersonnelOriginId())->get()->result() as $to):
+
+                $arrayTaux = array(
+                    'tauxHorairePersonnelId' => $personnel->getPersonnelId(),
+                    'tauxHoraire' => $to->tauxHoraire,
+                    'tauxHoraireDate' => $to->tauxDate
+                );
+                $taux = new TauxHoraire($arrayTaux);
+                $this->managerTauxHoraires->ajouter($taux);
+
+            endforeach;
+        endforeach;
+    }
 
     /* Clients
      * Nouvelle fonction, créer la table avec :
@@ -224,6 +405,21 @@ class Migration extends My_Controller {
       ALTER TABLE `categories` ADD FOREIGN KEY (`categorieRsId`) REFERENCES `raisonsSociales`(`rsId`) ON DELETE CASCADE ON UPDATE RESTRICT;
      */
 
+    private function importCategories(RaisonSociale $rs) {
+
+        foreach ($this->db->select('*')->from('V1_categorie')->where('id_rs', $rs->getRsOriginId())->get()->result() as $cat):
+
+            $arrayCategorie = array(
+                'categorieOriginId' => $cat->id_categorie,
+                'categorieRsId' => $rs->getRsId(),
+                'categorieNom' => $cat->nom
+            );
+            $categorie = new Categorie($arrayCategorie);
+            $this->managerCategories->ajouter($categorie);
+
+        endforeach;
+    }
+
     /* Intégration des affaires
      * Copier la table dossiers de la V1 en "dossiersV1"
      * créer la table affaires avec :
@@ -263,12 +459,10 @@ class Migration extends My_Controller {
 
      */
 
-    public function migrationDossiers() {
+    public function importDossiers(Etablissement $etablissement) {
 
-        foreach ($this->db->select('*')->from('dossiersV1')->where(array('id_etablissement' => 2))->order_by('dossierId DESC')->limit(50, 0)->get()->result() as $dossier):
+        foreach ($this->db->select('*')->from('V1_dossier')->where(array('id_etablissement' => $etablissement->getEtablissementOriginId()))->order_by('dossierId ASC')->limit(10, 0)->get()->result() as $dossier):
 
-            /* On garde l'établissement du dossier pour créer le client, les places et les affaires */
-            $etablissement = $dossier->id_etablissement;
             /**
              * Si on a une date de signature, on la prend comme date de création également
              * Si on n'a pas de date de signature, on prend la date de création du précedent dossier comme date de création
@@ -280,7 +474,7 @@ class Migration extends My_Controller {
             $this->db->trans_start();
             /* Création du client */
             $dataClient = array(
-                'clientEtablissementId' => $etablissement,
+                'clientEtablissementId' => $etablissement->getEtablissementId(),
                 'clientNom' => mb_strtoupper($dossier->client),
                 'clientAdresse' => $dossier->adresse,
                 'clientCp' => $dossier->cp,
@@ -294,40 +488,41 @@ class Migration extends My_Controller {
             $this->managerClients->ajouter($client);
 
             /* Creation d'une place */
-            $result = $this->maps->geocode(urlencode($client->getClientAdresse() . ' ' . $client->getClientCp() . ' ' . $client->getClientVille() . ' FRANCE'));
-            if ($result):
-
-                $volOiseau = $this->maps->distanceVolOiseau(explode(',', $this->session->userdata('etablissementGPS'))[0], explode(',', $this->session->userdata('etablissementGPS'))[1], $result['latitude'], $result['longitude']);
-                $zone = floor($volOiseau / 10000) + 1;
-                if ($zone > 6):
-                    $zone = 6;
-                endif;
-
-                $arrayPlace = array(
-                    'placeClientId' => $client->getClientId(),
-                    'placeEtablissementId' => $etablissement,
-                    'placeLat' => $result['latitude'],
-                    'placeLon' => $result['longitude'],
-                    'placeAdresse' => $result['adresse'],
-                    'placeGoogleId' => $result['placeGoogleId'],
-                    'placeDistance' => $result['distance'],
-                    'placeDuree' => $result['duree'],
-                    'placeZone' => $zone,
-                    'placeVolOiseau' => $volOiseau
-                );
-
-                $place = new Place($arrayPlace);
-                $this->managerPlaces->ajouter($place);
-
-            else:
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
-            endif;
+//            $result = $this->maps->geocode(urlencode($client->getClientAdresse() . ' ' . $client->getClientCp() . ' ' . $client->getClientVille() . ' FRANCE'), $etablissement);
+//            if ($result):
+//
+//                $volOiseau = $this->maps->distanceVolOiseau(explode(',', $etablissement->getEtablissementGps())[0], explode(',', $etablissement->getEtablissementGps())[1], $result['latitude'], $result['longitude']);
+//                $zone = floor($volOiseau / 10000) + 1;
+//                if ($zone > 6):
+//                    $zone = 6;
+//                endif;
+//
+//                $arrayPlace = array(
+//                    'placeClientId' => $client->getClientId(),
+//                    'placeEtablissementId' => $etablissement->getEtablissementId(),
+//                    'placeLat' => $result['latitude'],
+//                    'placeLon' => $result['longitude'],
+//                    'placeAdresse' => $result['adresse'],
+//                    'placeGoogleId' => $result['placeGoogleId'],
+//                    'placeDistance' => $result['distance'],
+//                    'placeDuree' => $result['duree'],
+//                    'placeZone' => $zone,
+//                    'placeVolOiseau' => $volOiseau
+//                );
+//
+//                $place = new Place($arrayPlace);
+//                $this->managerPlaces->ajouter($place);
+//            else:
+//                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
+//            endif;
 
             /* Evite les soucis de catégories fantômes */
-            if ($dossier->dossierCategorieId != 0 && $this->existCategorie($dossier->dossierCategorieId)):
-                $categorie = $dossier->dossierCategorieId;
-            else:
-                $categorie = null;
+            $categorie = null;
+            if ($dossier->dossierCategorieId != 0):
+                $categorieOrigin = $this->managerCategories->getCategorieByOriginId($dossier->dossierCategorieId);
+                if ($categorieOrigin):
+                    $categorie = $categorieOrigin->getCategorieId();
+                endif;
             endif;
 
             /* Etat des dossiers */
@@ -346,12 +541,12 @@ class Migration extends My_Controller {
             /* Creation d'une affaire */
             $arrayAffaire = array(
                 'affaireOriginId' => $dossier->dossierId,
-                'affaireEtablissementId' => $etablissement,
+                'affaireEtablissementId' => $etablissement->getEtablissementId(),
                 'affaireCreation' => $creation,
                 'affaireClientId' => $client->getClientId(),
                 'affaireCategorieId' => $categorie,
                 'affaireCommercialId' => $dossier->id_commercial,
-                'affairePlaceId' => $place ? $place->getPlaceId() : null,
+                'affairePlaceId' => !empty($place) ? $place->getPlaceId() : null,
                 'affaireDevis' => $dossier->devis,
                 'affairePrix' => $dossier->dossierPrix,
                 'affaireObjet' => $dossier->dossierObjet,
@@ -408,18 +603,20 @@ class Migration extends My_Controller {
       ALTER TABLE `chantiers` ADD FOREIGN KEY (`affairePlaceId`) REFERENCES `places`(`placeId`) ON DELETE SET NULL ON UPDATE RESTRICT;
 
      */
-    public function migrationChantiers() {
-        foreach ($this->db->select('*')->from('organibat_chantier')->where('dossier_id > ', 2457)->get()->result() as $chant):
+    public function migrationChantiers(Etablissement $etablissement) {
 
-            /* Recherche de l'affaire avec le originId du dossier du chantier */
-            $affaire = $this->managerAffaires->getAffaireByOriginId($chant->dossier_id);
-            if ($affaire):
+        $affaires = $this->managerAffaires->getAffairesByEtablissementId($etablissement->getEtablissementId());
+        foreach ($affaires as $affaire):
+
+            foreach ($this->db->select('*')->from('V1_chantier')->where('dossier_id', $affaire->getAffaireOriginId())->get()->result() as $chant):
 
                 /* Evite les soucis de catégories fantômes */
-                if ($chant->id_categorie != 0 && $this->existCategorie($chant->id_categorie)):
-                    $categorie = $chant->id_categorie;
-                else:
-                    $categorie = null;
+                $categorie = null;
+                if ($chant->id_categorie != 0):
+                    $categorieOrigin = $this->managerCategories->getCategorieByOriginId($chant->id_categorie);
+                    if ($categorieOrigin):
+                        $categorie = $categorieOrigin->getCategorieId();
+                    endif;
                 endif;
 
                 $dataChantier = array(
@@ -441,7 +638,10 @@ class Migration extends My_Controller {
                 );
                 $chantier = new Chantier($dataChantier);
                 $this->managerChantiers->ajouter($chantier);
-            endif;
+
+                $this->importCouts($chantier);
+
+            endforeach;
         endforeach;
     }
 
@@ -455,14 +655,8 @@ class Migration extends My_Controller {
      * Migration des couts
      * Copier la table Couts de la V1 puis lancer le script
      */
-    public function migrationCouts() {
-        foreach ($this->db->select('*')->from('organibat_cout')->where('coutChantierId >=', 3440)->get()->result() as $cout):
-
-            $chantier = $this->managerChantiers->getChantierByOriginId($cout->coutChantierId);
-            if (!$chantier):
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Impossible de trouver le chantier Origin ' . $cout->coutChantierId);
-                continue;
-            endif;
+    public function importCouts(Chantier $chantier) {
+        foreach ($this->db->select('*')->from('V1_cout')->where('coutChantierId', $chantier->getChantierOriginId())->get()->result() as $cout):
 
             switch ($cout->coutType):
                 case 0:
@@ -475,6 +669,8 @@ class Migration extends My_Controller {
                 case 3:
                     $type = 3;
                     break;
+                default:
+                    $type = 1;
             endswitch;
 
             $dataAchat = array(
@@ -491,9 +687,6 @@ class Migration extends My_Controller {
             $this->managerAchats->ajouter($achat);
 
         endforeach;
-        $this->db->query('DROP TABLE organibat_cout');
-
-        echo 'Migration des achats terminée';
     }
 
     /**

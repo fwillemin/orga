@@ -131,4 +131,12 @@ class Model_affaires extends MY_model {
         return $this->retourne($query, $type, self::classe, true);
     }
 
+    public function getAffairesByEtablissementId($etablissementId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where('affaireEtablissementId', $etablissementId)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
 }

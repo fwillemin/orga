@@ -9,6 +9,7 @@
 class RaisonSociale {
 
     protected $rsId;
+    protected $rsOriginId;
     protected $rsNom;
     protected $rsInscription;
     protected $rsMoisFiscal;
@@ -66,6 +67,14 @@ class RaisonSociale {
 
     function setRsCategorieNC($rsCategorieNC) {
         $this->rsCategorieNC = $rsCategorieNC;
+    }
+
+    function getRsOriginId() {
+        return $this->rsOriginId;
+    }
+
+    function setRsOriginId($rsOriginId) {
+        $this->rsOriginId = $rsOriginId;
     }
 
 }

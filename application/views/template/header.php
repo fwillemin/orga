@@ -48,14 +48,14 @@
                         <div class="nav navbar-nav">
                             <div class="nav-divider"></div>
                             <div class="nav-item">
-                                <a class="nav-link" href="#"  style="color: lightsteelblue; font-weight: bold; font-size:16px;">
+                                <a class="nav-link" href="<?= site_url('planning/'); ?>"  style="color: lightsteelblue; font-weight: bold; font-size:16px;">
                                     <i class="fas fa-calendar-alt"></i> Planning
                                 </a>
                             </div>
                             <div class="nav-divider"></div>
                             <div class="nav-item dropdown">
-                                <a class="dropdown-toggle collapsed" href="#menu_personels" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-file-signature"></i> Affaires</a>
-                                <div class="dropdown-menu col-xl-2 collapse animated" id="menu_personels" style="max-width: 280px;">
+                                <a class="dropdown-toggle collapsed" href="#menu_personnels" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-file-signature"></i> Affaires</a>
+                                <div class="dropdown-menu col-xl-2 collapse animated" id="menu_personnels" style="max-width: 280px;">
                                     <div class="dropdown-header">Gestion de vos affaires</div>
                                     <div class="dropdown-divider m-0"></div>
                                     <div class="dropdown-item">
@@ -144,6 +144,13 @@
                                                     <div class="col-12" style="min-height: 25px;">
                                                         <a href="<?= site_url('horaires/liste'); ?>" style="color: lightsteelblue;">
                                                             <div style="width:25px; float: left;"><i class="fas fa-clock"></i></div> Horaires
+                                                        </a>
+                                                    </div>
+                                                <?php endif; ?>
+                                                <?php if ($this->ion_auth->in_group(array(1))): ?>
+                                                    <div class="col-12" style="min-height: 25px;">
+                                                        <a href="<?= site_url('organibat/parametres'); ?>" style="color: lightsteelblue;">
+                                                            <div style="width:25px; float: left;"><i class="fas fa-cog"></i></div> Paramètres
                                                         </a>
                                                     </div>
                                                 <?php endif; ?>

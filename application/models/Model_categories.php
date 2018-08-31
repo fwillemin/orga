@@ -15,7 +15,8 @@ class Model_categories extends MY_model {
      */
     public function ajouter(Categorie $categorie) {
         $this->db
-                ->set('categorieRsId', $this->session->userdata('rsId'))
+                ->set('categorieOriginId', $categorie->getCategorieOriginId() ?: null)
+                ->set('categorieRsId', $this->session->userdata('rsId') ?: $categorie->getCategorieRsId())
                 ->set('categorieNom', $categorie->getCategorieNom())
                 ->insert($this->table);
         $categorie->setCategorieId($this->db->insert_id());
@@ -70,8 +71,15 @@ class Model_categories extends MY_model {
     public function getCategorieById($categorieId, $type = 'object') {
         $query = $this->db->select('*')
                 ->from($this->table)
-                //->where('categorieRsId', $this->session->userdata('rsId'))
                 ->where('categorieId', $categorieId)
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getCategorieByOriginId($categorieId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where('categorieOriginId', $categorieId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
     }
