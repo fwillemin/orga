@@ -64,7 +64,7 @@ $autoload['packages'] = array();
 
 $autoload['libraries'] = array('session', 'database', 'form_validation', 'email', 'ion_auth', 'own',
     'raisonSociale', 'etablissement', 'Utilisateur', 'Horaire', 'Personnel', 'Equipe', 'TauxHoraire', 'Client', 'Maps', 'Place',
-    'Affaire', 'Categorie', 'Chantier', 'Achat'
+    'Affaire', 'Categorie', 'Chantier', 'Achat', 'Parametre'
 );
 
 
@@ -156,5 +156,6 @@ $autoload['model'] = array(
     'Model_affaires' => 'managerAffaires',
     'Model_categories' => 'managerCategories',
     'Model_chantiers' => 'managerChantiers',
-    'Model_achats' => 'managerAchats'
+    'Model_achats' => 'managerAchats',
+    'Model_parametres' => 'managerParametres',
 );

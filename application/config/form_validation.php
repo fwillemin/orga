@@ -599,6 +599,29 @@ $config = array(
             'label' => 'Prix unitaire',
             'rules' => 'numeric'
         )
-    )
+    ),
+    /* Modification des parametres */
+    'modParametres' => array(
+        array(
+            'field' => 'nbSemainesAvant',
+            'label' => 'Nombre de semaines passées du planning',
+            'rules' => 'is_natural_no_zero|required'
+        ),
+        array(
+            'field' => 'nbSemainesApres',
+            'label' => 'Nombre de semaines futures du planning',
+            'rules' => 'is_natural_no_zero|required'
+        ),
+        array(
+            'field' => 'tranchePointage',
+            'label' => 'Tranche pointage',
+            'rules' => 'required|in_list[5,10,15,20,30]'
+        ),
+        array(
+            'field' => 'tailleAffectations',
+            'label' => 'Taille des affectations du planning',
+            'rules' => 'required|in_list[2,3]'
+        )
+    ),
 );
 ?>

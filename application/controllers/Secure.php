@@ -53,6 +53,7 @@ class Secure extends CI_Controller {
                             'rechAffaireEtat' => 2
                         )
                 );
+                $this->session->set_userdata('parametres', (array) $this->managerParametres->getParametres('array'));
 
                 echo json_encode(array('type' => 'success'));
             else :

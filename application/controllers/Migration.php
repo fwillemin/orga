@@ -46,7 +46,6 @@ class Migration extends My_Controller {
 
             $rs = $this->importRS($rsId);
             $etablissement = $this->importEtablissement($rs);
-            $this->db->set('parametreEtablissementId', $etablissement->getEtablissementId())->insert('parametres');
 
             /* Utilisateurs administratifs */
             $this->importUsers($etablissement);
@@ -107,6 +106,18 @@ class Migration extends My_Controller {
             );
             $etablissement = new Etablissement($arrayEta);
             $this->managerEtablissements->ajouter($etablissement);
+
+            /* Creation des paramètres de l'établissement */
+            $param = new Parametre(
+                    array(
+                'parametreEtablissementId' => $etablissement->getEtablissementId(),
+                'nbSemainesAvant' => 2,
+                'nbSemainesApres' => 2,
+                'tranchePointage' => 30,
+                'tailleAffectations' => 2
+                    )
+            );
+            $this->managerParametres->ajouter($param);
             return $etablissement;
         endif;
     }

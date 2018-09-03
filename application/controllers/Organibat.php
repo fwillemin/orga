@@ -50,4 +50,29 @@ class Organibat extends My_Controller {
         $this->load->view('template/content', $data);
     }
 
+    public function modParametres() {
+
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(1)))) :
+            redirect('organibat/board');
+            exit;
+        endif;
+        if (!$this->form_validation->run('modParametres')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $parametre = $this->managerParametres->getParametres();
+
+            $parametre->setNbSemainesAvant($this->input->post('nbSemainesAvant'));
+            $parametre->setNbSemainesApres($this->input->post('nbSemainesApres'));
+            $parametre->setTranchePointage($this->input->post('tranchePointage'));
+            $parametre->setTailleAffectations($this->input->post('tailleAffectations'));
+            $this->managerParametres->editer($parametre);
+
+            /* Mise à jour de la session */
+            $this->session->unset_userdata('parametres');
+            $this->session->set_userdata('parametres', (array) $this->managerParametres->getParametres('array'));
+
+            echo json_encode(array('type' => 'success'));
+        endif;
+    }
+
 }

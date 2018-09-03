@@ -13,6 +13,19 @@ class Planning extends My_Controller {
         if (!$this->ion_auth->logged_in()) :
             redirect('organibat/board');
         endif;
+
+        /* Définition des variables de planning */
+        $this->nbSemainesAvant = $this->session->userdata('parametres')['nbSemainesAvant'];
+        $this->nbSemainesApres = $this->session->userdata('parametres')['nbSemainesApres'];
+        switch ($this->session->userdata('parametres')['tailleAffectations']):
+            case 1:
+            case 2:
+                $this->hauteur = 30;
+                break;
+            case 3:
+                $this->hauteur = 50;
+                break;
+        endswitch;
     }
 
     public function index($debut = null) {

@@ -26,6 +26,22 @@ $(document).ready(function () {
             $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
         }, 0);
     });
+    
+    $('#formModParametres').on('submit', function (e) {
+        e.preventDefault();
+        var donnees = $(this).serialize();
+        console.log('pass');
+        $.post(chemin + 'organibat/modParametres', donnees, function (retour) {
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    $.toaster({priority: 'success', title: '<strong><i class="fas fa-check"></i> OK</strong>', message: '<br>' + 'Paramètres modifiés'});
+                    break;
+            }
+        }, 'json');
+    });
 
 
 //    $('.organisable').sortable({
