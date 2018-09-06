@@ -91,8 +91,7 @@
 
             <div class = "tab-pane" id = "achatsChantier" style = "padding:10px;">
 
-                Budget achats de ce chantier : <? = number_format($chantier->getChantierBudgetAchats(), 2, ',', ' ') . '€';
-                ?>
+                Budget achats de ce chantier : <?= number_format($chantier->getChantierBudgetAchats(), 2, ',', ' ') . '€'; ?>
                 <br>Budget prévu : <?= number_format($chantier->getChantierBudgetPrevu(), 2, ',', ' ') . '€'; ?>
                 <br>Budget consommé : <?= number_format($chantier->getChantierBudgetConsomme(), 2, ',', ' ') . '€'; ?>
                 <hr>
@@ -214,7 +213,7 @@
                                 endif;
 
                                 echo '<tr data-achatid="' . $a->getAchatId() . '"' . $style . '>'
-                                . '<td>' . $this->own->dateFrancais($a->getAchatDate(), 'DMA') . '</td>'
+                                . '<td>' . $this->cal->dateFrancais($a->getAchatDate(), 'DMA') . '</td>'
                                 . '<td>' . $a->getAchatDescription() . '</td>'
                                 . '<td style=" text-align: right; border-left: 1px solid black;">' . $a->getAchatQtePrevisionnel() . '</td>'
                                 . '<td style=" text-align: right;">' . $a->getAchatPrixPrevisionnel() . '</td>'

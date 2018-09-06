@@ -64,7 +64,7 @@
                                 else:
                                     $style = 'class="ligneClikable"';
                                 endif;
-                                echo '<tr data-tauxhoraireid="' . $th->getTauxHoraireId() . '"' . $style . '><td>' . $this->own->dateFrancais($th->getTauxHoraireDate()) . '</td>'
+                                echo '<tr data-tauxhoraireid="' . $th->getTauxHoraireId() . '"' . $style . '><td>' . $this->cal->dateFrancais($th->getTauxHoraireDate()) . '</td>'
                                 . '<td style="text-align: right;">' . $th->getTauxHoraire() . '</td></tr>';
                             endforeach;
                         endif;

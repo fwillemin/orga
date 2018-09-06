@@ -34,7 +34,7 @@
                         . '<td>' . character_limiter($affaire->getAffaireClient()->getClientNom(), 30) . '</td>'
                         . '<td>' . character_limiter($affaire->getAffaireObjet(), 40) . '</td>'
                         . '<td style="color: slategray;">' . $affaire->getAffaireCategorie() . '</td>'
-                        . '<td style="text-align: center;">' . $this->own->dateFrancais($affaire->getAffaireCreation(), 'Ma') . '</td>'
+                        . '<td style="text-align: center;">' . $this->cal->dateFrancais($affaire->getAffaireCreation(), 'Ma') . '</td>'
                         . '<td style="text-align: center;">' . $affaire->getAffaireEtatHtml() . '</td>'
                         . '<td style="text-align: right;">' . number_format($affaire->getAffairePrix(), 2, ',', ' ') . '</td>'
                         . '</tr>';

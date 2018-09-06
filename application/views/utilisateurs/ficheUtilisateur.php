@@ -17,7 +17,7 @@
         <div class="row">
             <div class="col-12 col-sm-6">
                 Login : <strong><?= $utilisateur->getUsername(); ?></strong>
-                <br>Dernière connexion le <?= $this->own->dateFrancais($utilisateur->getLast_login()); ?>
+                <br>Dernière connexion le <?= $this->cal->dateFrancais($utilisateur->getLast_login()); ?>
                 <br>
                 <br>
                 <div id="containerModUtilisateur" class="inPageForm" style="display: none;">

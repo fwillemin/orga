@@ -25,7 +25,7 @@ class Model_personnels extends MY_model {
                 ->set('personnelMessage', $personnel->getPersonnelMessage())
                 ->set('personnelHoraireId', $personnel->getPersonnelHoraireId())
                 ->set('personnelEquipeId', $personnel->getPersonnelEquipeId())
-                ->set('personnelActif', 1)
+                ->set('personnelActif', $personnel->getPersonnelActif())
                 ->insert($this->table);
         $personnel->setPersonnelId($this->db->insert_id());
     }
@@ -78,6 +78,16 @@ class Model_personnels extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function getPersonnelsPlanning($personnelsPlanning = array(), $tri = 'p.personnelEquipeId, p.personnelNom, p.personnelPrenom ASC', $type = 'object') {
+        $query = $this->db->select('*')
+                ->from('personnels p')
+                ->where('p.personnelEtablissementId', $this->session->userdata('etablissementId'))
+                ->where_in('p.personnelId', $personnelsPlanning)
+                ->order_by($tri)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
     /**
      * Retourne un objet de la classe Personnel correspondant à l'id
      * @param integer $personnelId ID de l'raisonSociale
@@ -88,6 +98,14 @@ class Model_personnels extends MY_model {
                 ->from($this->table)
                 ->where('personnelEtablissementId', $this->session->userdata('etablissementId'))
                 ->where('personnelId', $personnelId)
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getPersonnelByIdMigration($personnelId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where('personnelOriginId', $personnelId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
     }

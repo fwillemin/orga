@@ -20,213 +20,219 @@ class Planning extends My_Controller {
         switch ($this->session->userdata('parametres')['tailleAffectations']):
             case 1:
             case 2:
-                $this->hauteur = 30;
+                $this->hauteur = 40;
+                $this->largeur = 30;
                 break;
             case 3:
                 $this->hauteur = 50;
+                $this->largeur = 38;
                 break;
         endswitch;
     }
 
-    public function index($debut = null) {
+    public function modAffichageTermines() {
+        if (!$this->input->post('etat') || $this->input->post('etat') == 0):
+            $this->session->unset_userdata('inclureTermines');
+        else:
+            $this->session->set_userdata('inclureTermines', 1);
+        endif;
+        echo json_encode(array('type' => 'success'));
+    }
+
+    /**
+     * Affiche le planning
+     * @param String $debut Format YYYY-MM-DD
+     */
+    public function base($debut = null) {
 
         /* Recherche du premier jour du planning en excluant le dossier divers */
         if ($debut):
-            $premierJour = $this->organibat->mktimeFromInputDate($debut);
+            $this->session->set_userdata('dateFocus', $debut);
+        elseif ($this->session->userdata('dateFocus', $debut)):
+            $debut = $this->session->userdata('dateFocus', $debut);
         else:
-            $premierJour = time() - (15 * 86400);
+            $debut = date('Y-m-d');
+            $this->session->set_userdata('dateFocus', $debut);
         endif;
-        $premierJourPlanning = ($premierJour - (mdate('%N', $premierJour) - 1) * 86400) - (28 * 86400); // 1 mois avant le premier jour de la semaine en cours
+        $premierJour = $this->own->mktimeFromInputDate($debut);
+        $premierJourPlanning = $this->cal->premierJourSemaine($premierJour, $this->nbSemainesAvant);
 
-        $where_affect_start = array();
-        $where_affect = array();
+        /* Le dernier jour du planning est le premier jour auquel on additionne
+         * les semaines avant et apres la dateFocus et la derniere semaine en cours
+         */
+        $dernierJourPlanning = $premierJourPlanning + (1 + $this->nbSemainesAvant + $this->nbSemainesApres) * 604800;
 
-        /* parametrage des requetes en fonction de la selection de l'état DU DOSSIER */
-        switch ($this->session->userdata('dossierEtat')):
-            case 'Encours':
-                $whereAffect = array('d.dossierEtat' => 'Encours');
-                $whereChantier = array('d.dossierEtat' => 'Encours');
-                $whereDossier = array('d.dossierEtat' => 'Encours');
-                break;
-            case 'Termine':
-                $whereAffect = array('d.dossierEtat' => 'Termine');
-                $whereChantier = array('d.dossierEtat' => 'Termine');
-                $whereDossier = array('d.dossierEtat' => 'Termine');
-                break;
-            default:
-                $whereAffect = array('d.dossierEtat <>' => 'Devis');
-                $whereChantier = array('d.dossierEtat <>' => 'Devis');
-                $whereDossier = array('d.dossierEtat <>' => 'Devis');
-                break;
-        endswitch;
-
-        $whereAffect['a.fin >='] = $premierJourPlanning;
 
         /* Récuperation des données */
+        $personnelsActifs = $this->managerPersonnels->getPersonnels(array('personnelActif' => 1));
+        foreach ($personnelsActifs as $persoActif):
+            $listePersonnel[] = $persoActif->getPersonnelId();
+        endforeach;
+
         /* Affectations */
-        $affectations = $this->managerAffectations->liste($whereAffect, 'a.debut ASC');
-        /* on liste le personnel qui est utilisé dans ces affectations */
-        $personnelListe = array();
-        $affectationListe = array();
-        $heures = array();
-
-        /* On parcours les affectations pour créer les listes de personnels  et modifier le debut
-         * du planning si une affectation commence avant.
+        $affectations = $this->managerAffectations->getAffectationsPlanning($premierJourPlanning, $dernierJourPlanning, ($this->session->userdata('inclureTermines') ? 2 : 1), 'a.affectationDebut ASC');
+        /* On détermine un nouveau jour de début de planning avec le début le plus ancien des affectations selectionnées.
+         * Pas de semaine avant cette date, le retour dans le passé est pris en compte dans la selection des affectations
          */
-        $newPremierJour = $premierJourPlanning;
-        if (!empty($affectations)):
-            /* Creation des listes */
-            foreach ($affectations AS $a):
+        $listeAffairesClotureesPlanning = array(); /* Liste des ID des affaires cloturées ayant une affectation dans le panning généré */
+        if ($affectations):
+            /* Initialisations */
+            $dernier = $dernierJourPlanning;
 
-                if ($a->getDebut() < $newPremierJour):
-                    $newPremierJour = $a->getDebut();
+            /* Permier et dernier jours du planning */
+            $premierJourPlanning = $this->cal->premierJourSemaine($affectations[0]->getAffectationDebut(), 0);
+
+            foreach ($affectations as $affectation):
+
+                /* Dernier jour du planning */
+                if ($affectation->getAffectationFin() > $dernier):
+                    $dernier = $affectation->getAffectationFin();
+                endif;
+                /* Liste du personnel non actif mais présent dans des affectations de la période, ajouté aux personnels actifs. */
+                if (!in_array($affectation->getAffectationPersonnelId(), $listePersonnel)):
+                    $listePersonnel[] = $affectation->getAffectationPersonnelId();
                 endif;
 
-                $affectationListe[] = $a->getId(); /* la liste des id d'affectation va servir à rechercher uniquement les heures necessaires */
-                if ($a->getAffectationDossierId() != $this->session->userdata('divers') && !in_array($a->getId_personnel(), $personnelListe)):
-                    $personnelListe[] = $a->getId_personnel();
+                /* Recupération des affaires cloturées apparaissant sur la planning */
+                if ($this->session->userdata('inclureTermines')):
+                    $affectation->hydrateOrigines();
+                    if ($affectation->getAffectationAffaire()->getAffaireEtat() == 3 && !in_array($affectation->getAffectationAffaire()->getAffaireId(), $listeAffairesClotureesPlanning)):
+                        $listeAffairesClotureesPlanning[] = $affectation->getAffectationAffaire()->getAffaireId();
+                    endif;
                 endif;
+
             endforeach;
+            unset($affectation);
 
-            /* Nouvelle date de début de planning ajustée aux affectations */
-            $premierJourPlanning = ($newPremierJour - (mdate('%N', $newPremierJour) - 1) * 86400); // 1 mois avant le premier jour de la semaine en cours
-            /* Recherche des heures */
-            $heures = $this->managerHeures->listeInArrayAffectation($affectationListe);
+            /* Mise à jour des variables du planning */
+            $dernierJourPlanning = $this->cal->dernierJourSemaine($dernier, $this->nbSemainesApres);
+
+        endif;
+
+        /* Affaires du planning (toutes les non cloturées et les cloturées ayant une affectation sur le planning généré) */
+        $affairesPlanning = $this->managerAffaires->getAffairesPlanning($listeAffairesClotureesPlanning);
+        if (!empty($affairesPlanning)):
+            foreach ($affairesPlanning as $affaire):
+                $affaire->hydrateChantiers();
+                $affaire->hydrateClient();
+            endforeach;
+        endif;
+
+        /* Personnels du planning (Actifs et les inactifs associés à une affectation du planning généré) */
+        $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($listePersonnel);
+        if (!empty($personnelsPlanning)):
+            foreach ($personnelsPlanning as $personnel):
+                $personnel->hydrateEquipe();
+            endforeach;
+        endif;
+
+        if ($affectations):
+            foreach ($affectations as $affectation):
+                $affectation->getHTML($premierJourPlanning, $personnelsPlanning);
+            endforeach;
+            unset($affectation);
         endif;
 
         /* Passage du premier jour du planning en variable de session */
-        $this->session->set_userdata('planningPremierJour', $premierJourPlanning);
-
-        /* Recherche du personnel Forcé Actif */
-        $personnelsForceActif = $this->managerPersonnels->liste(array('actif' => 1));
-        if (!empty($personnelsForceActif)):
-            foreach ($personnelsForceActif as $pfa):
-                if (!in_array($pfa->getId(), $personnelListe)):
-                    $personnelListe[] = $pfa->getId();
-                endif;
-            endforeach;
-        endif;
+        $this->session->set_userdata('premierJourPlanning', $premierJourPlanning);
+        $this->session->set_userdata('dernierJourPlanning', $dernierJourPlanning);
 
         /* Recherche du personnel Forcé Inactif */
-        $personnelsForceInactif = $this->managerPersonnels->liste(array('actif' => 0));
-        /* Si on est sur le planning des Terminés ou le Full, on ne retire pas les forcés Inactifs pour pouvoir afficher l'hotorique */
-        if (!empty($personnelsForceInactif) && $this->session->userdata('dossierEtat') == 'Encours'):
-            foreach ($personnelsForceInactif as $pfi):
-                if (in_array($pfi->getId(), $personnelListe)):
-                    /* On retire l'id su personnel dans la liste */
-                    $key = array_search($pfi->getId(), $personnelListe);
-                    unset($personnelListe[$key]);
-                endif;
-            endforeach;
-        endif;
-
-        if (!empty($personnelListe)):
-            /* passage de la liste du personnel qui sera affiché sur le planning en session
-             * pour pouvoir la réutiliser lors de l'ajout/modification des affectations, drag et resize
-             */
-            $this->session->set_userdata('listePersonnelPlanning', $personnelListe);
-            $personnels = $this->managerPersonnels->listingInArray($personnelListe);
-        else:
-            $personnels = array();
-        endif;
-
-        /* recherche du dernier jour du planning */
-        if (!empty($affectations)):
-            $derniereAffectation = end($affectations)->getFin() + 15 * 86400;
-        else:
-            $derniereAffectation = time() + 15 * 86400;
-        endif;
+//        $personnelsForceInactif = $this->managerPersonnels->liste(array('actif' => 0));
+//        /* Si on est sur le planning des Terminés ou le Full, on ne retire pas les forcés Inactifs pour pouvoir afficher l'hotorique */
+//        if (!empty($personnelsForceInactif) && $this->session->userdata('dossierEtat') == 'Encours'):
+//            foreach ($personnelsForceInactif as $pfi):
+//                if (in_array($pfi->getId(), $personnelListe)):
+//                    /* On retire l'id su personnel dans la liste */
+//                    $key = array_search($pfi->getId(), $personnelListe);
+//                    unset($personnelListe[$key]);
+//                endif;
+//            endforeach;
+//        endif;
 
         /* recherche des indisponibilités pour cette periode */
-        $indisponibilites = $this->managerIndisponibilites->liste(array('fin >=' => $premierJourPlanning, 'debut <=' => $derniereAffectation), 'i.fin ASC');
+        //$indisponibilites = $this->managerIndisponibilites->liste(array('fin >=' => $premierJourPlanning, 'debut <=' => $derniereAffectation), 'i.fin ASC');
 
         /* les chantiers */
-        $chantiers = $this->managerChantiers->liste($whereChantier);
-        $listeChantiersPlanning = array();
+        $chantiers = $this->managerChantiers->getChantiers(array('chantierEtat' => 1));
         if (!empty($chantiers)):
-            foreach ($chantiers as $c):
-                $listeChantiersPlanning[] = $c->getId();
+            foreach ($chantiers as $chantier):
+                $chantier->hydrateClient();
             endforeach;
+            unset($chantier);
         endif;
-
-        /* les dossiers */
-        $dossiers = $this->managerDossiers->liste($whereDossier, 'd.client ASC');
-        if (!empty($dossiers)):
-            foreach ($dossiers as $d):
-                $d->hydrateChantiers();
-            endforeach;
-        endif;
-
-
 
         /* les livraisons de ces chantiers */
-        $livraisons = $this->managerLivraisons->listeInArrayChantiers($listeChantiersPlanning);
+//        $livraisons = $this->managerLivraisons->listeInArrayChantiers($listeChantiersPlanning);
         /* le planning va s'afficher sur N semaines */
-        $n = ceil(($derniereAffectation - $premierJourPlanning) / 604800);
+        $n = ceil(($dernierJourPlanning - $premierJourPlanning) / 604800);
 
 
         //calcul de stats ----------------------------------------------------------------------------------------------------------------------
         //carnet de commande = uniquement les encours
-        $chantierCarnet = $this->managerChantiers->liste(array('c.etat' => 'Encours'));
-        $carnet = 0; /* Nombre d'heure de travail à venir */
-        $ca = 0; /* Chiffre d'affaire à venir des chantiers en Encours */
-        if (!empty($chantierCarnet)):
-            foreach ($chantierCarnet as $c):
-                $c->hydrateHeures();
-                // on additionne le Ca
-                $ca += $c->getPrix();
-                //on comptabilise les heures déjà saisies sur ce Chantier
-                $temp_deduction = 0;
-                if (!empty($c->getChantierHeures())):
-                    foreach ($c->getChantierHeures() as $h):
-                        if ($h->getHeureChantierId() == $c->getId())
-                            $temp_deduction += $h->getNb_heure();
-                    endforeach;
-                endif;
-                //on deduit les heures réalisées du chantier (0 si plus d'heures que prevues à l'origine)
-                if ($temp_deduction <= $c->getNb_heures_prev()):
-                    $carnet += ($c->getNb_heures_prev() - $temp_deduction);
-                endif;
-            endforeach;
-        endif;
-
-        /* On recherche les chantiers terminés dans l'année fiscale */
-        $realise = 0;
-        $chantiersTermines = $this->managerChantiers->liste(array('c.etat' => 'Termine', 'c.cloture >' => $this->debutFiscale));
-        if (!empty($chantiersTermines)):
-            foreach ($chantiersTermines as $c):
-                $realise += $c->getPrix();
-            endforeach;
-        endif;
+//        $chantierCarnet = $this->managerChantiers->liste(array('c.etat' => 'Encours'));
+//        $carnet = 0; /* Nombre d'heure de travail à venir */
+//        $ca = 0; /* Chiffre d'affaire à venir des chantiers en Encours */
+//        if (!empty($chantierCarnet)):
+//            foreach ($chantierCarnet as $c):
+//                $c->hydrateHeures();
+//                // on additionne le Ca
+//                $ca += $c->getPrix();
+//                //on comptabilise les heures déjà saisies sur ce Chantier
+//                $temp_deduction = 0;
+//                if (!empty($c->getChantierHeures())):
+//                    foreach ($c->getChantierHeures() as $h):
+//                        if ($h->getHeureChantierId() == $c->getId())
+//                            $temp_deduction += $h->getNb_heure();
+//                    endforeach;
+//                endif;
+//                //on deduit les heures réalisées du chantier (0 si plus d'heures que prevues à l'origine)
+//                if ($temp_deduction <= $c->getNb_heures_prev()):
+//                    $carnet += ($c->getNb_heures_prev() - $temp_deduction);
+//                endif;
+//            endforeach;
+//        endif;
+//
+//        /* On recherche les chantiers terminés dans l'année fiscale */
+//        $realise = 0;
+//        $chantiersTermines = $this->managerChantiers->liste(array('c.etat' => 'Termine', 'c.cloture >' => $this->debutFiscale));
+//        if (!empty($chantiersTermines)):
+//            foreach ($chantiersTermines as $c):
+//                $realise += $c->getPrix();
+//            endforeach;
+//        endif;
 
         $data = array(
-            'map' => '',
             'section' => 'planning',
-            'hauteur' => self::HAUTEUR,
-            'largeur' => self::LARGEUR,
-            'today' => floor((time() - $premierJourPlanning) / 86400) * (self::LARGEUR * 2),
-            'msg' => $this->m_etablissement->get_one($this->session->userdata('etablissement'))->msg,
-            'liste_personnel' => $personnels,
-            'liste_chantier' => $chantiers,
-            'liste_dossier' => $dossiers, /* liste des dossiers utilisée pour le slide gauche */
-            'liste_affectation' => $affectations,
-            'liste_heure' => $heures,
-            'listeLivraison' => $livraisons,
-            'listeFournisseurs' => $this->managerFournisseurs->liste(),
-            'indisponibilite' => $indisponibilites,
-            'premier_jour' => $premierJourPlanning,
-            'dernier_jour' => $derniereAffectation,
-            'periodePrecedente' => date('Y-m-d', $premierJourPlanning - 7776000),
-            'nb_semaine_planning' => $n,
-            'carnet' => $carnet,
-            'ca' => $ca,
-            'realise' => $realise,
-            'nbChantiersEncours' => count($chantierCarnet),
-            'nbChantiersTermines' => count($chantiersTermines),
-            'analyseActivite' => $this->analyseActivite(),
+            'hauteur' => $this->hauteur,
+            'largeur' => $this->largeur,
+            'today' => floor((time() - $premierJourPlanning) / 86400) * ($this->largeur * 2),
+            'msg' => $this->nbSemainesApres = $this->session->userdata('parametres')['messageEtablissement'],
+            /* Affaires & chantiers */
+            'affairesPlanning' => $affairesPlanning,
+            /* Personnels */
+            'personnelsActifs' => $personnelsActifs, /* Pour la sélection dans le formulaire d'ajout d'affectations */
+            'personnelsPlanning' => $personnelsPlanning, /* Personnels affichés sur le planning */
+            //'indisponibilite' => $indisponibilites,
+            //'liste_chantier' => $chantiers,
+            'listeAffectations' => $affectations,
+            //'liste_heure' => $heures,
+            //'listeLivraison' => $livraisons,
+            //'listeFournisseurs' => $this->managerFournisseurs->liste(),
+            'dateFocus' => $debut, /* Date à partir de laquelle tout est calculé */
+            'premierJourPlanning' => $premierJourPlanning,
+            'dernierJourPlanning' => $dernierJourPlanning,
+            //'periodePrecedente' => date('Y-m-d', $premierJourPlanning - 7776000),
+            'nbSemainesPlanning' => $n,
+            //'carnet' => $carnet,
+            //'ca' => $ca,
+            //'realise' => $realise,
+            //'nbChantiersEncours' => count($chantierCarnet),
+            //'nbChantiersTermines' => count($chantiersTermines),
+            //'analyseActivite' => $this->analyseActivite(),
             'title' => $this->session->userdata('rs') . '|Planning',
             'description' => 'Planning de votre activité',
-            'content' => $this->view_folder . __FUNCTION__
+            'content' => $this->viewFolder . __FUNCTION__
         );
         $this->load->view('template/content', $data);
     }

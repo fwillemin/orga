@@ -89,6 +89,30 @@ class Model_affaires extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function getAffairesPlanning($affairesCloturees = array(), $tri = 'c.ClientNom ASC', $type = 'object') {
+        if (!empty($affairesCloturees)):
+            $query = $this->db->select('*')
+                    ->from('affaires a')
+                    ->join('clients c', 'c.clientId = a.affaireClientId', 'left')
+                    ->where('a.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                    ->group_start()
+                    ->where('a.affaireEtat', 2)
+                    ->or_where_in('a.affaireId', $affairesCloturees)
+                    ->group_end()
+                    ->order_by($tri)
+                    ->get();
+        else:
+            $query = $this->db->select('*')
+                    ->from('affaires a')
+                    ->join('clients c', 'c.clientId = a.affaireClientId', 'left')
+                    ->where('a.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                    ->where('a.affaireEtat', 2)
+                    ->order_by($tri)
+                    ->get();
+        endif;
+        return $this->retourne($query, $type, self::classe);
+    }
+
     /**
      * Retourne un objet de la classe Affaire correspondant à l'id
      * @param integer $affaireId ID de l'raisonSociale

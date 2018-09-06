@@ -91,4 +91,12 @@ class Model_clients extends MY_model {
         return $this->retourne($query, $type, self::classe, true);
     }
 
+    public function getClientByIdMigration($clientId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where('clientId', $clientId)
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
 }

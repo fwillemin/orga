@@ -16,6 +16,7 @@
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-colorpicker.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-select.min.css'); ?>" >
+        <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-datepicker3.min.css'); ?>" >
 
 
         <link rel="stylesheet" href="<?= base_url('assets/MegaNavbarBS4/assets/css/MegaNavbarBS4.css'); ?>">
@@ -48,7 +49,7 @@
                         <div class="nav navbar-nav">
                             <div class="nav-divider"></div>
                             <div class="nav-item">
-                                <a class="nav-link" href="<?= site_url('planning/'); ?>"  style="color: lightsteelblue; font-weight: bold; font-size:16px;">
+                                <a class="nav-link" href="<?= site_url('planning/base'); ?>"  style="color: lightsteelblue; font-weight: bold; font-size:16px;">
                                     <i class="fas fa-calendar-alt"></i> Planning
                                 </a>
                             </div>
@@ -113,7 +114,7 @@
                                             <div class="row" style="background: #000;">
                                                 <div class="col p-2">
                                                     <h2>Bonjour <?= $this->session->userdata('utilisateurPrenom'); ?>,</h2>
-                                                    <small class="form-text text-muted">Dernière connexion le <?= $this->own->dateFrancais($this->session->userdata('old_last_login')); ?></small>
+                                                    <small class="form-text text-muted">Dernière connexion le <?= $this->cal->dateFrancais($this->session->userdata('old_last_login')); ?></small>
                                                 </div>
                                             </div>
                                         </div>

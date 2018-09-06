@@ -75,9 +75,9 @@
                         <br>Tarif : <?= number_format($affaire->getAffairePrix(), 2, ',', ' ') . '€ HT'; ?>
                         <br>Liée au devis : <?= $affaire->getAffaireDevis(); ?>
                         <hr>
-                        Signée le <?= $affaire->getAffaireDateSignature() ? $this->own->dateFrancais($affaire->getAffaireDateSignature()) : '<small class="light">--</small>'; ?>
+                        Signée le <?= $affaire->getAffaireDateSignature() ? $this->cal->dateFrancais($affaire->getAffaireDateSignature()) : '<small class="light">--</small>'; ?>
                         <br>Etat : <?= $affaire->getAffaireEtatHtml(); ?>
-                        <br>Clôturée le <?= $affaire->getAffaireDateCloture() ? $this->own->dateFrancais($affaire->getAffaireDateCloture()) : '<small class="light">--</small>'; ?>
+                        <br>Clôturée le <?= $affaire->getAffaireDateCloture() ? $this->cal->dateFrancais($affaire->getAffaireDateCloture()) : '<small class="light">--</small>'; ?>
                         <hr>
                         <?= nl2br($affaire->getAffaireRemarque()); ?>
                     </div>

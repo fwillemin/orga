@@ -15,14 +15,20 @@ class Model_affectations extends MY_model {
      */
     public function ajouter(Affectation $affectation) {
         $this->db
-                ->set('affectationDossierId', $affectation->getAffectationDossierId())
-                ->set('affectationAffaireId', $affectation->getAffectationAffaireId())
-                ->set('affectationType', $affectation->getAffectationType())
-                ->set('affectationDate', $affectation->getAffectationDate())
-                ->set('affectationIntervenant', $affectation->getAffectationIntervenant())
-                ->set('affectationPosition', $affectation->getAffectationPosition())
-                ->set('affectationCommentaire', $affectation->getAffectationCommentaire())
+                ->set('affectationOriginId', $affectation->getAffectationOriginId())
+                ->set('affectationChantierId', $affectation->getAffectationChantierId())
+                ->set('affectationPersonnelId', $affectation->getAffectationPersonnelId())
+                ->set('affectationPlaceId', $affectation->getAffectationPlaceId())
+                ->set('affectationNbDemi', $affectation->getAffectationNbDemi())
+                ->set('affectationDebut', $affectation->getAffectationDebut())
+                ->set('affectationDebutMoment', $affectation->getAffectationDebutMoment())
+                ->set('affectationFin', $affectation->getAffectationFin())
+                ->set('affectationFinMoment', $affectation->getAffectationFinMoment())
+                ->set('affectationCases', $affectation->getAffectationCases())
                 ->set('affectationEtat', $affectation->getAffectationEtat())
+                ->set('affectationCommentaire', $affectation->getAffectationCommentaire())
+                ->set('affectationType', $affectation->getAffectationType())
+                ->set('affectationAffichage', $affectation->getAffectationAffichage())
                 ->insert($this->table);
         $affectation->setAffectationId($this->db->insert_id());
     }
@@ -34,14 +40,20 @@ class Model_affectations extends MY_model {
      */
     public function editer(Affectation $affectation) {
         $this->db
-                ->set('affectationDossierId', $affectation->getAffectationDossierId())
-                ->set('affectationAffaireId', $affectation->getAffectationAffaireId())
-                ->set('affectationType', $affectation->getAffectationType())
-                ->set('affectationDate', $affectation->getAffectationDate())
-                ->set('affectationIntervenant', $affectation->getAffectationIntervenant())
-                ->set('affectationPosition', $affectation->getAffectationPosition())
-                ->set('affectationCommentaire', $affectation->getAffectationCommentaire())
+                ->set('affectationOriginId', $affectation->getAffectationOriginId())
+                ->set('affectationChantierId', $affectation->getAffectationChantierId())
+                ->set('affectationPersonnelId', $affectation->getAffectationPersonnelId())
+                ->set('affectationPlaceId', $affectation->getAffectationPlaceId())
+                ->set('affectationNbDemi', $affectation->getAffectationNbDemi())
+                ->set('affectationDebut', $affectation->getAffectationDebut())
+                ->set('affectationDebutMoment', $affectation->getAffectationDebutMoment())
+                ->set('affectationFin', $affectation->getAffectationFin())
+                ->set('affectationFinMoment', $affectation->getAffectationFinMoment())
+                ->set('affectationCases', $affectation->getAffectationCases())
                 ->set('affectationEtat', $affectation->getAffectationEtat())
+                ->set('affectationCommentaire', $affectation->getAffectationCommentaire())
+                ->set('affectationType', $affectation->getAffectationType())
+                ->set('affectationAffichage', $affectation->getAffectationAffichage())
                 ->where('affectationId', $affectation->getAffectationId())
                 ->update($this->table);
         return $this->db->affected_rows();
@@ -65,9 +77,12 @@ class Model_affectations extends MY_model {
      * @param array $tri Critères de tri des affectations
      * @return array Liste d'objets de la classe Affectation
      */
-    public function liste($where = array(), $tri = 'affectationDate, affectationPosition ASC', $type = 'object') {
-        $query = $this->db->select('a.*')
+    public function getAffectations($where = array(), $tri = 'affectationDebutASC', $type = 'object') {
+        $query = $this->db->select('a.*, c.chantierEtat AS affectationChantierEtat')
                 ->from('affectations a')
+                ->join('chantiers c', 'c.chantierId = a.affectationChantierId', 'left')
+                ->join('affaires d', 'd.affaireId = c.chantierAffaireId', 'left')
+                ->where('d.affaireEtablissementId', $this->session->userdata('etablissementId'))
                 ->where($where)
                 ->order_by($tri)
                 ->get();
@@ -80,25 +95,26 @@ class Model_affectations extends MY_model {
      * @return \Affectation|boolean
      */
     public function getAffectationById($affectationId, $type = 'object') {
-        $query = $this->db->select('a.*')
+        $query = $this->db->select('a.*, c.chantierEtat AS affectationChantierEtat')
                 ->from('affectations a')
-                ->where(array('affectationId' => intval($affectationId)))
+                ->join('chantiers c', 'c.chantierId = a.affectationChantierId', 'left')
+                ->join('affaires d', 'd.affaireId = c.chantierAffaireId', 'left')
+                ->where('d.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where(array('a.affectationId' => $affectationId))
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
     }
 
-    /**
-     * Retourne la position d'une nouvelle affectation pour un type et une date donnée
-     * @param int Type
-     * @param int $date Date demandée
-     * @return int Position libre dans le planning
-     */
-    public function getNewPosition($type, $date) {
-
-        $query = $this->db->select('*')->from($this->table)
-                ->where(array('affectationType' => $type, 'affectationDate' => $date))
+    public function getAffectationsPlanning($premierJour, $dernierJour, $etat = 1, $tri = 'affectationDebutASC', $type = 'object') {
+        $query = $this->db->select('a.*, c.chantierEtat AS affectationChantierEtat')
+                ->from('affectations a')
+                ->join('chantiers c', 'c.chantierId = a.affectationChantierId', 'left')
+                ->join('affaires d', 'd.affaireId = c.chantierAffaireId', 'left')
+                ->where('d.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where(array('a.affectationdebut <=' => $dernierJour, 'a.affectationFin >=' => $premierJour, 'c.chantierEtat <=' => $etat))
+                ->order_by($tri)
                 ->get();
-        return $query->num_rows() + 1;
+        return $this->retourne($query, $type, self::classe);
     }
 
 }

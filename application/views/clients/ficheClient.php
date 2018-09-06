@@ -100,7 +100,7 @@
                         if (!empty($client->getClientAffaires())):
                             foreach ($client->getClientAffaires() as $affaire):
                                 echo '<tr data-affaireid="' . $affaire->getAffaireId() . '">'
-                                . '<td>' . $this->own->dateFrancais($affaire->getAffaireDateSignature(), 'DMA') . '</td>'
+                                . '<td>' . $this->cal->dateFrancais($affaire->getAffaireDateSignature(), 'DMA') . '</td>'
                                 . '<td>' . $affaire->getAffaireObjet() . '</td>'
                                 . '<td style="text-align: right;">' . $affaire->getAffairePrix() . '€</td>'
                                 . '<td style="text-align: center;">' . $affaire->getAffaireEtatHtml() . '</td>'

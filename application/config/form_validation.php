@@ -623,5 +623,76 @@ $config = array(
             'rules' => 'required|in_list[2,3]'
         )
     ),
+    /* get Affectation */
+    'getAffectation' => array(
+        array(
+            'field' => 'affectationId',
+            'label' => 'ID affectation',
+            'rules' => 'required|callback_existAffectation'
+        )
+    ),
+    /* Add Affectation */
+    'addAffectation' => array(
+        array(
+            'field' => 'addAffectationId',
+            'label' => 'ID Affectation',
+            'rules' => 'callback_existAffectation'
+        ),
+        array(
+            'field' => 'addAffectationChantierId',
+            'label' => 'ID Chantier',
+            'rules' => 'callback_existChantier|required'
+        ),
+        array(
+            'field' => 'addAffectationPersonnelId',
+            'label' => 'ID personnel',
+            'rules' => 'callback_existPersonnel|required'
+        ),
+        array(
+            'field' => 'addAffectationDebut',
+            'label' => 'Début',
+            'rules' => 'required|trim'
+        ),
+        array(
+            'field' => 'addAffectationDebutMoment',
+            'label' => 'Début à quel moment',
+            'rules' => 'required|in_list[1,2]'
+        ),
+        array(
+            'field' => 'addAffectationFin',
+            'label' => 'Fin',
+            'rules' => 'required|trim'
+        ),
+        array(
+            'field' => 'addAffectationFinMoment',
+            'label' => 'Fin à quel moment',
+            'rules' => 'required|in_list[1,2]'
+        ),
+        array(
+            'field' => 'addAffectationCases',
+            'label' => 'Cases de planning',
+            'rules' => 'is_natural_no_zero|required'
+        ),
+        array(
+            'field' => 'addAffectationEtat',
+            'label' => 'Etat',
+            'rules' => 'required|in_list[1,2]'
+        ),
+        array(
+            'field' => 'addAffectationCommentaire',
+            'label' => 'Commentaire',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addAffectationType',
+            'label' => 'Type',
+            'rules' => 'required|in_list[1,2,3]'
+        ),
+        array(
+            'field' => 'addAffectationAffichage',
+            'label' => 'Type',
+            'rules' => 'required|in_list[1,2,3]'
+        )
+    )
 );
 ?>

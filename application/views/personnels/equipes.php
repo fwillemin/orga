@@ -1,6 +1,9 @@
 <div class="row">
     <div class="col-12 col-lg-8 offset-lg-2 fond" style="padding-top: 20px;">
         <h2>
+            <a href="<?= site_url('personnels/liste'); ?>" style="text-decoration: none;">
+                <i class="fas fa-chevron-circle-left" style="color: grey;"></i>
+            </a>
             Gestion de vos équipes
         </h2>
         <hr>

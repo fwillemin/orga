@@ -66,7 +66,7 @@ class Affaire {
 
     public function hydratePlace() {
         $CI = & get_instance();
-        $this->affairePlace = $CI->managerPlaces->getPlaceById($this->affairePlaceId);
+        $this->affairePlace = $CI->managerPlaces->getPlaceByIdMigration($this->affairePlaceId);
     }
 
     function hydrateChantiers() {

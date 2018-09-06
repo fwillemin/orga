@@ -30,7 +30,7 @@
                         echo '<tr class="ligneClikable" data-clientid="' . $client->getClientId() . '">'
                         . '<td>' . $client->getClientNom() . '</td>'
                         . '<td>' . $client->getClientVille() . '</td>'
-                        . '<td style="text-align:center;">' . ($client->getClientLastAffaire() ? $this->own->dateFrancais($client->getClientLastAffaire()->getAffaireCreation(), 'Am') : 'NC') . '</td>'
+                        . '<td style="text-align:center;">' . ($client->getClientLastAffaire() ? $this->cal->dateFrancais($client->getClientLastAffaire()->getAffaireCreation(), 'Am') : 'NC') . '</td>'
                         . '<td>' . $client->getClientFixe() . '</td>'
                         . '<td>' . $client->getClientPortable() . '</td>'
                         . '<td style="text-align: center;"><input type="checkbox" class="js-fusion"></td>'

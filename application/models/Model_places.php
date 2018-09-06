@@ -92,4 +92,21 @@ class Model_places extends MY_model {
         return $this->retourne($query, $type, self::classe, true);
     }
 
+    public function getPlaceByIdMigration($placeId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where('placeId', $placeId)
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getPlaceByGoogle($googleId, $etablissementId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where('placeGoogleId', $googleId)
+                ->where('placeEtablissementId', $etablissementId)
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
 }

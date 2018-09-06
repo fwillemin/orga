@@ -4,6 +4,11 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+/*
+ * Projets de développement
+ * - Passer les heures prévues d'un chantier en comptant les heures de chaque 1/2 journée en fonction de l'horaire du personnel de l'affectation (pas de travail l'aprem, 4 heures le matin et 3 heures l'aprem, ...)
+ */
+
 class Migration extends My_Controller {
 
     const tauxTVA = 20;
@@ -34,6 +39,7 @@ class Migration extends My_Controller {
         $this->db->query("ALTER TABLE `affaires` auto_increment = 1;");
         $this->db->query("ALTER TABLE `chantiers` auto_increment = 1;");
         $this->db->query("ALTER TABLE `achats` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `affectations` auto_increment = 1;");
     }
 
     public function migrerRS($rsId = null) {
@@ -114,7 +120,8 @@ class Migration extends My_Controller {
                 'nbSemainesAvant' => 2,
                 'nbSemainesApres' => 2,
                 'tranchePointage' => 30,
-                'tailleAffectations' => 2
+                'tailleAffectations' => 2,
+                'messageEtablissement' => ''
                     )
             );
             $this->managerParametres->ajouter($param);
@@ -484,48 +491,53 @@ class Migration extends My_Controller {
 
             $this->db->trans_start();
             /* Création du client */
-            $dataClient = array(
-                'clientEtablissementId' => $etablissement->getEtablissementId(),
-                'clientNom' => mb_strtoupper($dossier->client),
-                'clientAdresse' => $dossier->adresse,
-                'clientCp' => $dossier->cp,
-                'clientVille' => $dossier->ville,
-                'clientPays' => 'FRANCE',
-                'clientFixe' => ( strlen($dossier->tel) > 9 ? $dossier->tel : ''),
-                'clientPortable' => '',
-                'clientEmail' => $dossier->email
-            );
-            $client = new Client($dataClient);
-            $this->managerClients->ajouter($client);
+            /* Recherche d'une place identique et donc d'un client déjà validé */
+            $result = $this->maps->geocode(urlencode($dossier->adresse . ' ' . $dossier->cp . ' ' . $dossier->ville . ' FRANCE'), $etablissement);
+            if ($result):
+                $placeExistante = $this->managerPlaces->getPlaceByGoogle($result['placeGoogleId'], $etablissement->getEtablissementId());
+                if ($placeExistante):
+                    $client = $this->managerClients->getClientByIdMigration($placeExistante->getPlaceClientId());
+                    $place = $placeExistante;
+                else:
+                    $dataClient = array(
+                        'clientEtablissementId' => $etablissement->getEtablissementId(),
+                        'clientNom' => mb_strtoupper($dossier->client),
+                        'clientAdresse' => $dossier->adresse,
+                        'clientCp' => $dossier->cp,
+                        'clientVille' => $dossier->ville,
+                        'clientPays' => 'FRANCE',
+                        'clientFixe' => ( strlen($dossier->tel) > 9 ? $dossier->tel : ''),
+                        'clientPortable' => '',
+                        'clientEmail' => $dossier->email
+                    );
+                    $client = new Client($dataClient);
+                    $this->managerClients->ajouter($client);
 
-            /* Creation d'une place */
-//            $result = $this->maps->geocode(urlencode($client->getClientAdresse() . ' ' . $client->getClientCp() . ' ' . $client->getClientVille() . ' FRANCE'), $etablissement);
-//            if ($result):
-//
-//                $volOiseau = $this->maps->distanceVolOiseau(explode(',', $etablissement->getEtablissementGps())[0], explode(',', $etablissement->getEtablissementGps())[1], $result['latitude'], $result['longitude']);
-//                $zone = floor($volOiseau / 10000) + 1;
-//                if ($zone > 6):
-//                    $zone = 6;
-//                endif;
-//
-//                $arrayPlace = array(
-//                    'placeClientId' => $client->getClientId(),
-//                    'placeEtablissementId' => $etablissement->getEtablissementId(),
-//                    'placeLat' => $result['latitude'],
-//                    'placeLon' => $result['longitude'],
-//                    'placeAdresse' => $result['adresse'],
-//                    'placeGoogleId' => $result['placeGoogleId'],
-//                    'placeDistance' => $result['distance'],
-//                    'placeDuree' => $result['duree'],
-//                    'placeZone' => $zone,
-//                    'placeVolOiseau' => $volOiseau
-//                );
-//
-//                $place = new Place($arrayPlace);
-//                $this->managerPlaces->ajouter($place);
-//            else:
-//                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
-//            endif;
+                    $volOiseau = $this->maps->distanceVolOiseau(explode(',', $etablissement->getEtablissementGps())[0], explode(',', $etablissement->getEtablissementGps())[1], $result['latitude'], $result['longitude']);
+                    $zone = floor($volOiseau / 10000) + 1;
+                    if ($zone > 6):
+                        $zone = 6;
+                    endif;
+
+                    $arrayPlace = array(
+                        'placeClientId' => $client->getClientId(),
+                        'placeEtablissementId' => $etablissement->getEtablissementId(),
+                        'placeLat' => $result['latitude'],
+                        'placeLon' => $result['longitude'],
+                        'placeAdresse' => $result['adresse'],
+                        'placeGoogleId' => $result['placeGoogleId'],
+                        'placeDistance' => $result['distance'],
+                        'placeDuree' => $result['duree'],
+                        'placeZone' => $zone,
+                        'placeVolOiseau' => $volOiseau
+                    );
+
+                    $place = new Place($arrayPlace);
+                    $this->managerPlaces->ajouter($place);
+                endif;
+            else:
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
+            endif;
 
             /* Evite les soucis de catégories fantômes */
             $categorie = null;
@@ -565,7 +577,7 @@ class Migration extends My_Controller {
                 'affaireDateCloture' => $dossier->date_solde ?: null,
                 'affaireEtat' => $etat,
                 'affaireCouleur' => $dossier->dossierCouleur,
-                'affaireCouleurSecondaire' => $this->own->getCouleurSecondaire($dossier->dossierCouleur, 30),
+                'affaireCouleurSecondaire' => $this->couleurSecondaire($dossier->dossierCouleur),
                 'affaireRemarque' => $dossier->dossierRemarque
             );
 
@@ -652,6 +664,9 @@ class Migration extends My_Controller {
 
                 $this->importCouts($chantier);
 
+                $affaire->hydratePlace();
+                $this->importAffectations($chantier, $affaire);
+
             endforeach;
         endforeach;
     }
@@ -700,10 +715,77 @@ class Migration extends My_Controller {
         endforeach;
     }
 
-    /**
-     *
-     * A DEVELOPPER
-     *
-     * Fusionner des clients
-     */
+    public function importAffectations(Chantier $chantier, Affaire $affaire) {
+        foreach ($this->db->select('*')->from('V1_affectation')->where('id_chantier', $chantier->getChantierOriginId())->get()->result() as $affect):
+
+            if ($affect->etat == 'Termine'):
+                $etat = 2;
+            else:
+                $etat = 1;
+            endif;
+
+            similar_text(strtoupper($affect->affectationAdresse), strtoupper(explode(',', $affaire->getAffairePlace()->getPlaceAdresse())[0]), $percent);
+
+            if ($percent < 60 && $affect->affectationAdresse != ''):
+                /* On créé une nouvelle place pour ce client */
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ------------ Affect ' . $affect->id . ' -- ' . $percent . '% ----');
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Nouvelle place pour le client : ' . $affaire->getAffaireClientId());
+                $etablissement = $this->managerEtablissements->getEtablissementById($affaire->getAffaireEtablissementId());
+                $result = $this->maps->geocode(urlencode($affect->affectationAdresse . ', ' . $affect->affectationCp . ' ' . $affect->affectationVille . ', FRANCE'), $etablissement);
+                if ($result):
+
+                    $volOiseau = $this->maps->distanceVolOiseau(explode(',', $etablissement->getEtablissementGps())[0], explode(',', $etablissement->getEtablissementGps())[1], $result['latitude'], $result['longitude']);
+                    $zone = floor($volOiseau / 10000) + 1;
+                    if ($zone > 6):
+                        $zone = 6;
+                    endif;
+
+                    $arrayPlace = array(
+                        'placeClientId' => $affaire->getAffaireClientId(),
+                        'placeEtablissementId' => $etablissement->getEtablissementId(),
+                        'placeLat' => $result['latitude'],
+                        'placeLon' => $result['longitude'],
+                        'placeAdresse' => $result['adresse'],
+                        'placeGoogleId' => $result['placeGoogleId'],
+                        'placeDistance' => $result['distance'],
+                        'placeDuree' => $result['duree'],
+                        'placeZone' => $zone,
+                        'placeVolOiseau' => $volOiseau
+                    );
+
+                    $place = new Place($arrayPlace);
+                    $this->managerPlaces->ajouter($place);
+                else:
+                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
+                endif;
+            endif;
+
+            $personnel = $this->managerPersonnels->getPersonnelByIdMigration($affect->id_personnel);
+            if ($personnel):
+
+                $dataAffectation = array(
+                    'affectationOriginId' => $affect->id,
+                    'affectationChantierId' => $chantier->getChantierId(),
+                    'affectationPersonnelId' => $personnel->getPersonnelId(),
+                    'affectationPlaceId' => $chantier->getChantierPlaceId(),
+                    'affectationNbDemi' => $affect->nb_demi,
+                    'affectationDebut' => $affect->debut,
+                    'affectationDebutMoment' => $affect->debut_journee + 1,
+                    'affectationFin' => $affect->debut,
+                    'affectationFinMoment' => $affect->fin_journee + 1,
+                    'affectationCases' => $affect->longueur,
+                    'affectationEtat' => $etat,
+                    'affectationCommentaire' => $affect->commentaire,
+                    'affectationType' => $affect->type + 1,
+                    'affectationAffichage' => $affect->affichage + 1
+                );
+                $affectation = new Affectation($dataAffectation);
+                $this->managerAffectations->ajouter($affectation);
+            else:
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Ctte affectation n\'a pas été migrée (Origin) ' . $affect->id . '// Personnel invalide (Origin):' . $affect->id_personnel);
+            endif;
+
+        endforeach;
+    }
+
 }
