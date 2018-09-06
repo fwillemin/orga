@@ -75,8 +75,75 @@ class Affectation {
         $this->affectationClient = $CI->managerClients->getClientById($this->affectationAffaire->getAffaireClientId());
     }
 
-    public function getHTML() {
+    /**
+     * Génère une div representant l'affectation dans le planning en mode readOnly
+     *
+     * @param Affectation $affectation Affectation à afficher
+     * @param string $type Indispo ou active
+     * @param integer $premier_jour timestamp du premier jour du planning
+     * @param int $num_ligne Numéro de la ligne de placement de cette affectation correpsondant au personnel affecté
+     * @param boolean $drag La div peut-elle être déplacée
+     * @param boolean $resize La div peut-elle être redimensionnée
+     * @param integer $hauteur Hauteur de la div
+     * @param integer $largeur Largeur de la div
+     *
+     * @return string Retourne le code HTML de la div à insérer dans le planning
+     */
+    public function getHTML2($premierJourPlanning = null, $personnelsPlanning = array(), $hauteur, $largeur, $drag, $resize) {
 
+    }
+
+    public function getHTML1($premierJourPlanning = null, $personnelsPlanning = array(), $hauteur, $largeur, $drag, $resize) {
+        $CI = & get_instance();
+
+
+        $positionLeft = ceil(($this->affectationDebut - $premierJourPlanning) / 86400) * ($largeur * 2 + 3) + 3;
+        //si on commence de l'aprem, on ajoute une 1/2 journée
+        if ($this->affectationDebutMoment == 1) {
+            $positionLeft += $largeur + 3;
+        }
+
+        $classes = 'affectation';
+        $attributs = 'js-affectationid="' . $this->affectationId . '" js-chantierid="' . $this->affectationChantierId; /* ac signifie affectation du chantier + l'id du chantier associé => utilisé pour mettre toutes les affectations les elements d'un chantier en surbrillance lors du click dans le slide gauche */
+        $taille = $this->affectationCases * 2 * $largeur;
+        $zindex = 2;
+        $couleur = $this->affectationCouleur();
+        if ($type == 'active'):
+            $border = '1px solid ' . $couleur_secondaire;
+            $background = $couleur;
+        else:
+            $border = '2px solid grey';
+            $background = "repeating-linear-gradient(
+                        135deg," . $couleur_secondaire . ", " . $couleur_secondaire . " 0.1em," . $couleur . " 0," . $couleur . " 0.75em)";
+        endif;
+        $class_text = "";
+        $id_div = $affectation->getId();
+        $txt = '<a href="#" data-toggle="tooltip" title="' . $affectation->getAffectationClient() . ' [' . $affectation->getAffectationCategorie() . ' - ' . $affectation->getAffectationObjet() . ']" style="color:' . $couleur_secondaire . ';">
+                    <span class="' . $class_text . '" style="position:relative; left:2px; top:-3px; font-weight:bold; font-size:10px; cursor:pointer;">'
+                . substr($affectation->getAffectationClient(), 0, floor($taille / 10)) .
+                '</span>
+                    </a>';
+
+
+        //recentrage des div d'une seule 1/2j
+        if ($taille < 50) : $left_position -= 1;
+        endif;
+        //calcul de la ligne d'apposition
+        $top_position = $hauteur * $num_ligne + 38;
+
+        //mode d'affichage de la div (pleine case, 1/2 heut ou 1/2 bas)
+        if ($affectation->getAffichage() == 0): $hauteur_div = $hauteur - 5;
+        else:
+            $hauteur_div = floor($hauteur / 2) - 2;
+            if ($affectation->getAffichage() == 1): $top_position += floor($hauteur / 2) - 3;
+            endif;
+        endif;
+        return '<div style="
+                 top:' . $top_position . 'px; left:' . $left_position . 'px;
+                 background:' . $background . '; border:' . $border . ';
+                 width:' . $taille . 'px; height:' . $hauteur_div . 'px; z-index :' . $zindex . ';"
+                 id="' . $id_div . '" bottom="' . $affectation->getAffichage() . '" class="' . $options . '" >' . $txt . '
+                </div>';
     }
 
     function getAffectationId() {

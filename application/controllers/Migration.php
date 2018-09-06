@@ -321,7 +321,7 @@ class Migration extends My_Controller {
                 'personnelNom' => $perso->nom,
                 'personnelPrenom' => $perso->prenom,
                 'personnelQualif' => $perso->qualif,
-                'personnelActif' => $perso->actif,
+                'personnelActif' => $perso->actif == 1 ? 1 : 0,
                 'personnelMessage' => $perso->message,
                 'personnelCode' => $perso->code,
                 'personnelHoraireId' => $horaire ? $horaire->getHoraireId() : null,

@@ -7,137 +7,102 @@
 
         <div class="col-12">
             <div class="row">
-
-                <?php
-                if (empty($personnelsPlanning)): echo '<div class="alert alert-success pull-right alertNewUser" style="width:70%; padding:15px;">Rendez-vous dans la section <a href="' . site_url('rh/worker') . '" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-user"></i> Personnel</a> pour créer votre personnel ouvrier.</div>';
-                else:
-                    ?>
-                    <div class="col-2" align="right">
-                        <!-- liste du personnel -->
-                        <table style="width:100%;">
+                <!-- liste du personnel -->
+                <div class="col-2" align="right">
+                    <table id="tablePlanningPersonnel">
+                        <tr height="43">
+                            <td></td>
+                        </tr>
+                        <?php
+                        foreach ($personnelsPlanning as $personnel):
+                            if ($this->ion_auth->in_group(array(25))):
+                                $link = site_url('personnels/fichePersonnel/' . $personnel->getPersonnelId());
+                            else:
+                                $link = '#';
+                            endif;
+                            ?>
                             <tr height="<?= $this->hauteur; ?>">
                                 <td align="right">
-                                    Personnels
+                                    <a href="<?= $link; ?>" target="_self">
+                                        <span class="<?= $personnel->getPersonnelActif() == 1 ? 'badge-light' : 'badge-secondary'; ?>" style="">
+                                            <?= $personnel->getPersonnelNom() . ' ' . substr($personnel->getPersonnelPrenom(), 0, 1) . ' <i class="fas fa-play" style=""></i>'; ?>
+                                        </span>
+                                    </a>
                                 </td>
                             </tr>
+                        <?php endforeach; ?>
+                        <tr height="50">
+                            <td align="right">
+                                Livraisons
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="col-10" id="planningDiv" today="<?= $today; ?>" style="overflow-x: scroll; padding-left: 0px;">
+                    <!-- planning -->
+
+                    <table cellspacing="0" border="0">
+
+                        <!-- semaines -->
+                        <tr>
                             <?php
-                            foreach ($personnelsPlanning as $personnel):
-                                if ($this->ion_auth->in_group(array(25))):
-                                    $link = site_url('personnels/fichePersonnel/' . $personnel->getPersonnelId());
-                                else:
-                                    $link = '#';
-                                endif;
+                            // génération des semaines du planning
+                            for ($i = 0; $i < $nbSemainesPlanning; $i++):
+                                $jourEncours = $premierJourPlanning + (8 + $i * 7) * 86400;
                                 ?>
-                                <tr height="<?= $this->hauteur; ?>">
-                                    <td align="right">
-                                        <a href="<?= $link; ?>" target="_self">
-                                            <font style="color:#FFF; font-weight: bold;"><?= $personnel->getPersonnelNom() . ' ' . substr($personnel->getPersonnelPrenom(), 0, 1); ?></font>
-                                        </a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                            <tr height="50"><td align="right"><label class="label label-info">Livraisons</label></td></tr>
-                        </table>
-                    </div>
-
-                    <div class="col-10" id="planning_div" today="<?= $today; ?>" style="overflow-x: scroll; padding-right: 100px;">
-                        <!-- planning -->
-
-                        <table cellspacing="0">
-
-                            <!-- semaines -->
-                            <tr>
                                 <td class="cellSemaines" colspan="14" align="center">
-                                    <?= $this->cal->dateFrancais($premierJourPlanning, 'MA') . ' | Semaine ' . date('W', $premierJourPlanning); ?>
+                                    <?= $this->cal->dateFrancais($jourEncours, 'Ma') . ' | Semaine ' . date('W', $jourEncours); ?>
                                 </td>
                                 <?php
-                                // génération des semaines du planning
-                                for ($i = 0; $i < $nbSemainesPlanning - 1; $i++):
-                                    $jourEncours = $premierJourPlanning + (8 + $i * 7) * 86400;
-                                    ?>
-                                    <td class="cellSemaines" colspan="14" align="center">
-                                        <?= $this->cal->dateFrancais($jourEncours, 'Ma') . ' | Semaine ' . date('W', $jourEncours); ?>
-                                    </td>
-                                    <?php
-                                endfor;
-                                unset($jourEncours);
-                                ?>
-                            </tr>
+                            endfor;
+                            unset($jourEncours);
+                            ?>
+                        </tr>
 
-                            <!-- jours -->
-                            <tr>
-                                <?php
-                                $currentDate = $premierJourPlanning - 86400;
-                                $heureEte = date('I', $premierJourPlanning); /* indique si le premier jour du planning est été ou hiver */
-                                for ($i = 0; $i < $nbSemainesPlanning * 7; $i++) {
-                                    $currentDate += 86400;
-                                    /* Gestion des passages en heure été et heure hiver */
-                                    if (date('I', $currentDate) != $heureEte):
-                                        if ($heureEte == 1):
-                                            /* on ajoute une heure */
-                                            $currentDate += 3600;
-                                        else:
-                                            /* on retire une heure */
-                                            $currentDate -= 3600;
-                                        endif;
-                                        $heureEte = date('I', $currentDate);
-                                    endif;
-                                    if (date('dmy', $currentDate) == date('dmy')) {
-                                        ?>
-                                        <td class="cell_aujourdhui upright" align="center" colspan="2"><?= date('d', $currentDate); ?></td>
-                                    <?php } else { ?>
-                                        <td class="cell_jours upright" align="center" colspan="2"><?= date('d', $currentDate); ?></td>
-                                        <?php
-                                    }
-                                }
-                                ?>
-                            </tr>
-
-
-                            <!-- Personnel -->
-                            <!-- une ligne par personnel actif dans l'établissement -->
+                        <!-- jours -->
+                        <tr>
                             <?php
-                            $personnelListe = array(); /* Liste qui va contenir tous les ids des personnels affichés */
-                            foreach ($personnelsPlanning as $personnel):
-                                $personnelListe[] = $personnel->getPersonnelId();
-                                ?>
-                                <tr height="<?= $this->hauteur; ?>">
-                                    <?php
-                                    $heureEte = date('I', $premierJourPlanning); /* indique si le premier jour du planning est été ou hiver */
-                                    $currentDate = $premierJourPlanning - 86400;
-                                    for ($i = 0; $i < $nbSemainesPlanning * 7; $i++):
-
-                                        $currentDate += 86400;
-                                        /* Gestion des passages en heure été et heure hiver */
-                                        if (date('I', $currentDate) != $heureEte):
-                                            if ($heureEte == 1):
-                                                /* on ajoute une heure */
-                                                $currentDate += 3600;
-                                            else:
-                                                /* on retire une heure */
-                                                $currentDate -= 3600;
-                                            endif;
-                                            $heureEte = abs($heureEte - 1);
-                                        endif;
-                                        // si on est un samedi ou un dimanche
-                                        if ($i != 0 and ( ($i + 1) % 7 == 0) or ( $i + 2) % 7 == 0):
-                                            ?>
-                                            <td class="we matin"></td><td class="we aprem"></td>
-                                        <?php else: ?>
-                                            <td class="cell matin" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>"></td>
-                                            <td class="cell aprem" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>"></td>
-                                        <?php
-                                        endif;
-                                    endfor;
+                            $currentDate = $premierJourPlanning - 86400;
+                            $heureEte = date('I', $premierJourPlanning); /* indique si le premier jour du planning est été ou hiver */
+                            for ($i = 0; $i < $nbSemainesPlanning * 7; $i++):
+                                $currentDate += 86400;
+                                /* Gestion des passages en heure été et heure hiver */
+                                if (date('I', $currentDate) != $heureEte):
+                                    if ($heureEte == 1):
+                                        /* on ajoute une heure */
+                                        $currentDate += 3600;
+                                    else:
+                                        /* on retire une heure */
+                                        $currentDate -= 3600;
+                                    endif;
+                                    $heureEte = date('I', $currentDate);
+                                endif;
+                                if (date('dmy', $currentDate) == date('dmy')):
                                     ?>
-                                </tr>
-                            <?php endforeach; ?>
+                                    <td class="cellAujourdhui" align="center" colspan="2"><?= date('d', $currentDate); ?></td>
+                                <?php else: ?>
+                                    <td class="cellJours" align="center" colspan="2"><?= date('d', $currentDate); ?></td>
+                                <?php
+                                endif;
+                            endfor;
+                            ?>
+                        </tr>
 
-                            <tr style="height : 50px;">
+
+                        <!-- Personnel -->
+                        <!-- une ligne par personnel actif dans l'établissement -->
+                        <?php
+                        $personnelListe = array(); /* Liste qui va contenir tous les ids des personnels affichés */
+                        foreach ($personnelsPlanning as $personnel):
+                            $personnelListe[] = $personnel->getPersonnelId();
+                            ?>
+                            <tr height="<?= $this->hauteur; ?>">
                                 <?php
                                 $heureEte = date('I', $premierJourPlanning); /* indique si le premier jour du planning est été ou hiver */
                                 $currentDate = $premierJourPlanning - 86400;
-                                for ($i = 0; $i < $nbSemainesPlanning * 7; $i++) {
+                                for ($i = 0; $i < $nbSemainesPlanning * 7; $i++):
+
                                     $currentDate += 86400;
                                     /* Gestion des passages en heure été et heure hiver */
                                     if (date('I', $currentDate) != $heureEte):
@@ -151,179 +116,206 @@
                                         $heureEte = abs($heureEte - 1);
                                     endif;
                                     // si on est un samedi ou un dimanche
-                                    if ($i != 0 and ( ($i + 1) % 7 == 0) or ( $i + 2) % 7 == 0) {
+                                    if ($i != 0 and ( ($i + 1) % 7 == 0) or ( $i + 2) % 7 == 0):
                                         ?>
-                                        <td colspan="2" class="weLivraison"></td>
-                                    <?php } else { ?>
-                                        <td colspan="2" class="cellLivraison" jour="<?= date('Y-m-d', $currentDate); ?>">
-                                            <?php
-                                            if (!empty($listeLivraison)):
-                                                foreach ($listeLivraison as $l):
-                                                    if (date('Y-m-d', $l->getLivraisonDate()) == date('Y-m-d', $currentDate)):
-                                                        ?>
-                                                        <a style="border:1px solid <?= $this->organibat->SetBright($l->getLivraisonCouleur(), 110); ?>; color:<?= $this->organibat->SetBright($l->getLivraisonCouleur(), 110); ?>; background-color:<?= $l->getLivraisonCouleur(); ?>; cursor:pointer; position:relative;"
-                                                           class="markerLivraison <?= 'lc' . $l->getLivraisonChantierId(); ?>"
-                                                           id="<?= 'liv' . $l->getLivraisonId(); ?>"
-                                                           data-toggle="popover"
-                                                           data-trigger="manual"
-                                                           data-title=" "
-                                                           data-content=" "
-                                                           tabindex="0"
-                                                           data-placement="bottom">
-
-                                                            <?php if ($l->getLivraisonNbContrainte() > 0): ?>
-                                                                <i class="glyphicon glyphicon-link"></i>
-                                                            <?php endif; ?>
-                                                        </a>
-                                                        <?php
-                                                    else:
-                                                        if (date('Y-m-d', $l->getLivraisonDate()) > date('Y-m-d', $currentDate))
-                                                            break;
-                                                    endif;
-                                                endforeach;
-                                            endif;
-                                            ?>
-                                        </td>
-                                        <?php
-                                    }
-                                }
-                                ?>
-                            </tr>
-                            <!-- jours -->
-                            <tr>
-                                <?php
-                                $currentDate = $premierJourPlanning - 86400;
-                                $heureEte = date('I', $premierJourPlanning); /* indique si le premier jour du planning est été ou hiver */
-                                for ($i = 0; $i < $nbSemainesPlanning * 7; $i++) {
-                                    $currentDate += 86400;
-                                    /* Gestion des passages en heure été et heure hiver */
-                                    if (date('I', $currentDate) != $heureEte):
-                                        if ($heureEte == 1):
-                                            /* on ajoute une heure */
-                                            $currentDate += 3600;
-                                        else:
-                                            /* on retire une heure */
-                                            $currentDate -= 3600;
-                                        endif;
-                                        $heureEte = date('I', $currentDate);
+                                        <td class="we matin"></td><td class="we aprem"></td>
+                                    <?php else: ?>
+                                        <td class="<?= $personnel->getPersonnelActif() == 1 ? 'cell matin' : 'matinInactif'; ?>" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>"></td>
+                                        <td class="<?= $personnel->getPersonnelActif() == 1 ? 'cell aprem' : 'apremInactif'; ?>" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>"></td>
+                                    <?php
                                     endif;
-                                    if (date('dmy', $currentDate) == date('dmy')) {
-                                        ?>
-                                        <td class="cell_aujourdhui reverse" align="center" colspan="2"><?= date('d', $currentDate); ?></td>
-                                    <?php } else { ?>
-                                        <td class="cell_jours reverse" align="center" colspan="2"><?= date('d', $currentDate); ?></td>
-                                        <?php
-                                    }
-                                }
+                                endfor;
                                 ?>
                             </tr>
-                            <!-- semaines -->
-                            <tr>
-                                <td class="cellSemaines" colspan="14" align="center">
-                                    <?= $this->cal->dateFrancais($premierJourPlanning, 'MA') . ' | Semaine ' . date('W', $premierJourPlanning); ?>
-                                </td>
-                                <?php
-                                // génération des semaines du planning
-                                for ($i = 0; $i < $nbSemainesPlanning - 1; $i++):
-                                    $jourEncours = $premierJourPlanning + (8 + $i * 7) * 86400;
+                        <?php endforeach; ?>
+
+                        <tr style="height : 50px;">
+                            <?php
+                            $heureEte = date('I', $premierJourPlanning); /* indique si le premier jour du planning est été ou hiver */
+                            $currentDate = $premierJourPlanning - 86400;
+                            for ($i = 0; $i < $nbSemainesPlanning * 7; $i++) {
+                                $currentDate += 86400;
+                                /* Gestion des passages en heure été et heure hiver */
+                                if (date('I', $currentDate) != $heureEte):
+                                    if ($heureEte == 1):
+                                        /* on ajoute une heure */
+                                        $currentDate += 3600;
+                                    else:
+                                        /* on retire une heure */
+                                        $currentDate -= 3600;
+                                    endif;
+                                    $heureEte = abs($heureEte - 1);
+                                endif;
+                                // si on est un samedi ou un dimanche
+                                if ($i != 0 and ( ($i + 1) % 7 == 0) or ( $i + 2) % 7 == 0) {
                                     ?>
-                                    <td class="cellSemaines" colspan="14" align="center">
-                                        <button class="btn btn-xs btn-link btnListingLivraison" semaine="<?= date('W', $premierJourPlanning + (8 + $i * 7) * 86400); ?>" annee ="<?= date('Y', $premierJourPlanning + (8 + $i * 7) * 86400); ?>">Livraisons</button>
-                                        <?= $this->cal->dateFrancais($jourEncours, 'Ma') . ' | Semaine ' . date('W', $jourEncours); ?>
+                                    <td colspan="2" class="weLivraison"></td>
+                                <?php } else { ?>
+                                    <td colspan="2" class="cellLivraison" jour="<?= date('Y-m-d', $currentDate); ?>">
+                                        <?php
+                                        if (!empty($listeLivraison)):
+                                            foreach ($listeLivraison as $l):
+                                                if (date('Y-m-d', $l->getLivraisonDate()) == date('Y-m-d', $currentDate)):
+                                                    ?>
+                                                    <a style="border:1px solid <?= $this->organibat->SetBright($l->getLivraisonCouleur(), 110); ?>; color:<?= $this->organibat->SetBright($l->getLivraisonCouleur(), 110); ?>; background-color:<?= $l->getLivraisonCouleur(); ?>; cursor:pointer; position:relative;"
+                                                       class="markerLivraison <?= 'lc' . $l->getLivraisonChantierId(); ?>"
+                                                       id="<?= 'liv' . $l->getLivraisonId(); ?>"
+                                                       data-toggle="popover"
+                                                       data-trigger="manual"
+                                                       data-title=" "
+                                                       data-content=" "
+                                                       tabindex="0"
+                                                       data-placement="bottom">
+
+                                                        <?php if ($l->getLivraisonNbContrainte() > 0): ?>
+                                                            <i class="glyphicon glyphicon-link"></i>
+                                                        <?php endif; ?>
+                                                    </a>
+                                                    <?php
+                                                else:
+                                                    if (date('Y-m-d', $l->getLivraisonDate()) > date('Y-m-d', $currentDate))
+                                                        break;
+                                                endif;
+                                            endforeach;
+                                        endif;
+                                        ?>
                                     </td>
                                     <?php
-                                endfor;
-                                unset($jourEncours);
+                                }
+                            }
+                            ?>
+                        </tr>
+                        <!-- jours -->
+                        <tr>
+                            <?php
+                            $currentDate = $premierJourPlanning - 86400;
+                            $heureEte = date('I', $premierJourPlanning); /* indique si le premier jour du planning est été ou hiver */
+                            for ($i = 0; $i < $nbSemainesPlanning * 7; $i++) {
+                                $currentDate += 86400;
+                                /* Gestion des passages en heure été et heure hiver */
+                                if (date('I', $currentDate) != $heureEte):
+                                    if ($heureEte == 1):
+                                        /* on ajoute une heure */
+                                        $currentDate += 3600;
+                                    else:
+                                        /* on retire une heure */
+                                        $currentDate -= 3600;
+                                    endif;
+                                    $heureEte = date('I', $currentDate);
+                                endif;
+                                if (date('dmy', $currentDate) == date('dmy')) {
+                                    ?>
+                                    <td class="cell_aujourdhui reverse" align="center" colspan="2"><?= date('d', $currentDate); ?></td>
+                                <?php } else { ?>
+                                    <td class="cell_jours reverse" align="center" colspan="2"><?= date('d', $currentDate); ?></td>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        </tr>
+                        <!-- semaines -->
+                        <tr>
+                            <?php
+                            // génération des semaines du planning
+                            for ($i = 0; $i < $nbSemainesPlanning; $i++):
+                                $jourEncours = $premierJourPlanning + (8 + $i * 7) * 86400;
                                 ?>
-                            </tr>
-                        </table>
+                                <td class="cellSemaines" colspan="14" align="center">
+                                    <button class="btn btn-sm btn-outline-info btnListingLivraison" semaine="<?= date('W', $jourEncours); ?>" annee ="<?= date('Y', $jourEncours); ?>">Livraisons</button>
+                                    <?= $this->cal->dateFrancais($jourEncours, 'Ma') . ' | Semaine ' . date('W', $jourEncours); ?>
+                                </td>
+                                <?php
+                            endfor;
+                            unset($jourEncours);
+                            ?>
+                        </tr>
+                    </table>
 
-                        <?php
-                        // positionnement d'une grande div de we
-                        //hauteur de la div
+                    <?php
+                    // positionnement d'une grande div de we
+                    //hauteur de la div
 //                        $hauteur_we = $hauteur * $nb_personnel - 2;
 //                        for ($i = 0; $i < $nbSemainesPlanning; $i++):
 //
 //                            $ecart_we = $i * (($largeur * 2) + 3) * 2 + ($i + 1) * 5 * (($largeur * 2) + 3) + 2;
 //
-                        ?>
+                    ?>
                                                                     <!--<div class="div_week_end" style="left://<?= $ecart_we . 'px'; ?>; height:<?= $hauteur_we . 'px'; ?>;"></div>-->
-                        <?php
+                    <?php
 //                        endfor;
-                        //positionnement d'une div de masquage
-                        ?>
-                        <!--                        <div id="masque_planning" class="masque" style="
-                                                     width : <?= ($nbSemainesPlanning * 7 * (($largeur * 2) + 3)) . 'px'; ?>;
-                                                     height:<?= $hauteur_we + 100 . 'px'; ?>;"
-                                                     ></div>-->
+                    //positionnement d'une div de masquage
+                    ?>
+                    <!--                        <div id="masque_planning" class="masque" style="
+                                                 width : <?= ($nbSemainesPlanning * 7 * (($largeur * 2) + 3)) . 'px'; ?>;
+                                                 height:<?= $hauteur_we + 100 . 'px'; ?>;"
+                                                 ></div>-->
 
-                        <?php
-                        // --------------------------------- affectation ------------------------------------
-                        if (!empty($liste_affectation)):
-                            foreach ($liste_affectation as $a):
+                    <?php
+                    // --------------------------------- affectation ------------------------------------
+                    if (!empty($liste_affectation)):
+                        foreach ($liste_affectation as $a):
 
-                                /* si l'affectation ne rentre pas dans le planning (cas des divers) ou que le personnel n'existe pas (personnel ayant uniquement des divers) on passe */
-                                if ($a->getfin() < $premierJourPlanning || !in_array($a->getId_personnel(), $personnelListe)):
-                                    continue;
-                                else:
+                            /* si l'affectation ne rentre pas dans le planning (cas des divers) ou que le personnel n'existe pas (personnel ayant uniquement des divers) on passe */
+                            if ($a->getfin() < $premierJourPlanning || !in_array($a->getId_personnel(), $personnelListe)):
+                                continue;
+                            else:
 
-                                    //recherche de la ligne d'apposition
-                                    $i = 0;
-                                    foreach ($personnelsPlanning as $p):
-                                        if ($a->getId_personnel() == $p->getId()) {
-                                            $ligne = $i;
-                                            break;
-                                        }
-                                        $i++;
-                                    endforeach;
-                                    /* on ne peux plus déplacer une affectation qui a eu des heures saisies */
-                                    if (intval($a->getAffectationHeuresSaisies()) == 0):
-                                        $drag = TRUE;
-                                    else:
-                                        $drag = FALSE;
-                                    endif;
-
-                                    if ($a->getEtat() == 'Termine'): $type = 'termine';
-                                        $drag = FALSE;
-                                        $resize = FALSE;
-                                    else: $type = 'active';
-                                        $resize = TRUE;
-                                    endif;
-                                    /* on restreint les options si l'utilisateur n'est pas au mins niveau 2 (direction ou administration) */
-                                    if ($this->session->userdata('niveau') > 2): $drag = FALSE;
-                                        $resize = FALSE;
-                                    endif;
-                                    /* on lance l'apposition de l'affectation sur le planning */
-                                    echo $this->organibat->affichageDiv($a, $type, $premierJourPlanning, $ligne, $drag, $resize, $hauteur, $largeur);
-
-                                endif;
-                            endforeach;
-                        endif;
-
-                        // ------------------------------ Indispo ------------------------------------------------
-                        if (!empty($indisponibilite)):
-                            foreach ($indisponibilite as $ind):
                                 //recherche de la ligne d'apposition
                                 $i = 0;
                                 foreach ($personnelsPlanning as $p):
-                                    if ($ind->getId_personnel() == $p->getId()) {
+                                    if ($a->getId_personnel() == $p->getId()) {
                                         $ligne = $i;
                                         break;
                                     }
                                     $i++;
                                 endforeach;
-                                echo $this->organibat->affichageDiv($ind, 'indispo', $premierJourPlanning, $ligne, FALSE, FALSE, $hauteur, $largeur);
+                                /* on ne peux plus déplacer une affectation qui a eu des heures saisies */
+                                if (intval($a->getAffectationHeuresSaisies()) == 0):
+                                    $drag = TRUE;
+                                else:
+                                    $drag = FALSE;
+                                endif;
+
+                                if ($a->getEtat() == 'Termine'): $type = 'termine';
+                                    $drag = FALSE;
+                                    $resize = FALSE;
+                                else: $type = 'active';
+                                    $resize = TRUE;
+                                endif;
+                                /* on restreint les options si l'utilisateur n'est pas au mins niveau 2 (direction ou administration) */
+                                if ($this->session->userdata('niveau') > 2): $drag = FALSE;
+                                    $resize = FALSE;
+                                endif;
+                                /* on lance l'apposition de l'affectation sur le planning */
+                                echo $this->organibat->affichageDiv($a, $type, $premierJourPlanning, $ligne, $drag, $resize, $hauteur, $largeur);
+
+                            endif;
+                        endforeach;
+                    endif;
+
+                    // ------------------------------ Indispo ------------------------------------------------
+                    if (!empty($indisponibilite)):
+                        foreach ($indisponibilite as $ind):
+                            //recherche de la ligne d'apposition
+                            $i = 0;
+                            foreach ($personnelsPlanning as $p):
+                                if ($ind->getId_personnel() == $p->getId()) {
+                                    $ligne = $i;
+                                    break;
+                                }
+                                $i++;
                             endforeach;
-                        endif;
+                            echo $this->organibat->affichageDiv($ind, 'indispo', $premierJourPlanning, $ligne, FALSE, FALSE, $hauteur, $largeur);
+                        endforeach;
+                    endif;
 
-                        // ----------------------------- fin des div planning ----------------------------------------
-                        ?>
+                    // ----------------------------- fin des div planning ----------------------------------------
+                    ?>
 
-                    </div>
+                </div>
 
-                    <?php
-                    $y = 1800;
-                endif;
+                <?php
+                $y = 1800;
                 ?>
             </div>
         </div>
@@ -368,11 +360,13 @@ if ($this->session->userdata('niveau') <= 2):
                                     <select name="chantier" class="superselect" data-width="100%" id="addAffectChantier">
                                         <option value="" disabled="" selected>Choississez un chantier</option>
                                         <?php
-                                        foreach ($liste_chantier as $chantier):
-                                            if ($chantier->getEtat() <> 'Termine'):
-                                                echo '<option value="' . $chantier->getId() . '" data-content="<span style=\'font-size:12px;\'>' . $chantier->getClient() . '</span> - <span style=\'color:blue; font-size:10px;\'>' . $chantier->getChantierCategorie() . '</span><span style=\'font-weight:bold; color:grey; font-size:8px; position:relative; top:5px;\' class=\'pull-right\'>' . $chantier->getVille() . '</span><br/><span style=\'font-size:11px;\'>' . $chantier->getObjet() . '</span>">' . $chantier->getClient() . ' | ' . $chantier->getVille() . '</option>';
-                                            endif;
-                                        endforeach;
+                                        if (!empty($liste_chantier)):
+                                            foreach ($liste_chantier as $chantier):
+                                                if ($chantier->getEtat() <> 'Termine'):
+                                                    echo '<option value="' . $chantier->getId() . '" data-content="<span style=\'font-size:12px;\'>' . $chantier->getClient() . '</span> - <span style=\'color:blue; font-size:10px;\'>' . $chantier->getChantierCategorie() . '</span><span style=\'font-weight:bold; color:grey; font-size:8px; position:relative; top:5px;\' class=\'pull-right\'>' . $chantier->getVille() . '</span><br/><span style=\'font-size:11px;\'>' . $chantier->getObjet() . '</span>">' . $chantier->getClient() . ' | ' . $chantier->getVille() . '</option>';
+                                                endif;
+                                            endforeach;
+                                        endif;
                                         ?>
                                     </select>
                                     <span id="addAffectLieu" style="font-size:10px;"></span>
@@ -534,7 +528,7 @@ if ($this->session->userdata('niveau') <= 2):
                             <select name="personnel" id="mod_affect_personnel" class="form-control">
                                 <?php
                                 foreach ($personnelsPlanning as $personnel):
-                                    echo '<option value="' . $personnel->getId() . '">' . $personnel->getNom() . ' ' . $personnel->getPrenom() . '</option>';
+                                    echo '<option value="' . $personnel->getPersonnelId() . '">' . $personnel->getPersonnelNom() . ' ' . $personnel->getPersonnelPrenom() . '</option>';
                                 endforeach;
                                 ?>
                             </select>
@@ -545,13 +539,15 @@ if ($this->session->userdata('niveau') <= 2):
                         <div class="col-lg-8 col-md-8 col-sm-8 col-xs-9">
                             <select name="chantier" id="mod_affect_chantier" class="form-control" data-width="100%" data-show-subtext="true">
                                 <?php
-                                foreach ($liste_chantier as $chantier):
-                                    if ($chantier->getEtat() <> 'Termine'):
-                                        ?>
-                                        <option value="<?= $chantier->getId(); ?>"><?= $chantier->getClient() . ' - ' . $chantier->getChantierCategorie(); ?></option>
-                                        <?php
-                                    endif;
-                                endforeach;
+                                if (!empty($liste_chantier)):
+                                    foreach ($liste_chantier as $chantier):
+                                        if ($chantier->getEtat() <> 'Termine'):
+                                            ?>
+                                            <option value="<?= $chantier->getId(); ?>"><?= $chantier->getClient() . ' - ' . $chantier->getChantierCategorie(); ?></option>
+                                            <?php
+                                        endif;
+                                    endforeach;
+                                endif;
                                 ?>
                             </select>
                         </div>
@@ -695,11 +691,13 @@ if ($this->session->userdata('niveau') <= 2):
                             <select name="addLivraisonChantier" id="addLivraisonChantier" class="superselect" data-width="100%" data-show-subtext="true">
                                 <option value="0">Selectionnez un chantier...</option>
                                 <?php
-                                foreach ($liste_chantier as $chantier):
-                                    if ($chantier->getEtat() <> 'Termine'):
-                                        echo '<option value="' . $chantier->getId() . '" data-content="<span style=\'font-size:12px;\'>' . $chantier->getClient() . '</span> - <span style=\'color:blue;\'>' . $chantier->getChantierCategorie() . '</span><span style=\'font-weight:bold; color:grey; font-size:8px; position:relative; top:5px;\' class=\'pull-right\'>' . $chantier->getVille() . '</span>">' . $chantier->getClient() . ' | ' . $chantier->getVille() . '</option>';
-                                    endif;
-                                endforeach;
+                                if (!empty($liste_chantier)):
+                                    foreach ($liste_chantier as $chantier):
+                                        if ($chantier->getEtat() <> 'Termine'):
+                                            echo '<option value="' . $chantier->getId() . '" data-content="<span style=\'font-size:12px;\'>' . $chantier->getClient() . '</span> - <span style=\'color:blue;\'>' . $chantier->getChantierCategorie() . '</span><span style=\'font-weight:bold; color:grey; font-size:8px; position:relative; top:5px;\' class=\'pull-right\'>' . $chantier->getVille() . '</span>">' . $chantier->getClient() . ' | ' . $chantier->getVille() . '</option>';
+                                        endif;
+                                    endforeach;
+                                endif;
                                 ?>
                             </select>
                         </div>
