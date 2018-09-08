@@ -217,11 +217,11 @@ small{
     border-bottom:1px solid black;
     border-right:1px solid black;
     font-size:11px;
-    min-width: 441px;
+/*    min-width: 441px;*/
     background: #FFF;
 }
 .cellJours, .cellAujourdhui {	
-    width : 63px;
+/*    width : 63px;*/
     font-size:10px;
     background: #FFF;
     border: 1px solid grey;
@@ -247,11 +247,13 @@ small{
     border-right : 2px double #1f3863;
 }
 .matin, .matinInactif {
+    width: 50%;
     border-bottom:1px solid #bdc1cc;
     background: #f4f5f7;    
     color:#f4f5f7;
 }
-.aprem, .apremInactif {    
+.aprem, .apremInactif {   
+    width: 50%;
     border-right:1px solid #bdc1cc;
     border-bottom:1px solid #bdc1cc;
     background: #f4f5f7;    

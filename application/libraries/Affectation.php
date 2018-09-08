@@ -97,7 +97,7 @@ class Affectation {
         $CI = & get_instance();
 
 
-        $positionLeft = ceil(($this->affectationDebut - $premierJourPlanning) / 86400) * ($largeur * 2 + 3) + 3;
+        $positionLeft = ceil(($this->affectationDebut - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
         //si on commence de l'aprem, on ajoute une 1/2 journée
         if ($this->affectationDebutMoment == 2) {
             $positionLeft += $largeur;

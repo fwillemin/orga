@@ -51,7 +51,7 @@
                             for ($i = 0; $i < $nbSemainesPlanning; $i++):
                                 $jourEncours = $premierJourPlanning + (8 + $i * 7) * 86400;
                                 ?>
-                                <td class="cellSemaines" colspan="14" align="center">
+                                <td class="cellSemaines" colspan="14" align="center" style="min-width: <?= 14 * ($this->largeur + 1.5); ?>px;">
                                     <?= $this->cal->dateFrancais($jourEncours, 'Ma') . ' | Semaine ' . date('W', $jourEncours); ?>
                                 </td>
                                 <?php
@@ -80,9 +80,9 @@
                                 endif;
                                 if (date('dmy', $currentDate) == date('dmy')):
                                     ?>
-                                    <td class="cellAujourdhui" align="center" colspan="2"><?= date('d', $currentDate); ?></td>
+                                    <td class="cellAujourdhui" align="center" colspan="2" style="min-width: <?= 2 * ($this->largeur + 1.5); ?>px;"><?= date('d', $currentDate); ?></td>
                                 <?php else: ?>
-                                    <td class="cellJours" align="center" colspan="2"><?= date('d', $currentDate); ?></td>
+                                    <td class="cellJours" align="center" colspan="2" style="min-width: <?= 2 * ($this->largeur + 1.5); ?>px;"><?= date('d', $currentDate); ?></td>
                                 <?php
                                 endif;
                             endfor;
@@ -118,11 +118,11 @@
                                     // si on est un samedi ou un dimanche
                                     if ($i != 0 and ( ($i + 1) % 7 == 0) or ( $i + 2) % 7 == 0):
                                         ?>
-                                        <td class="we matin" style="width:<?= $this->largeur; ?>;"></td>
-                                        <td class="we aprem" style="width:<?= $this->largeur; ?>;"></td>
+                                        <td class="we matin"></td>
+                                        <td class="we aprem"></td>
                                     <?php else: ?>
-                                        <td class="<?= $personnel->getPersonnelActif() == 1 ? 'cell matin' : 'matinInactif'; ?>" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>" style="width:<?= $this->largeur; ?>;"></td>
-                                        <td class="<?= $personnel->getPersonnelActif() == 1 ? 'cell aprem' : 'apremInactif'; ?>" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>" style="width:<?= $this->largeur; ?>;"></td>
+                                        <td class="<?= $personnel->getPersonnelActif() == 1 ? 'cell matin' : 'matinInactif'; ?>" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>"></td>
+                                        <td class="<?= $personnel->getPersonnelActif() == 1 ? 'cell aprem' : 'apremInactif'; ?>" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>"></td>
                                     <?php
                                     endif;
                                 endfor;
