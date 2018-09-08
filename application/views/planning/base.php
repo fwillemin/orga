@@ -118,10 +118,11 @@
                                     // si on est un samedi ou un dimanche
                                     if ($i != 0 and ( ($i + 1) % 7 == 0) or ( $i + 2) % 7 == 0):
                                         ?>
-                                        <td class="we matin"></td><td class="we aprem"></td>
+                                        <td class="we matin" style="width:<?= $this->largeur; ?>;"></td>
+                                        <td class="we aprem" style="width:<?= $this->largeur; ?>;"></td>
                                     <?php else: ?>
-                                        <td class="<?= $personnel->getPersonnelActif() == 1 ? 'cell matin' : 'matinInactif'; ?>" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>"></td>
-                                        <td class="<?= $personnel->getPersonnelActif() == 1 ? 'cell aprem' : 'apremInactif'; ?>" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>"></td>
+                                        <td class="<?= $personnel->getPersonnelActif() == 1 ? 'cell matin' : 'matinInactif'; ?>" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>" style="width:<?= $this->largeur; ?>;"></td>
+                                        <td class="<?= $personnel->getPersonnelActif() == 1 ? 'cell aprem' : 'apremInactif'; ?>" jour="<?= date('Y-m-d', $currentDate); ?>" data-personnelid="<?= $personnel->getPersonnelId(); ?>" style="width:<?= $this->largeur; ?>;"></td>
                                     <?php
                                     endif;
                                 endfor;
@@ -232,64 +233,45 @@
                     </table>
 
                     <?php
-                    // positionnement d'une grande div de we
-                    //hauteur de la div
-//                        $hauteur_we = $hauteur * $nb_personnel - 2;
-//                        for ($i = 0; $i < $nbSemainesPlanning; $i++):
-//
-//                            $ecart_we = $i * (($largeur * 2) + 3) * 2 + ($i + 1) * 5 * (($largeur * 2) + 3) + 2;
-//
-                    ?>
-                                                                    <!--<div class="div_week_end" style="left://<?= $ecart_we . 'px'; ?>; height:<?= $hauteur_we . 'px'; ?>;"></div>-->
-                    <?php
-//                        endfor;
-                    //positionnement d'une div de masquage
-                    ?>
-                    <!--                        <div id="masque_planning" class="masque" style="
-                                                 width : <?= ($nbSemainesPlanning * 7 * (($largeur * 2) + 3)) . 'px'; ?>;
-                                                 height:<?= $hauteur_we + 100 . 'px'; ?>;"
-                                                 ></div>-->
-
-                    <?php
                     // --------------------------------- affectation ------------------------------------
-                    if (!empty($liste_affectation)):
-                        foreach ($liste_affectation as $a):
+                    if (!empty($affectationsPlanning)):
+                        foreach ($affectationsPlanning as $affectation):
 
                             /* si l'affectation ne rentre pas dans le planning (cas des divers) ou que le personnel n'existe pas (personnel ayant uniquement des divers) on passe */
-                            if ($a->getfin() < $premierJourPlanning || !in_array($a->getId_personnel(), $personnelListe)):
-                                continue;
-                            else:
+//                            if ($a->getfin() < $premierJourPlanning || !in_array($a->getId_personnel(), $personnelListe)):
+//                                continue;
+//                            else:
+                            //recherche de la ligne d'apposition
+//                                $i = 0;
+//                                foreach ($personnelsPlanning as $p):
+//                                    if ($a->getId_personnel() == $p->getId()) {
+//                                        $ligne = $i;
+//                                        break;
+//                                    }
+//                                    $i++;
+//                                endforeach;
+//                                /* on ne peux plus déplacer une affectation qui a eu des heures saisies */
+//                                if (intval($a->getAffectationHeuresSaisies()) == 0):
+//                                    $drag = TRUE;
+//                                else:
+//                                    $drag = FALSE;
+//                                endif;
+//
+//                                if ($a->getEtat() == 'Termine'): $type = 'termine';
+//                                    $drag = FALSE;
+//                                    $resize = FALSE;
+//                                else: $type = 'active';
+//                                    $resize = TRUE;
+//                                endif;
+//                                /* on restreint les options si l'utilisateur n'est pas au mins niveau 2 (direction ou administration) */
+//                                if ($this->session->userdata('niveau') > 2): $drag = FALSE;
+//                                    $resize = FALSE;
+//                                endif;
+//                                /* on lance l'apposition de l'affectation sur le planning */
+//                                echo $this->organibat->affichageDiv($a, $type, $premierJourPlanning, $ligne, $drag, $resize, $hauteur, $largeur);
+                            echo $affectation->getAffectationHTML();
 
-                                //recherche de la ligne d'apposition
-                                $i = 0;
-                                foreach ($personnelsPlanning as $p):
-                                    if ($a->getId_personnel() == $p->getId()) {
-                                        $ligne = $i;
-                                        break;
-                                    }
-                                    $i++;
-                                endforeach;
-                                /* on ne peux plus déplacer une affectation qui a eu des heures saisies */
-                                if (intval($a->getAffectationHeuresSaisies()) == 0):
-                                    $drag = TRUE;
-                                else:
-                                    $drag = FALSE;
-                                endif;
-
-                                if ($a->getEtat() == 'Termine'): $type = 'termine';
-                                    $drag = FALSE;
-                                    $resize = FALSE;
-                                else: $type = 'active';
-                                    $resize = TRUE;
-                                endif;
-                                /* on restreint les options si l'utilisateur n'est pas au mins niveau 2 (direction ou administration) */
-                                if ($this->session->userdata('niveau') > 2): $drag = FALSE;
-                                    $resize = FALSE;
-                                endif;
-                                /* on lance l'apposition de l'affectation sur le planning */
-                                echo $this->organibat->affichageDiv($a, $type, $premierJourPlanning, $ligne, $drag, $resize, $hauteur, $largeur);
-
-                            endif;
+//                            endif;
                         endforeach;
                     endif;
 

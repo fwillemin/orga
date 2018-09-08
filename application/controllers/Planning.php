@@ -25,7 +25,7 @@ class Planning extends My_Controller {
                 break;
             case 3:
                 $this->hauteur = 50;
-                $this->largeur = 38;
+                $this->largeur = 35;
                 break;
         endswitch;
     }
@@ -128,7 +128,7 @@ class Planning extends My_Controller {
 
         if ($affectations):
             foreach ($affectations as $affectation):
-                $affectation->getHTML($premierJourPlanning, $personnelsPlanning);
+                $affectation->getHTML($premierJourPlanning, $personnelsPlanning, $this->hauteur, $this->largeur);
             endforeach;
             unset($affectation);
         endif;
@@ -215,7 +215,7 @@ class Planning extends My_Controller {
             'personnelsPlanning' => $personnelsPlanning, /* Personnels affichés sur le planning */
             //'indisponibilite' => $indisponibilites,
             //'liste_chantier' => $chantiers,
-            'listeAffectations' => $affectations,
+            'affectationsPlanning' => $affectations,
             //'liste_heure' => $heures,
             //'listeLivraison' => $livraisons,
             //'listeFournisseurs' => $this->managerFournisseurs->liste(),
