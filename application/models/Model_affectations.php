@@ -20,12 +20,11 @@ class Model_affectations extends MY_model {
                 ->set('affectationPersonnelId', $affectation->getAffectationPersonnelId())
                 ->set('affectationPlaceId', $affectation->getAffectationPlaceId())
                 ->set('affectationNbDemi', $affectation->getAffectationNbDemi())
-                ->set('affectationDebut', $affectation->getAffectationDebut())
+                ->set('affectationDebutDate', $affectation->getAffectationDebutDate())
                 ->set('affectationDebutMoment', $affectation->getAffectationDebutMoment())
-                ->set('affectationFin', $affectation->getAffectationFin())
+                ->set('affectationFinDate', $affectation->getAffectationFinDate())
                 ->set('affectationFinMoment', $affectation->getAffectationFinMoment())
                 ->set('affectationCases', $affectation->getAffectationCases())
-                ->set('affectationEtat', $affectation->getAffectationEtat())
                 ->set('affectationCommentaire', $affectation->getAffectationCommentaire())
                 ->set('affectationType', $affectation->getAffectationType())
                 ->set('affectationAffichage', $affectation->getAffectationAffichage())
@@ -45,12 +44,11 @@ class Model_affectations extends MY_model {
                 ->set('affectationPersonnelId', $affectation->getAffectationPersonnelId())
                 ->set('affectationPlaceId', $affectation->getAffectationPlaceId())
                 ->set('affectationNbDemi', $affectation->getAffectationNbDemi())
-                ->set('affectationDebut', $affectation->getAffectationDebut())
+                ->set('affectationDebutDate', $affectation->getAffectationDebutDate())
                 ->set('affectationDebutMoment', $affectation->getAffectationDebutMoment())
-                ->set('affectationFin', $affectation->getAffectationFin())
+                ->set('affectationFinDate', $affectation->getAffectationFinDate())
                 ->set('affectationFinMoment', $affectation->getAffectationFinMoment())
                 ->set('affectationCases', $affectation->getAffectationCases())
-                ->set('affectationEtat', $affectation->getAffectationEtat())
                 ->set('affectationCommentaire', $affectation->getAffectationCommentaire())
                 ->set('affectationType', $affectation->getAffectationType())
                 ->set('affectationAffichage', $affectation->getAffectationAffichage())
@@ -77,7 +75,7 @@ class Model_affectations extends MY_model {
      * @param array $tri Critères de tri des affectations
      * @return array Liste d'objets de la classe Affectation
      */
-    public function getAffectations($where = array(), $tri = 'affectationDebutASC', $type = 'object') {
+    public function getAffectations($where = array(), $tri = 'affectationDebutDate ASC', $type = 'object') {
         $query = $this->db->select('a.*, c.chantierEtat AS affectationChantierEtat')
                 ->from('affectations a')
                 ->join('chantiers c', 'c.chantierId = a.affectationChantierId', 'left')
@@ -105,13 +103,13 @@ class Model_affectations extends MY_model {
         return $this->retourne($query, $type, self::classe, true);
     }
 
-    public function getAffectationsPlanning($premierJour, $dernierJour, $etat = 1, $tri = 'affectationDebutASC', $type = 'object') {
+    public function getAffectationsPlanning($premierJour, $dernierJour, $etat = 1, $tri = 'affectationDebutDate ASC', $type = 'object') {
         $query = $this->db->select('a.*, c.chantierEtat AS affectationChantierEtat')
                 ->from('affectations a')
                 ->join('chantiers c', 'c.chantierId = a.affectationChantierId', 'left')
                 ->join('affaires d', 'd.affaireId = c.chantierAffaireId', 'left')
                 ->where('d.affaireEtablissementId', $this->session->userdata('etablissementId'))
-                ->where(array('a.affectationdebut <=' => $dernierJour, 'a.affectationFin >=' => $premierJour, 'c.chantierEtat <=' => $etat))
+                ->where(array('a.affectationDebutDate <=' => $dernierJour, 'a.affectationFinDate >=' => $premierJour, 'c.chantierEtat <=' => $etat))
                 ->order_by($tri)
                 ->get();
         return $this->retourne($query, $type, self::classe);

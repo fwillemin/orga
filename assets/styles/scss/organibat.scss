@@ -74,8 +74,10 @@ table {
 }
 
 .affectation {       
+    position: absolute;
+    z-index: 2;
     border: 1px solid;    
-    padding:4px;
+    padding:2px 3px 2px 2px;
     font-size:12px;
     @include border-radius(4px, 4px);
 }
@@ -98,7 +100,8 @@ table {
 }
 
 small{
-    line-height: 75%;    
+    line-height: 75%;
+    font-size : 12px;
     &.light{
         color: lightsteelblue;
     }
@@ -166,10 +169,10 @@ small{
     }
 }
 .progress {
-    height: 5px;
+    height: 3px;
 }
 .progress-bar {
-    height: 2px;
+    height: 3px;
     @include border-radius(0px, 0px);
 }
 #datepicker-container {
@@ -217,26 +220,16 @@ small{
     border-bottom:1px solid black;
     border-right:1px solid black;
     font-size:11px;
-/*    min-width: 441px;*/
     background: #FFF;
 }
 .cellJours, .cellAujourdhui {	
-/*    width : 63px;*/
     font-size:10px;
     background: #FFF;
     border: 1px solid grey;
     padding-top: 3px;
+    text-align: center;
 }
-.upright {
-    border-bottom:1px solid black;
-    border-right:1px solid black;
-}
-.reverse {
-    border-top:1px solid black;
-    border-right:1px solid black;
-    border-bottom-right-radius: 8px;
-    border-bottom-left-radius: 8px;
-}
+
 .cellAujourdhui {
     background: #33d52b;
 }
@@ -264,12 +257,13 @@ small{
 }
 .we, .weLivraison {
     background: #2e3541;
+    width : 50%;
 }
 .cellLivraison {
     background : #e8ebf0;
     border:1px solid grey;
     padding:3px;
-    width : 63px;
+    width : 100%;
 }
 .cell:hover, .cellLivraison:hover {
     color:#000;
@@ -284,6 +278,32 @@ small{
     font-weight:bold;
     font-size:10px;
     cursor:pointer;
+    &:hover{
+        text-decoration: underline;
+    }
+}
+.selectpickerPersonnel {
+    font-size:12px;
+    color:$noir;    
+}
+.selectpickerClient {
+    font-size:12px;
+    color:steelblue;
+    font-weight: bold;
+}
+.selectpickerChantier {
+    font-size:12px;
+    color:gray;
+    font-style: italic;
+}
+.dropdown-item.active, .dropdown-item:active{
+    background-color: lavender;    
+}
+
+#modalAffectation {
+    & a{
+        color: steelblue;
+    }
 }
 
 

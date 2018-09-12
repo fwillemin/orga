@@ -70,7 +70,6 @@ class Chantiers extends My_Controller {
 
             if ($this->input->post('addChantierId')):
                 $chantier = $this->managerChantiers->getChantierById($this->input->post('addChantierId'));
-                $chantier->setChantierAffaireId($this->input->post('addChantierAffaireId'));
                 $chantier->setChantierPlaceId($this->input->post('addChantierPlaceId') ?: null);
                 $chantier->setChantierCategorieId($this->input->post('addChantierCategorieId') ?: null);
                 $chantier->setChantierObjet(ucfirst($this->input->post('addChantierObjet')));
@@ -105,6 +104,12 @@ class Chantiers extends My_Controller {
                 $chantier = new Chantier($dataChantier);
                 $this->managerChantiers->ajouter($chantier);
 
+                $affaire = $this->managerAffaires->getAffaireById($chantier->getChantierAffaireId());
+                if ($affaire->getAffaireEtat() == 1):
+                    $affaire->setAffaireEtat(2);
+                    $this->managerAffaires->editer($affaire);
+                endif;
+
             endif;
 
             echo json_encode(array('type' => 'success', 'chantierId' => $chantier->getChantierId()));
@@ -122,6 +127,14 @@ class Chantiers extends My_Controller {
         else:
             $chantier = $this->managerChantiers->getChantierById($this->input->post('chantierId'));
             $this->managerChantiers->delete($chantier);
+
+            $nbChantiersAffaireRestants = $this->managerChantiers->count(array('chantierAffaireId' => $chantier->getChantierAffaireId()));
+            if ($nbChantiersAffaireRestants == 0):
+                $affaire = $this->managerAffaires->getAffaireById($chantier->getChantierAffaireId());
+                $affaire->setAffaireEtat(1);
+                $this->managerAffaires->editer($affaire);
+            endif;
+
             echo json_encode(array('type' => 'success'));
         endif;
     }

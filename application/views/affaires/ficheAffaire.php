@@ -9,7 +9,7 @@
                     </a>
                     <?php
                     $client = $affaire->getAffaireClient();
-                    echo $client->getClientNom() . '<span style="color:grey; font-size:12px; position: absolute; top:60px; left: 55px;">[Affaire ' . $affaire->getAffaireId() . ']</span> ';
+                    echo $client->getClientNom() . '<small class="light" style="position: absolute; top:60px; left: 55px;">[Affaire ' . $affaire->getAffaireId() . ']</small> ';
                     ?>
                     <h4 style="margin-top: 15px;"><?= $affaire->getAffaireObjet(); ?></h4>
                 </h2>

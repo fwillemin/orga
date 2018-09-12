@@ -92,8 +92,8 @@
                             </td>
                             <td>
                                 <select name="tailleAffectations" id="tailleAffectations" class="form-control form-control-sm" style="text-align: right;">
-                                    <option value="1" disabled>Petites</option>
-                                    <option value="2" <?= ($this->session->userdata('parametres')['tailleAffectations'] == 2) ? 'selected' : ''; ?>>Standard</option>
+                                    <option value="1" <?= ($this->session->userdata('parametres')['tailleAffectations'] == 1) ? 'selected' : ''; ?>>Petites</option>
+                                    <option value="2" <?= ($this->session->userdata('parametres')['tailleAffectations'] == 2) ? 'selected' : ''; ?>>Standards</option>
                                     <option value="3" <?= ($this->session->userdata('parametres')['tailleAffectations'] == 3) ? 'selected' : ''; ?>>Grandes</option>
                                 </select>
                             </td>
@@ -113,3 +113,4 @@
             </div>
         </div>
     </div>
+</div>

@@ -79,4 +79,16 @@ class Own {
         return $output;
     }
 
+    public function nbCasesAffectation(Affectation $affectation) {
+
+        $nbCases = (($affectation->getAffectationFinDate() - $affectation->getAffectationDebutDate()) / 43200) + 2;
+        if ($affectation->getAffectationDebutMoment() == 2):
+            $nbCases--;
+        endif;
+        if ($affectation->getAffectationFinMoment() == 1):
+            $nbCases--;
+        endif;
+        return $nbCases;
+    }
+
 }

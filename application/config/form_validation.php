@@ -620,7 +620,7 @@ $config = array(
         array(
             'field' => 'tailleAffectations',
             'label' => 'Taille des affectations du planning',
-            'rules' => 'required|in_list[2,3]'
+            'rules' => 'required|in_list[1,2,3]'
         )
     ),
     /* get Affectation */
@@ -643,13 +643,13 @@ $config = array(
             'label' => 'ID Chantier',
             'rules' => 'callback_existChantier|required'
         ),
+//        array(
+//            'field' => 'addAffectationPersonnelsIds',
+//            'label' => 'ID personnels',
+//            'rules' => 'required'
+//        ),
         array(
-            'field' => 'addAffectationPersonnelId',
-            'label' => 'ID personnel',
-            'rules' => 'callback_existPersonnel|required'
-        ),
-        array(
-            'field' => 'addAffectationDebut',
+            'field' => 'addAffectationDebutDate',
             'label' => 'Début',
             'rules' => 'required|trim'
         ),
@@ -659,23 +659,13 @@ $config = array(
             'rules' => 'required|in_list[1,2]'
         ),
         array(
-            'field' => 'addAffectationFin',
+            'field' => 'addAffectationFinDate',
             'label' => 'Fin',
             'rules' => 'required|trim'
         ),
         array(
             'field' => 'addAffectationFinMoment',
             'label' => 'Fin à quel moment',
-            'rules' => 'required|in_list[1,2]'
-        ),
-        array(
-            'field' => 'addAffectationCases',
-            'label' => 'Cases de planning',
-            'rules' => 'is_natural_no_zero|required'
-        ),
-        array(
-            'field' => 'addAffectationEtat',
-            'label' => 'Etat',
             'rules' => 'required|in_list[1,2]'
         ),
         array(
@@ -690,8 +680,8 @@ $config = array(
         ),
         array(
             'field' => 'addAffectationAffichage',
-            'label' => 'Type',
-            'rules' => 'required|in_list[1,2,3]'
+            'label' => 'Affichage',
+            'rules' => 'in_list[1,2,3]'
         )
     )
 );

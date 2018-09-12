@@ -109,6 +109,7 @@ class Affaires extends My_Controller {
             else:
 
                 $dataAffaire = array(
+                    'affaireEtablissementId' => $this->session->userdata('etablissementId'),
                     'affaireClientId' => $this->input->post('addAffaireClientId'),
                     'affairePlaceId' => $this->input->post('addAffairePlaceId'),
                     'affaireCommercialId' => $this->input->post('addAffaireCommercialId') ?: null,

@@ -21,21 +21,24 @@ class Affectation {
     protected $affectationPlace;
     /* -- */
     protected $affectationNbDemi;
-    protected $affectationDebut;
+    protected $affectationDebutDate;
     protected $affectationDebutMoment; /* 1 Matin, 2 Aprem */
-    protected $affectationFin;
+    protected $affectationDebutMomentText;
+    protected $affectationFinDate;
     protected $affectationFinMoment; /* 1 Matin, 2 Aprem */
+    protected $affectationFinMomentText;
     protected $affectationCases; /* Nombre de case du planning incluant les week-end */
     /* --  */
-    protected $affectationEtat;
     protected $affectationChantierEtat; /* Etat du chantier pere */
     protected $affectationCommentaire;
     protected $affectationType;
+    protected $affectationTypeText;
     protected $affectationAffichage; /* 1 FULL, 2 BAS, 3 HAUT */
     /* --- */
     protected $affectationAffaire;
     protected $affectationClient;
     protected $affectationHTML;
+    protected $affectationHeures;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -49,6 +52,33 @@ class Affectation {
             if (method_exists($this, $method))
                 $this->$method($value);
         endforeach;
+        switch ($this->affectationType):
+            case 1:
+                $this->affectationTypeText = 'Chantier';
+                break;
+            case 2:
+                $this->affectationTypeText = 'Atelier';
+                break;
+            case 3:
+                $this->affectationTypeText = 'Service après-vente';
+                break;
+        endswitch;
+        switch ($this->affectationDebutMoment):
+            case 1:
+                $this->affectationDebutMomentText = 'matin';
+                break;
+            case 2:
+                $this->affectationDebutMomentText = 'après-midi';
+                break;
+        endswitch;
+        switch ($this->affectationFinMoment):
+            case 1:
+                $this->affectationFinMomentText = 'matin';
+                break;
+            case 2:
+                $this->affectationFinMomentText = 'après-midi';
+                break;
+        endswitch;
     }
 
     public function hydrateChantier() {
@@ -58,7 +88,7 @@ class Affectation {
 
     public function hydratePersonnel() {
         $CI = & get_instance();
-        $this->affectationPersonnel = $CI->managerPersonnels->getPersonnelById($this->affectationPersonelId);
+        $this->affectationPersonnel = $CI->managerPersonnels->getPersonnelById($this->affectationPersonnelId);
     }
 
     public function hydratePlace() {
@@ -75,29 +105,23 @@ class Affectation {
         $this->affectationClient = $CI->managerClients->getClientById($this->affectationAffaire->getAffaireClientId());
     }
 
-    /**
-     * Génère une div representant l'affectation dans le planning en mode readOnly
-     *
-     * @param Affectation $affectation Affectation à afficher
-     * @param string $type Indispo ou active
-     * @param integer $premier_jour timestamp du premier jour du planning
-     * @param int $num_ligne Numéro de la ligne de placement de cette affectation correpsondant au personnel affecté
-     * @param boolean $drag La div peut-elle être déplacée
-     * @param boolean $resize La div peut-elle être redimensionnée
-     * @param integer $hauteur Hauteur de la div
-     * @param integer $largeur Largeur de la div
-     *
-     * @return string Retourne le code HTML de la div à insérer dans le planning
-     */
-    public function getHTML2($premierJourPlanning = null, $personnelsPlanning = array(), $hauteur, $largeur, $drag, $resize) {
-
+    public function hydrateHeures() {
+//        $CI = & get_instance();
+//        $this->affectationHeures = $CI->managerHeures->getHeuresByAffectationId($this->affectationId);
     }
 
-    public function getHTML($premierJourPlanning = null, $personnelsPlanning = array(), $hauteur, $largeur) {
+    /**
+     *
+     * @param type $premierJourPlanning
+     * @param type $personnelsPlanning Liste du personnel du planning pour calculer le numéro de ligne si on ne l'a pas dans la varible "ligne"
+     * @param int $ligne Numéro de ligne dans le planning
+     * @param type $hauteur
+     * @param type $largeur
+     */
+    public function getHTML($premierJourPlanning = null, $personnelsPlanning = array(), $numLigne = null, $hauteur, $largeur) {
         $CI = & get_instance();
 
-
-        $positionLeft = ceil(($this->affectationDebut - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
+        $positionLeft = ceil(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
         //si on commence de l'aprem, on ajoute une 1/2 journée
         if ($this->affectationDebutMoment == 2) {
             $positionLeft += $largeur;
@@ -106,65 +130,66 @@ class Affectation {
         $classes = 'affectation';
         $attributs = 'js-affectationid="' . $this->affectationId . '" js-chantierid="' . $this->affectationChantierId; /* ac signifie affectation du chantier + l'id du chantier associé => utilisé pour mettre toutes les affectations les elements d'un chantier en surbrillance lors du click dans le slide gauche */
         $taille = $this->affectationCases * ($largeur + 1) - 3;
-        $zindex = 2;
-        $background = $this->getAffectationChantier()->getChantierCouleur();
+        $background = $this->affectationChantier->getChantierCouleur();
         if ($this->getAffectationChantier()->getChantierEtat() == 1):
             $border = '1px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire();
-            $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur());
+            $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur(), 0.85);
         else:
             $border = '1px dashed ' . $this->getAffectationChantier()->getChantierCouleurSecondaire();
             $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur(), 0.2);
         endif;
-        $couleur = $this->getAffectationChantier()->getChantierCouleur();
+        //$couleur = $this->getAffectationChantier()->getChantierCouleur();
 
-
-        if ($CI->ion_auth->in_group(array(50))):
-            $link = site_url('affaires/ficheAffaire/' . $this->getAffectationAffaire()->getAffaireId());
-        else:
-            $link = '#';
-        endif;
-
-        $txt = '<a href="' . $link . '" data-toggle="tooltip" title="' . $this->getAffectationClient()->getClientNom() . ' [' . $this->getAffectationChantier()->getChantierCategorie() . ' - ' . $this->getAffectationChantier()->getChantierObjet() . ']" style="color:' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';">'
-                . '<span class="planningDivText ' . ($this->getAffectationChantier()->getChantierEtat() == 2 ? 'surligner"' : '') . '">'
-                . substr($this->getAffectationClient()->getClientNom(), 0, floor($taille / 10)) .
-                '</span></a>';
+        $txt = '<span class="planningDivText" data-toggle="tooltip" title="' . $this->getAffectationClient()->getClientNom() . ' [' . $this->getAffectationChantier()->getChantierCategorie() . ' - ' . $this->getAffectationChantier()->getChantierObjet() . ']" style="color:' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';">'
+                . substr($this->getAffectationClient()->getClientNom(), 0, floor($taille / 10))
+                . '</span>';
 
 
         //recentrage des div d'une seule 1/2j
-        if ($taille < $largeur) :
-            $positionLeft -= 1;
-        endif;
-
+//        if ($taille < $largeur) :
+//            $positionLeft -= 1;
+//        endif;
         //calcul de la ligne d'apposition
-        $ligne = 0;
-        while ($personnelsPlanning[$ligne]->getPersonnelId() != $this->affectationPersonnelId):
-            $ligne++;
-        endwhile;
-        $positionTop = $hauteur * $ligne + 42;
+
+        if (!$numLigne):
+            $ligne = 1;
+            while ($personnelsPlanning[$ligne - 1]->getPersonnelId() != $this->affectationPersonnelId):
+                $ligne++;
+            endwhile;
+        else:
+            $ligne = $numLigne;
+        endif;
+        $positionTop = $hauteur * ($ligne - 1) + 41;
 
         //mode d'affichage de la div (pleine case, 1/2 haut ou 1/2 bas)
         if ($this->affectationAffichage == 1):
-            $hauteurDiv = $hauteur - 5;
+            $hauteurDiv = $hauteur - 3;
         else:
             $hauteurDiv = floor($hauteur / 2) - 2;
             if ($this->affectationAffichage == 2):
-                $positionTop += floor($hauteur / 2) - 3;
+                $positionTop += floor($hauteur / 2) - 1;
             endif;
         endif;
         $this->affectationHTML = '<div style="'
-                . 'position:absolute;'
-                . ' top:' . $positionTop . 'px;'
+                . 'top:' . $positionTop . 'px;'
                 . ' left:' . $positionLeft . 'px;'
                 . ' background-color:' . $background . ';'
                 . ' border:' . $border . ';'
                 . ' width:' . $taille . 'px;'
-                . ' height:' . $hauteurDiv . 'px;'
-                . ' z-index :' . $zindex . ';"'
+                . ' height:' . $hauteurDiv . 'px;"'
                 . ' data-affectationid="' . $this->affectationId . '"'
-                . ' data-placement="' . $this->affectationAffichage . '"'
+                . ' data-ligne="' . $ligne . '"'
+                //. ' data-placement="' . $this->affectationAffichage . '"'
                 . ' class="' . $classes . '" >'
                 . $txt
                 . '</div>';
+    }
+
+    public function toggleAffichage() {
+        $this->affectationAffichage++;
+        if ($this->affectationAffichage > 3):
+            $this->affectationAffichage = 1;
+        endif;
     }
 
     function getAffectationId() {
@@ -203,16 +228,16 @@ class Affectation {
         return $this->affectationNbDemi;
     }
 
-    function getAffectationDebut() {
-        return $this->affectationDebut;
+    function getAffectationDebutDate() {
+        return $this->affectationDebutDate;
     }
 
     function getAffectationDebutMoment() {
         return $this->affectationDebutMoment;
     }
 
-    function getAffectationFin() {
-        return $this->affectationFin;
+    function getAffectationFinDate() {
+        return $this->affectationFinDate;
     }
 
     function getAffectationFinMoment() {
@@ -221,10 +246,6 @@ class Affectation {
 
     function getAffectationCases() {
         return $this->affectationCases;
-    }
-
-    function getAffectationEtat() {
-        return $this->affectationEtat;
     }
 
     function getAffectationChantierEtat() {
@@ -253,6 +274,10 @@ class Affectation {
 
     function getAffectationHTML() {
         return $this->affectationHTML;
+    }
+
+    function getAffectationHeures() {
+        return $this->affectationHeures;
     }
 
     function setAffectationId($affectationId) {
@@ -291,16 +316,16 @@ class Affectation {
         $this->affectationNbDemi = $affectationNbDemi;
     }
 
-    function setAffectationDebut($affectationDebut) {
-        $this->affectationDebut = $affectationDebut;
+    function setAffectationDebutDate($affectationDebutDate) {
+        $this->affectationDebutDate = $affectationDebutDate;
     }
 
     function setAffectationDebutMoment($affectationDebutMoment) {
         $this->affectationDebutMoment = $affectationDebutMoment;
     }
 
-    function setAffectationFin($affectationFin) {
-        $this->affectationFin = $affectationFin;
+    function setAffectationFinDate($affectationFinDate) {
+        $this->affectationFinDate = $affectationFinDate;
     }
 
     function setAffectationFinMoment($affectationFinMoment) {
@@ -309,10 +334,6 @@ class Affectation {
 
     function setAffectationCases($affectationCases) {
         $this->affectationCases = $affectationCases;
-    }
-
-    function setAffectationEtat($affectationEtat) {
-        $this->affectationEtat = $affectationEtat;
     }
 
     function setAffectationChantierEtat($affectationChantierEtat) {
@@ -341,6 +362,34 @@ class Affectation {
 
     function setAffectationHTML($affectationHTML) {
         $this->affectationHTML = $affectationHTML;
+    }
+
+    function setAffectationHeures($affectationHeures) {
+        $this->affectationHeures = $affectationHeures;
+    }
+
+    function getAffectationTypeText() {
+        return $this->affectationTypeText;
+    }
+
+    function setAffectationTypeText($affectationTypeText) {
+        $this->affectationTypeText = $affectationTypeText;
+    }
+
+    function getAffectationDebutMomentText() {
+        return $this->affectationDebutMomentText;
+    }
+
+    function getAffectationFinMomentText() {
+        return $this->affectationFinMomentText;
+    }
+
+    function setAffectationDebutMomentText($affectationDebutMomentText) {
+        $this->affectationDebutMomentText = $affectationDebutMomentText;
+    }
+
+    function setAffectationFinMomentText($affectationFinMomentText) {
+        $this->affectationFinMomentText = $affectationFinMomentText;
     }
 
 }

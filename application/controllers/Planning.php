@@ -19,16 +19,21 @@ class Planning extends My_Controller {
         $this->nbSemainesApres = $this->session->userdata('parametres')['nbSemainesApres'];
         switch ($this->session->userdata('parametres')['tailleAffectations']):
             case 1:
-            case 2:
                 $this->hauteur = 40;
                 $this->largeur = 30;
                 break;
-            case 3:
+            case 2:
                 $this->hauteur = 50;
                 $this->largeur = 35;
                 break;
+            case 3:
+                $this->hauteur = 60;
+                $this->largeur = 40;
+                break;
         endswitch;
     }
+
+    /* Permet la selection ou non des chantiers terminés dans le slide gauche */
 
     public function modAffichageTermines() {
         if (!$this->input->post('etat') || $this->input->post('etat') == 0):
@@ -64,13 +69,14 @@ class Planning extends My_Controller {
 
 
         /* Récuperation des données */
-        $personnelsActifs = $this->managerPersonnels->getPersonnels(array('personnelActif' => 1));
+        $personnelsActifs = $this->managerPersonnels->getPersonnels(array('personnelActif' => 1), 'personnelEquipeId DESC, personnelNom, personnelPrenom ASC');
         foreach ($personnelsActifs as $persoActif):
+            $persoActif->hydrateEquipe();
             $listePersonnel[] = $persoActif->getPersonnelId();
         endforeach;
 
         /* Affectations */
-        $affectations = $this->managerAffectations->getAffectationsPlanning($premierJourPlanning, $dernierJourPlanning, ($this->session->userdata('inclureTermines') ? 2 : 1), 'a.affectationDebut ASC');
+        $affectations = $this->managerAffectations->getAffectationsPlanning($premierJourPlanning, $dernierJourPlanning, ($this->session->userdata('inclureTermines') ? 2 : 1), 'a.affectationDebutDate ASC');
         /* On détermine un nouveau jour de début de planning avec le début le plus ancien des affectations selectionnées.
          * Pas de semaine avant cette date, le retour dans le passé est pris en compte dans la selection des affectations
          */
@@ -80,13 +86,14 @@ class Planning extends My_Controller {
             $dernier = $dernierJourPlanning;
 
             /* Permier et dernier jours du planning */
-            $premierJourPlanning = $this->cal->premierJourSemaine($affectations[0]->getAffectationDebut(), 0);
+            $premierJourPlanning = $this->cal->premierJourSemaine($affectations[0]->getAffectationDebutDate(), 0);
 
             foreach ($affectations as $affectation):
+                $affectation->hydrateOrigines();
 
                 /* Dernier jour du planning */
-                if ($affectation->getAffectationFin() > $dernier):
-                    $dernier = $affectation->getAffectationFin();
+                if ($affectation->getAffectationFinDate() > $dernier):
+                    $dernier = $affectation->getAffectationFinDate();
                 endif;
                 /* Liste du personnel non actif mais présent dans des affectations de la période, ajouté aux personnels actifs. */
                 if (!in_array($affectation->getAffectationPersonnelId(), $listePersonnel)):
@@ -95,7 +102,6 @@ class Planning extends My_Controller {
 
                 /* Recupération des affaires cloturées apparaissant sur la planning */
                 if ($this->session->userdata('inclureTermines')):
-                    $affectation->hydrateOrigines();
                     if ($affectation->getAffectationAffaire()->getAffaireEtat() == 3 && !in_array($affectation->getAffectationAffaire()->getAffaireId(), $listeAffairesClotureesPlanning)):
                         $listeAffairesClotureesPlanning[] = $affectation->getAffectationAffaire()->getAffaireId();
                     endif;
@@ -108,6 +114,7 @@ class Planning extends My_Controller {
             $dernierJourPlanning = $this->cal->dernierJourSemaine($dernier, $this->nbSemainesApres);
 
         endif;
+        $this->session->set_userdata('planningPersonnelsIds', $listePersonnel);
 
         /* Affaires du planning (toutes les non cloturées et les cloturées ayant une affectation sur le planning généré) */
         $affairesPlanning = $this->managerAffaires->getAffairesPlanning($listeAffairesClotureesPlanning);
@@ -128,7 +135,7 @@ class Planning extends My_Controller {
 
         if ($affectations):
             foreach ($affectations as $affectation):
-                $affectation->getHTML($premierJourPlanning, $personnelsPlanning, $this->hauteur, $this->largeur);
+                $affectation->getHTML($premierJourPlanning, $personnelsPlanning, null, $this->hauteur, $this->largeur);
             endforeach;
             unset($affectation);
         endif;
@@ -235,6 +242,180 @@ class Planning extends My_Controller {
             'content' => $this->viewFolder . __FUNCTION__
         );
         $this->load->view('template/content', $data);
+    }
+
+    /* Passe l'affectation à un affichage FULL, BAS, HAUT */
+
+    public function affectationToggleAffichage() {
+        if (!$this->form_validation->run('getAffectation')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
+            $affectation->hydrateOrigines();
+            $affectation->toggleAffichage();
+            $affectation->getHTML($this->session->userdata('premierJourPlanning'), array(), $this->input->post('ligne'), $this->hauteur, $this->largeur);
+            $this->managerAffectations->editer($affectation);
+            echo json_encode(array('type' => 'success', 'html' => $affectation->getAffectationHTML()));
+        endif;
+    }
+
+    public function addAffectation() {
+        if (!$this->ion_auth->in_group(60)):
+            echo json_encode(array('type' => 'error', 'message' => 'Vous ne possédez pas les droits necessaires'));
+        elseif (!$this->form_validation->run('addAffectation')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+
+            /* Personnels du planning */
+            $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($this->session->userdata('planningPersonnelsIds'));
+            if (!empty($personnelsPlanning)):
+                foreach ($personnelsPlanning as $personnel):
+                    $personnel->hydrateEquipe();
+                endforeach;
+            endif;
+
+            $chantier = $this->managerChantiers->getChantierById($this->input->post('addAffectationChantierId'));
+            $html = '';
+            if ($this->input->post('addAffectationId')):
+                $affectation = $this->managerAffectations->getAffectationById($this->input->post('addAffectationId'));
+                $affectation->hydrateHeures();
+                /* On ne peut changer le personnel d'une affectation si elle a des heures */
+                if (empty($affectation->getAffectationHeures())):
+                    $affectation->setAffectationPersonnelId($this->input->post('addAffectationPersonnelsIds')[0]);
+                endif;
+
+                $affectation->setAffectationType($this->input->post('addAffectationType'));
+                $affectation->setAffectationCommentaire($this->input->post('addAffectationCommentaire'));
+                $affectation->setAffectationChantierId($this->input->post('addAffectationChantierId'));
+                $affectation->setAffectationPlaceId($chantier->getChantierPlaceId());
+                $affectation->setAffectationDebutDate($this->own->mktimeFromInputDate($this->input->post('addAffectationDebutDate')));
+                $affectation->setAffectationDebutMoment($this->input->post('addAffectationDebutMoment'));
+                $affectation->setAffectationFinDate($this->own->mktimeFromInputDate($this->input->post('addAffectationFinDate')));
+                $affectation->setAffectationFinMoment($this->input->post('addAffectationFinMoment'));
+                $affectation->setAffectationNbDemi($this->input->post('addAffectationNbDemi'));
+                $affectation->setAffectationCases($this->own->nbCasesAffectation($affectation));
+
+                $this->managerAffectations->editer($affectation);
+
+
+            else:
+
+                foreach ($this->input->post('addAffectationPersonnelsIds') as $key => $personnelId):
+
+                    $dataAffectation = array(
+                        'affectationOriginId' => null,
+                        'affectationChantierId' => $this->input->post('addAffectationChantierId'),
+                        'affectationPersonnelId' => $personnelId,
+                        'affectationPlaceId' => $chantier->getChantierPlaceId(),
+                        'affectationNbDemi' => $this->input->post('addAffectationNbDemi'),
+                        'affectationDebutDate' => $this->own->mktimeFromInputDate($this->input->post('addAffectationDebutDate')),
+                        'affectationDebutMoment' => $this->input->post('addAffectationDebutMoment'),
+                        'affectationFinDate' => $this->own->mktimeFromInputDate($this->input->post('addAffectationFinDate')),
+                        'affectationFinMoment' => $this->input->post('addAffectationFinMoment'),
+                        'affectationCases' => 0,
+                        'affectationCommentaire' => $this->input->post('addAffectationCommentaire'),
+                        'affectationType' => $this->input->post('addAffectationType'),
+                        'affectationAffichage' => 1
+                    );
+
+                    $affectation = new Affectation($dataAffectation);
+                    $affectation->setAffectationCases($this->own->nbCasesAffectation($affectation));
+                    $this->managerAffectations->ajouter($affectation);
+
+                endforeach;
+
+            endif;
+            $affectation->hydrateOrigines();
+            $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
+
+            echo json_encode(array('type' => 'success', 'HTML' => $affectation->getAffectationHTML()));
+
+        endif;
+    }
+
+    public function getAffectationDetails() {
+
+        if (!$this->form_validation->run('getAffectation')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+
+            $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
+            $affectation->hydrateOrigines();
+            $affectation->hydratePersonnel();
+            $affectation->getAffectationChantier()->hydratePlace();
+
+            $affaire = array(
+                'affaireId' => $affectation->getAffectationAffaire()->getAffaireId(),
+                'affaireObjet' => $affectation->getAffectationAffaire()->getAffaireObjet(),
+                'affaireRemarque' => $affectation->getAffectationAffaire()->getAffaireRemarque()
+            );
+
+            $ratio = round($affectation->getAffectationChantier()->getChantierHeuresPlanifiees() * 100 / $affectation->getAffectationChantier()->getChantierHeuresPrevues());
+            if ($ratio > 100):
+                $bgClass = "progress-bar bg-danger";
+                $ratio = 100;
+            elseif ($ratio > 75):
+                $bgClass = "progress-bar bg-warning";
+            else:
+                $bgClass = "progress-bar bg-info";
+            endif;
+
+            $chantier = array(
+                'chantierId' => $affectation->getAffectationChantier()->getChantierId(),
+                'chantierObjet' => $affectation->getAffectationChantier()->getChantierObjet(),
+                'chantierPlace' => $affectation->getAffectationChantier()->getChantierPlace()->getPlaceAdresse(),
+                'chantierRemarque' => $affectation->getAffectationChantier()->getChantierRemarque(),
+                'chantierRatio' => $ratio,
+                'chantierProgressBar' => $bgClass
+            );
+
+            $client = array(
+                'clientId' => $affectation->getAffectationClient()->getClientId(),
+                'clientNom' => $affectation->getAffectationClient()->getClientNom(),
+                'clientVille' => $affectation->getAffectationClient()->getClientVille(),
+                'clientPortable' => $affectation->getAffectationClient()->getClientPortable()
+            );
+
+            if ($affectation->getAffectationDebutDate() == $affectation->getAffectationFinDate() && $affectation->getAffectationDebutMoment() == $affectation->getAffectationFinMoment()):
+                $periode = 'le ' . $this->cal->dateFrancais($affectation->getAffectationDebutDate()) . ' ' . $affectation->getAffectationDebutMomentText();
+            else:
+                $periode = 'du ' . $this->cal->dateFrancais($affectation->getAffectationDebutDate(), 'JDM') . ' ' . $affectation->getAffectationDebutMomentText() . ' au ' . $this->cal->dateFrancais($affectation->getAffectationFinDate()) . ' ' . $affectation->getAffectationFinMomentText();
+            endif;
+
+            $affect = array(
+                'affectationId' => $affectation->getAffectationId(),
+                'affectationDebutDate' => $affectation->getAffectationDebutDate(),
+                'affectationDebutMoment' => $affectation->getAffectationDebutMoment(),
+                'affectationFinDate' => $affectation->getAffectationFinDate(),
+                'affectationFinMoment' => $affectation->getAffectationFinMoment(),
+                'affectationPersonnelId' => $affectation->getAffectationPersonnelId(),
+                'affectationChantierId' => $affectation->getAffectationChantierId(),
+                'affectationNbDemi' => $affectation->getAffectationNbDemi(),
+                'affectationTypeText' => $affectation->getAffectationTypeText(),
+                'affectationType' => $affectation->getAffectationType(),
+                'affectationCommentaire' => nl2br($affectation->getAffectationCommentaire()),
+                'affectationPeriode' => $periode
+            );
+            $personnel = array(
+                'personnelId' => $affectation->getAffectationPersonnel()->getPersonnelId(),
+                'personnelNom' => $affectation->getAffectationPersonnel()->getPersonnelNom() . ' ' . $affectation->getAffectationPersonnel()->getPersonnelPrenom()
+            );
+
+            echo json_encode(array('type' => 'success', 'affectation' => $affect, 'affaire' => $affaire, 'chantier' => $chantier, 'client' => $client, 'personnel' => $personnel));
+        endif;
+    }
+
+    public function delAffectation() {
+        if (!$this->ion_auth->in_group(60)):
+            echo json_encode(array('type' => 'error', 'message' => 'Vous ne possédez pas les droits necessaires'));
+        elseif (!$this->form_validation->run('getAffectation')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+
+            $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
+            $this->managerAffectations->delete($affectation);
+            echo json_encode(array('type' => 'success'));
+        endif;
     }
 
 }
