@@ -683,6 +683,42 @@ $config = array(
             'label' => 'Affichage',
             'rules' => 'in_list[1,2,3]'
         )
+    ),
+    /* get Achat */
+    'getHeure' => array(
+        array(
+            'field' => 'heureId',
+            'label' => 'ID Heure',
+            'rules' => 'required|callback_existHeure'
+        )
+    ),
+    /* Add Heure */
+    'addHeure' => array(
+        array(
+            'field' => 'addHeureId',
+            'label' => 'ID Heure',
+            'rules' => 'callback_existHeure'
+        ),
+        array(
+            'field' => 'addHeureAffectationId',
+            'label' => 'ID Affectation',
+            'rules' => 'required|callback_existAffectation'
+        ),
+        array(
+            'field' => 'addHeureDate',
+            'label' => 'Date',
+            'rules' => 'required|trim'
+        ),
+        array(
+            'field' => 'addHeureDuree',
+            'label' => 'Durée du pointage',
+            'rules' => 'required|trim'
+        ),
+        array(
+            'field' => 'addHeureValide',
+            'label' => 'Heure confirmée',
+            'rules' => 'in_list[0,1]'
+        )
     )
 );
 ?>

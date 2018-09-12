@@ -40,6 +40,7 @@ class Migration extends My_Controller {
         $this->db->query("ALTER TABLE `chantiers` auto_increment = 1;");
         $this->db->query("ALTER TABLE `achats` auto_increment = 1;");
         $this->db->query("ALTER TABLE `affectations` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `heures` auto_increment = 1;");
     }
 
     public function migrerRS($rsId = null) {
@@ -769,9 +770,9 @@ class Migration extends My_Controller {
                     'affectationPersonnelId' => $personnel->getPersonnelId(),
                     'affectationPlaceId' => $chantier->getChantierPlaceId(),
                     'affectationNbDemi' => $affect->nb_demi,
-                    'affectationDebut' => $affect->debut,
+                    'affectationDebutDate' => $affect->debut,
                     'affectationDebutMoment' => $affect->debut_journee + 1,
-                    'affectationFin' => $affect->debut,
+                    'affectationFinDate' => $affect->debut,
                     'affectationFinMoment' => $affect->fin_journee + 1,
                     'affectationCases' => $affect->longueur,
                     'affectationEtat' => $etat,
@@ -781,9 +782,28 @@ class Migration extends My_Controller {
                 );
                 $affectation = new Affectation($dataAffectation);
                 $this->managerAffectations->ajouter($affectation);
+
+                $this->importHeures($affectation);
+
             else:
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Ctte affectation n\'a pas été migrée (Origin) ' . $affect->id . '// Personnel invalide (Origin):' . $affect->id_personnel);
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Cette affectation n\'a pas été migrée (Origin) ' . $affect->id . '// Personnel invalide (Origin):' . $affect->id_personnel);
             endif;
+
+        endforeach;
+    }
+
+    public function importHeures(Affectation $affectation) {
+        foreach ($this->db->select('*')->from('V1_heure')->where('id_affectation', $affectation->getAffectationOriginId())->get()->result() as $heure):
+
+            $dataHeure = array(
+                'heureOriginId' => $heure->id,
+                'heureAffectationId' => $affectation->getAffectationId(),
+                'heureDate' => $heure->date,
+                'heureDuree' => $heure->nb_heure * 60,
+                'heureValide' => $heure->valide
+            );
+            $newHeure = new Heure($dataHeure);
+            $this->managerHeures->ajouter($newHeure);
 
         endforeach;
     }
