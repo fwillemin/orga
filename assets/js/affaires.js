@@ -28,7 +28,7 @@ $(document).ready(function () {
         }, 'json');
     });
 
-    $('#btnResetCouleurChantier').on('click', function () {        
+    $('#btnResetCouleurChantier').on('click', function () {
         $('#selectCouleurChantier').colorpicker('setValue', $('#demoChantier').attr('data-couleuraffaire'));
         $('#selectCouleurChantier').colorpicker('update');
     });
@@ -133,6 +133,35 @@ $(document).ready(function () {
                     break;
             }
         }, 'json');
+    });
+
+    $('#btnAddChantier').on('click', function () {
+        if ($('#affaireEtat').val() < 3) {
+            $('#modalAddChantier').modal('show');
+        } else {
+            $.confirm({
+                columnClass: 'medium',
+                title: 'Cette affaire est cloturée !',
+                content: 'Vous pouvez ajouter un nouveau chantier, cela réouvrira l\'affaire jusqu\'à la clôture de ce nouveau chantier',
+                type: 'blue',
+                theme: 'material',
+                buttons: {
+                    confirm: {
+                        btnClass: 'btn-green',
+                        text: 'Créer un nouveau chantier',
+                        action: function () {
+                            $('#modalAddChantier').modal('show');
+                        }
+                    },
+                    cancel: {
+                        btnClass: 'btn-red',
+                        text: 'Laisser l\'affaire clôturée'
+                    }
+                }
+            })
+        }
+
+
     });
 
     $('#btnAddAffaire').on('click', function () {
@@ -248,10 +277,6 @@ $(document).ready(function () {
         }
     });
 
-    $('#btnAddChantier').on('click', function () {
-        $('#modalAddChantier').modal('show');
-    });
-    
     $('#btnDelAffaire').confirm({
         title: 'Suppression de cette affaire ?',
         content: 'Êtes-vous sûr de vouloir supprimer cette affaire ?',

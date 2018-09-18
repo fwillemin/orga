@@ -1,7 +1,91 @@
+function  getCookie(name) {
+    if (document.cookie.length == 0)
+        return null;
+
+    var regSepCookie = new RegExp('(; )', 'g');
+    var cookies = document.cookie.split(regSepCookie);
+
+    for (var i = 0; i < cookies.length; i++) {
+        var regInfo = new RegExp('=', 'g');
+        var infos = cookies[i].split(regInfo);
+        if (infos[0] == name) {
+            return unescape(infos[1]);
+        }
+    }
+    return null;
+}
+
 $(document).ready(function () {
 
     $('#rowPlanning').fadeIn();
     $('#rowLoading').fadeOut();
+      
+    $("#divPlanning").animate({scrollLeft: getCookie('positionPlanning')}, 800);
+    if ($('#divPlanning').scrollLeft() == 0) {
+        $('#divPlanning').scrollLeft($('#divPlanning').attr('today'));
+    }
+    
+    $('#divPlanning').scroll(function () {        
+        var trs = document.getElementById('divPlanning').scrollLeft;
+        document.cookie = "positionPlanning" + "=" + escape(trs) + ';path=/';
+    });
+
+    var resizeOption = {
+        grid: [(parseFloat($('#caseWidth').val()) + 1), parseFloat($('#caseHeight').val())],
+        stop: function () {
+            var nbCases = Math.ceil(($(this).width()) / (parseFloat($('#caseWidth').val()) + 1));
+            var affect = $(this);
+            $.post(chemin + 'planning/resizeAffectation/', {nbCases: nbCases, affectationId: affect.attr('data-affectationid')}, function (retour) {
+                if (retour.type === 'error') {
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                }
+                affect.remove();
+                $('#divPlanning').append(retour.html);
+                refreshPlanningUI();
+            }, 'json');
+        }
+    };
+
+    var start = [0, 0], stop = [0, 0];
+    var dragOption = {
+        delay: 200,
+        cancel: "span",
+        grid: [(parseFloat($('#caseWidth').val()) + 1), parseFloat($('#caseHeight').val())],
+        cursor: "move",
+        start: function () {
+            start[0] = this.offsetLeft;
+            start[1] = this.offsetTop;
+        },
+        drag: function () {
+        },
+        stop: function () {
+            stop[0] = this.offsetLeft;
+            stop[1] = this.offsetTop;
+            var affect = $(this);
+            $.post(chemin + 'planning/dragAffectation',
+                    {
+                        decalageX: stop[0] - start[0],
+                        decalageY: stop[1] - start[1],
+                        affectationId: affect.attr('data-affectationid'),
+                        ligne: affect.attr('data-ligne')
+                    },
+                    function (retour) {
+                        if (retour.type == 'error') {
+                            $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                        }
+                        affect.remove();
+                        $('#divPlanning').append(retour.html);
+                        refreshPlanningUI();
+                    }, 'json'
+                    );
+        }
+    };
+
+    function refreshPlanningUI() {
+        $(".resizable").resizable(resizeOption);
+        $(".draggable").draggable(dragOption);
+    }
+    refreshPlanningUI();
 
     $('#divPlanning').on('mousedown', function (e) {
         e.preventDefault();
@@ -62,8 +146,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#divPlanning').on('dblclick', '.affectation', function (e) {
-
+    $('#divPlanning').on('dblclick', '.affectation', function () {
         var affect = $(this);
         $.post(chemin + 'planning/affectationToggleAffichage', {affectationId: affect.attr('data-affectationid'), ligne: affect.attr('data-ligne')}, function (retour) {
             switch (retour.type) {
@@ -73,6 +156,7 @@ $(document).ready(function () {
                 case 'success':
                     affect.remove()
                     $('#divPlanning').append(retour.html);
+                    refreshPlanningUI();
                     break;
             }
         }, 'json');
@@ -210,6 +294,7 @@ $(document).ready(function () {
                             affectationRAZ();
 
                             $('#divPlanning').append(retour.HTML);
+                            refreshPlanningUI();
                             break;
                     }
                 }, 'json');
@@ -281,10 +366,10 @@ $(document).ready(function () {
                             case 'error':
                                 $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
                                 break;
-                            case 'success':                                
-                                    $('.affectation[data-affectationid="' + $('#addAffectationId').val() + '"]').remove();     
-                                    affectationRAZ();
-                                    $('#modalAffectation').modal('hide');
+                            case 'success':
+                                $('.affectation[data-affectationid="' + $('#addAffectationId').val() + '"]').remove();
+                                affectationRAZ();
+                                $('#modalAffectation').modal('hide');
                                 break;
                         }
                     }, 'json');

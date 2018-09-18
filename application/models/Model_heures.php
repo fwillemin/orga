@@ -57,7 +57,7 @@ class Model_heures extends MY_model {
      * @param array $tri Critères de tri des raisonSociales
      * @return array Liste d'objets de la classe Heure
      */
-    public function getHeures($where = array(), $tri = 'heureCreation ASC', $type = 'object') {
+    public function getHeures($where = array(), $tri = 'heureDate ASC', $type = 'object') {
         $query = $this->db->select('*')
                 ->from($this->table)
                 ->where('heureEtablissementId', $this->session->userdata('etablissementId'))
@@ -75,9 +75,9 @@ class Model_heures extends MY_model {
     public function getHeureById($heureId, $type = 'object') {
         $query = $this->db->select('*')
                 ->from('heures h')
-                ->join('affectation a', 'a.affectationId = h.heureAffectationId', 'left')
-                ->join('chantier c', 'c.chantierId = a.AffectationChantierId', 'left')
-                ->join('affaire f', 'f.affaireId = c.ChantierAffaireId', 'left')
+                ->join('affectations a', 'a.affectationId = h.heureAffectationId', 'left')
+                ->join('chantiers c', 'c.chantierId = a.AffectationChantierId', 'left')
+                ->join('affaires f', 'f.affaireId = c.ChantierAffaireId', 'left')
                 ->where('f.affaireEtablissementId', $this->session->userdata('etablissementId'))
                 ->where('heureId', $heureId)
                 ->get();
@@ -92,12 +92,12 @@ class Model_heures extends MY_model {
         return $this->retourne($query, $type, self::classe, true);
     }
 
-    public function getHeuresByAffectationId($affectationId, $type = 'object') {
+    public function getHeuresByAffectationId($affectationId, $tri = 'heureDate ASC', $type = 'object') {
         $query = $this->db->select('*')
                 ->from('heures h')
-                ->join('affectation a', 'a.affectationId = h.heureAffectationId', 'left')
-                ->join('chantier c', 'c.chantierId = a.AffectationChantierId', 'left')
-                ->join('affaire f', 'f.affaireId = c.ChantierAffaireId', 'left')
+                ->join('affectations a', 'a.affectationId = h.heureAffectationId', 'left')
+                ->join('chantiers c', 'c.chantierId = a.AffectationChantierId', 'left')
+                ->join('affaires f', 'f.affaireId = c.ChantierAffaireId', 'left')
                 ->where('f.affaireEtablissementId', $this->session->userdata('etablissementId'))
                 ->where('heureAffectationId', $affectationId)
                 ->get();

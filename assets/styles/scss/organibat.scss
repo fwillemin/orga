@@ -26,6 +26,14 @@ table.style1 {
         font-size:13px;
     }
 }
+table.condensed {
+    & tr {
+        line-height: 85%;
+        & td {
+            padding:3px;
+        }
+    }
+}
 
 table {
     font-size: 13px;
@@ -73,13 +81,19 @@ table {
     cursor: pointer;
 }
 
-.affectation {       
-    position: absolute;
+.affectation, .affectationEnPage {  
     z-index: 2;
     border: 1px solid;    
     padding:2px 3px 2px 2px;
     font-size:12px;
     @include border-radius(4px, 4px);
+}
+.affectation {
+     position: absolute;
+}
+.affectationEnPage {
+    position: relative;
+    width: 100%;
 }
 
 .cadre {

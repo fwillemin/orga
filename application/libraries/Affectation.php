@@ -106,8 +106,8 @@ class Affectation {
     }
 
     public function hydrateHeures() {
-//        $CI = & get_instance();
-//        $this->affectationHeures = $CI->managerHeures->getHeuresByAffectationId($this->affectationId);
+        $CI = & get_instance();
+        $this->affectationHeures = $CI->managerHeures->getHeuresByAffectationId($this->affectationId);
     }
 
     /**
@@ -120,6 +120,10 @@ class Affectation {
      */
     public function getHTML($premierJourPlanning = null, $personnelsPlanning = array(), $numLigne = null, $hauteur, $largeur) {
         $CI = & get_instance();
+        if (empty($this->affectationAffaire) || empty($this->affectationChantier)):
+            $this->hydrateOrigines();
+        endif;
+        $this->hydrateHeures();
 
         $positionLeft = ceil(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
         //si on commence de l'aprem, on ajoute une 1/2 journée
@@ -132,6 +136,12 @@ class Affectation {
         $taille = $this->affectationCases * ($largeur + 1) - 3;
         $background = $this->affectationChantier->getChantierCouleur();
         if ($this->getAffectationChantier()->getChantierEtat() == 1):
+            $classes .= ' resizable';
+            if (empty($this->affectationHeures)):
+                $classes .= ' draggable';
+            else:
+                $classes .= ' draggableHorizontal';
+            endif;
             $border = '1px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire();
             $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur(), 0.85);
         else:
@@ -143,13 +153,6 @@ class Affectation {
         $txt = '<span class="planningDivText" data-toggle="tooltip" title="' . $this->getAffectationClient()->getClientNom() . ' [' . $this->getAffectationChantier()->getChantierCategorie() . ' - ' . $this->getAffectationChantier()->getChantierObjet() . ']" style="color:' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';">'
                 . substr($this->getAffectationClient()->getClientNom(), 0, floor($taille / 10))
                 . '</span>';
-
-
-        //recentrage des div d'une seule 1/2j
-//        if ($taille < $largeur) :
-//            $positionLeft -= 1;
-//        endif;
-        //calcul de la ligne d'apposition
 
         if (!$numLigne):
             $ligne = 1;
@@ -179,7 +182,6 @@ class Affectation {
                 . ' height:' . $hauteurDiv . 'px;"'
                 . ' data-affectationid="' . $this->affectationId . '"'
                 . ' data-ligne="' . $ligne . '"'
-                //. ' data-placement="' . $this->affectationAffichage . '"'
                 . ' class="' . $classes . '" >'
                 . $txt
                 . '</div>';

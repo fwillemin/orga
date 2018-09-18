@@ -40,6 +40,11 @@
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-select.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-colorpicker.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-datepicker.min.js'); ?>"></script>
+    <?php
+endif;
+if ($this->uri->segment(1) === 'planning'):
+    ?>
+    <script defer type="text/javascript" src="<?= base_url('assets/jquery-ui/jquery-ui.min.js'); ?>"></script>
 <?php endif; ?>
 
 <script defer type="text/javascript" src="<?= base_url('assets/js/organibat.js'); ?>"></script>

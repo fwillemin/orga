@@ -1,5 +1,7 @@
 <?= form_open('affaires/addAffaire', array('id' => 'formAddAffaire')); ?>
 <input type="hidden" name="addAffaireId" id="addAffaireId" value="<?= !empty($affaire) ? $affaire->getAffaireId() : ''; ?>">
+<!--L'état de l'affaire est repris lors de l'ajout d'un chantier en js-->
+<input type="hidden" id="affaireEtat" value="<?= !empty($affaire) ? $affaire->getAffaireEtat() : ''; ?>">
 <div class="form-row" style="margin-top: 4px; border-bottom: 1px dashed grey;">
     <div class="col">
         <label for="addAffaireClientId">Sélectionnez un client</label><br>

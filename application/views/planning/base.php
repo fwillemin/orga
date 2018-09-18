@@ -1,6 +1,7 @@
 <div class="container-fluid">
     <div class="row" style="margin-top : 15px;">
-
+        <input type="hidden" id="caseHeight" value="<?= $this->hauteur; ?>">
+        <input type="hidden" id="caseWidth" value="<?= $this->largeur; ?>">
         <?php
         include('listeChantiers.php');
         ?>

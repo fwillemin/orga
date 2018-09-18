@@ -36,7 +36,7 @@ class Chantier {
     protected $chantierBudgetPrevu; /* Somme des achats prévus */
     protected $chantierBudgetConsomme; /* Somme des achats réalisés */
     protected $chantierheuresPlanifiees; /* Somme des heures plannifiées */
-    protected $chantierheuresConsommees; /* Somme des heures pointées */
+    protected $chantierheuresPointees; /* Somme des heures pointées */
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -284,7 +284,7 @@ class Chantier {
         return $this->chantierheuresPlanifiees;
     }
 
-    function getChantierheuresConsommees() {
+    function getChantierheuresPointees() {
         return $this->chantierheuresConsommees;
     }
 
@@ -292,7 +292,7 @@ class Chantier {
         $this->chantierheuresPlanifiees = $chantierheuresPlanifiees;
     }
 
-    function setChantierheuresConsommees($chantierheuresConsommees) {
+    function setChantierheuresPointees($chantierheuresConsommees) {
         $this->chantierheuresConsommees = $chantierheuresConsommees;
     }
 

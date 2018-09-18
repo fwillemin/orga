@@ -53,4 +53,116 @@ class Cal {
         return $dateFR;
     }
 
+    public function nbDemiEntreDates($debutDate, $debutMoment, $finDate, $finMoment) {
+        if ($debutMoment == 2) {
+            $nbDemiAffectation = 1;
+        } else {
+            $nbDemiAffectation = 2;
+        }
+
+        while ($debutDate < $finDate) {
+            $debutDate += 86400;
+            if (date('w', $debutDate) > 0 && date('w', $debutDate) < 6) {
+                $nbDemiAffectation += 2;
+            }
+        }
+        if ($finMoment == 1 && date('w', $debutDate) > 0 && date('w', $debutDate) < 6) {
+            $nbDemiAffectation--;
+        }
+        return $nbDemiAffectation;
+    }
+
+    public function nbCasesEntreDates($debutDate, $debutMoment, $finDate, $finMoment) {
+        if ($debutMoment == 2) {
+            $nbCasesAffectation = 1;
+        } else {
+            $nbCasesAffectation = 2;
+        }
+
+        while ($debutDate < $finDate) {
+            $debutDate += 86400;
+            $nbCasesAffectation += 2;
+        }
+        if ($finMoment == 1 && date('w', $debutDate) > 0 && date('w', $debutDate) < 6) {
+            $nbCasesAffectation--;
+        }
+        return $nbCasesAffectation;
+    }
+
+    public function decalageNbDemi(Affectation $affectation, $decalage) {
+
+        /* On calcule la nouvelle date de début */
+        if ($decalage > 0):
+            $debutDate = $affectation->getAffectationDebutDate() + floor($decalage / 2) * 86400;
+            if ($decalage % 2 != 0 && $affectation->getAffectationDebutMoment() == 2):
+                $debutDate += 86400;
+            endif;
+        else:
+            $debutDate = $affectation->getAffectationDebutDate() + ceil($decalage / 2) * 86400;
+            if ($decalage % 2 != 0 && $affectation->getAffectationDebutMoment() == 1):
+                $debutDate -= 86400;
+            endif;
+        endif;
+
+
+        /* Puis le 1/2 de debut et de fin */
+        if ($decalage % 2 != 0):
+            $debutMoment = $affectation->getAffectationDebutMoment() == 1 ? 2 : 1;
+            $finMoment = $affectation->getAffectationFinMoment() == 1 ? 2 : 1;
+        else:
+            $debutMoment = $affectation->getAffectationDebutMoment();
+            $finMoment = $affectation->getAffectationFinMoment();
+        endif;
+
+        /* Puis la date de fin */
+        $finDate = $this->calculeDateFinDemi($debutDate, $debutMoment, $affectation->getAffectationNbDemi());
+        $cases = $this->nbCasesEntreDates($debutDate, $debutMoment, $finDate, $finMoment);
+
+        return array(
+            'debutDate' => $debutDate,
+            'debutMoment' => $debutMoment,
+            'finDate' => $finDate,
+            'finMoment' => $finMoment,
+            'cases' => $cases
+        );
+    }
+
+    /* Recalcule la date de fin d'une affectation en fonction de ses informations de début et du nombre de 1/2 journées
+     * en ajoutant les WE
+     */
+
+    public function calculeDateFinDemi($debutDate, $debutMoment, $nbDemi) {
+        $finDate = $debutDate;
+        $nbDemiRestant = $nbDemi;
+        /* Fin du premier jour */
+        if ($debutMoment == 1) {
+            $nbDemiRestant -= 2;
+        } else {
+            $nbDemiRestant--;
+        }
+        while ($nbDemiRestant > 0) {
+            $finDate += 86400;
+            if (date('w', $finDate) > 0 && date('w', $finDate) < 6) {
+                $nbDemiRestant -= 2;
+            }
+        }
+        return $finDate;
+    }
+
+    public function calculeDateFinCases($debutDate, $debutMoment, $nbCases) {
+        $finDate = $debutDate;
+        $nbCasesRestantes = $nbCases;
+        /* Fin du premier jour */
+        if ($debutMoment == 1) {
+            $nbCasesRestantes -= 2;
+        } else {
+            $nbCasesRestantes--;
+        }
+        while ($nbCasesRestantes > 0) {
+            $finDate += 86400;
+            $nbCasesRestantes -= 2;
+        }
+        return $finDate;
+    }
+
 }

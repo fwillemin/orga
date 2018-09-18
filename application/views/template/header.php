@@ -25,6 +25,7 @@
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/dataTable/datatables.min.css'); ?>" >
 
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/jqueryConfirm/jquery-confirm.min.css'); ?>" >
+        <link rel="stylesheet" type="text/css" href="<?= base_url('assets/jquery-ui/jquery-ui.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/organibat.css'); ?>" >
 
 

@@ -82,6 +82,7 @@ class Chantiers extends My_Controller {
                 $chantier->setChantierFraisGeneraux($this->input->post('addChantierFraisGeneraux'));
                 $chantier->setChantierTauxHoraireMoyen($this->input->post('addChantierTauxHoraireMoyen'));
                 $this->managerChantiers->editer($chantier);
+            /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
 
             else:
 
@@ -103,13 +104,7 @@ class Chantiers extends My_Controller {
                 );
                 $chantier = new Chantier($dataChantier);
                 $this->managerChantiers->ajouter($chantier);
-
-                $affaire = $this->managerAffaires->getAffaireById($chantier->getChantierAffaireId());
-                if ($affaire->getAffaireEtat() == 1):
-                    $affaire->setAffaireEtat(2);
-                    $this->managerAffaires->editer($affaire);
-                endif;
-
+            /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
             endif;
 
             echo json_encode(array('type' => 'success', 'chantierId' => $chantier->getChantierId()));
@@ -117,7 +112,21 @@ class Chantiers extends My_Controller {
     }
 
     public function clotureChantier() {
+        if (!$this->ion_auth->in_group(54)):
+            echo json_encode(array('type' => 'error', 'message' => 'Vous n\'avez pas les droits pour clôturer un chantier'));
+        elseif (!$this->form_validation->run('getChantier')) :
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
 
+            /* Cloture du chantier */
+            $chantier = $this->managerChantiers->getChantierById($this->input->post('chantierId'));
+            $chantier->setChantierEtat(2);
+            $chantier->setChantierDateCloture(time());
+
+            $this->managerChantiers->editer($chantier);
+            /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
+            echo json_encode(array('type' => 'success'));
+        endif;
     }
 
     public function delChantier() {
@@ -127,13 +136,7 @@ class Chantiers extends My_Controller {
         else:
             $chantier = $this->managerChantiers->getChantierById($this->input->post('chantierId'));
             $this->managerChantiers->delete($chantier);
-
-            $nbChantiersAffaireRestants = $this->managerChantiers->count(array('chantierAffaireId' => $chantier->getChantierAffaireId()));
-            if ($nbChantiersAffaireRestants == 0):
-                $affaire = $this->managerAffaires->getAffaireById($chantier->getChantierAffaireId());
-                $affaire->setAffaireEtat(1);
-                $this->managerAffaires->editer($affaire);
-            endif;
+            /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
 
             echo json_encode(array('type' => 'success'));
         endif;
