@@ -719,6 +719,93 @@ $config = array(
             'label' => 'Heure confirmée',
             'rules' => 'in_list[0,1]'
         )
+    ),
+    /* get fournisseur */
+    'getFournisseur' => array(
+        array(
+            'field' => 'fournisseurId',
+            'label' => 'ID Fournisseur',
+            'rules' => 'required|callback_existFournisseur'
+        )
+    ),
+    /* Add Fournisseur */
+    'addFournisseur' => array(
+        array(
+            'field' => 'addFournisseurId',
+            'label' => 'ID Fournisseur',
+            'rules' => 'callback_existFournisseur'
+        ),
+        array(
+            'field' => 'addFournisseurNom',
+            'label' => 'Nom',
+            'rules' => 'required|trim'
+        ),
+        array(
+            'field' => 'addFournisseurAdresse',
+            'label' => 'Adresse',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addFournisseurCp',
+            'label' => 'Code postal',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addFournisseurVille',
+            'label' => 'Ville',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addFournisseurTelephone',
+            'label' => 'Téléphone',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addFournisseurEmail',
+            'label' => 'Email',
+            'rules' => 'valid_email|trim'
+        )
+    ),
+    /* get Livraison */
+    'getLivraison' => array(
+        array(
+            'field' => 'LivraisonId',
+            'label' => 'ID Livraison',
+            'rules' => 'required|callback_existLivraison'
+        )
+    ),
+    /* Add Heure */
+    'addFournisseur' => array(
+        array(
+            'field' => 'addLivraisonId',
+            'label' => 'ID Livraison',
+            'rules' => 'callback_existLivraison'
+        ),
+        array(
+            'field' => 'addLivraisonChantierId',
+            'label' => 'ID Chantier',
+            'rules' => 'required|callback_existChantier'
+        ),
+        array(
+            'field' => 'addLivraisonFournisseurId',
+            'label' => 'ID fournisseur',
+            'rules' => 'callback_existFournisseur'
+        ),
+        array(
+            'field' => 'addLivraisonDate',
+            'label' => 'Date',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'addLivraisonEtat',
+            'label' => 'Etat',
+            'rules' => 'required|in_list[1,2,3]'
+        ),
+        array(
+            'field' => 'addLivraisonRemarque',
+            'label' => 'Remarque',
+            'rules' => 'trim'
+        )
     )
 );
 ?>
