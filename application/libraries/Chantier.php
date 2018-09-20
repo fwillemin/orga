@@ -32,6 +32,7 @@ class Chantier {
     protected $chantierTauxHoraireMoyen;
     protected $chantierRemarque;
     protected $chantierAchats;
+    protected $chantierLivraisons;
     /* TRIGGERED */
     protected $chantierBudgetPrevu; /* Somme des achats prévus */
     protected $chantierBudgetConsomme; /* Somme des achats réalisés */
@@ -66,6 +67,16 @@ class Chantier {
     public function hydratePlace() {
         $CI = & get_instance();
         $this->chantierPlace = $CI->managerPlaces->getPlaceById($this->chantierPlaceId);
+    }
+
+    public function hydrateLivraisons() {
+        $CI = & get_instance();
+        $this->chantierLivraisons = $CI->managerLivraisons->getLivraisonsByChantierId($this->chantierId);
+    }
+
+    public function hydrateLivraisonsMigration() {
+        $CI = & get_instance();
+        $this->chantierLivraisons = $CI->managerLivraisons->getLivraisonsByChantierIdMigration($this->chantierId);
     }
 
     public function hydrateAffaire() {
@@ -294,6 +305,14 @@ class Chantier {
 
     function setChantierheuresPointees($chantierheuresConsommees) {
         $this->chantierheuresConsommees = $chantierheuresConsommees;
+    }
+
+    function getChantierLivraisons() {
+        return $this->chantierLivraisons;
+    }
+
+    function setChantierLivraisons($chantierLivraisons) {
+        $this->chantierLivraisons = $chantierLivraisons;
     }
 
 }

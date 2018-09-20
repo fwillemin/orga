@@ -39,6 +39,7 @@ class Affectation {
     protected $affectationClient;
     protected $affectationHTML;
     protected $affectationHeures;
+    protected $affectationLivraisons;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -108,6 +109,11 @@ class Affectation {
     public function hydrateHeures() {
         $CI = & get_instance();
         $this->affectationHeures = $CI->managerHeures->getHeuresByAffectationId($this->affectationId);
+    }
+
+    public function hydrateLivraisons() {
+        $CI = & get_instance();
+        $this->affectationLivraisons = $CI->managerLivraisons->getLivraisonsByAffectationId($this->affectationId);
     }
 
     /**
@@ -392,6 +398,14 @@ class Affectation {
 
     function setAffectationFinMomentText($affectationFinMomentText) {
         $this->affectationFinMomentText = $affectationFinMomentText;
+    }
+
+    function getAffectationLivraisons() {
+        return $this->affectationLivraisons;
+    }
+
+    function setAffectationLivraisons($affectationLivraisons) {
+        $this->affectationLivraisons = $affectationLivraisons;
     }
 
 }

@@ -12,6 +12,7 @@
 class Livraison {
 
     protected $livraisonId;
+    protected $livraisonOriginId;
     protected $livraisonChantierId;
     protected $livraisonChantier;
     protected $livraisonFournisseurId;
@@ -127,6 +128,14 @@ class Livraison {
 
     function setLivraisonEtatText($livraisonEtatText) {
         $this->livraisonEtatText = $livraisonEtatText;
+    }
+
+    function getLivraisonOriginId() {
+        return $this->livraisonOriginId;
+    }
+
+    function setLivraisonOriginId($livraisonOriginId) {
+        $this->livraisonOriginId = $livraisonOriginId;
     }
 
 }

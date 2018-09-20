@@ -41,6 +41,8 @@ class Migration extends My_Controller {
         $this->db->query("ALTER TABLE `achats` auto_increment = 1;");
         $this->db->query("ALTER TABLE `affectations` auto_increment = 1;");
         $this->db->query("ALTER TABLE `heures` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `fournisseurs` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `livraisons` auto_increment = 1;");
     }
 
     public function migrerRS($rsId = null) {
@@ -56,13 +58,12 @@ class Migration extends My_Controller {
 
             /* Utilisateurs administratifs */
             $this->importUsers($etablissement);
-
+            $this->importFournisseurs($etablissement);
             $this->importHoraires($etablissement);
             $this->importPersonnels($etablissement);
             $this->importTauxHoraire($etablissement);
             $this->importCategories($rs);
             $this->importDossiers($etablissement);
-            $this->migrationChantiers($etablissement);
 
             echo 'Import terminé avec succès !';
 
@@ -186,6 +187,27 @@ class Migration extends My_Controller {
                 $this->ion_auth->register($email, $mdp, $email, $additional_data, $group);
                 $i++;
             endif;
+
+        endforeach;
+    }
+
+    private function importFournisseurs(Etablissement $etablissement) {
+
+        foreach ($this->db->select('*')->from('V1_fournisseurs')->where('fournisseurEtablissementId', $etablissement->getEtablissementOriginId())->get()->result() as $fst):
+
+            $dataFst = array(
+                'fournisseurOriginId' => $fst->fournisseurId,
+                'fournisseurEtablissementId' => $etablissement->getEtablissementId(),
+                'fournisseurNom' => $fst->fournisseurNom,
+                'fournisseurAdresse' => $fst->fournisseurAdresse,
+                'fournisseurCp' => $fst->fournisseurCp,
+                'fournisseurVille' => $fst->fournisseurVille,
+                'fournisseurTelephone' => $fst->fournisseurTelephone,
+                'fournisseurEmail' => $fst->fournisseurEmail
+            );
+            $fournisseur = new Fournisseur($dataFst);
+            $this->managerFournisseurs->ajouter($fournisseur);
+            unset($fournisseur);
 
         endforeach;
     }
@@ -587,6 +609,8 @@ class Migration extends My_Controller {
 
             $this->db->trans_complete();
 
+            $this->importChantiers($affaire);
+
         endforeach;
     }
 
@@ -627,48 +651,61 @@ class Migration extends My_Controller {
       ALTER TABLE `chantiers` ADD FOREIGN KEY (`affairePlaceId`) REFERENCES `places`(`placeId`) ON DELETE SET NULL ON UPDATE RESTRICT;
 
      */
-    public function migrationChantiers(Etablissement $etablissement) {
+    public function importChantiers(Affaire $affaire) {
 
-        $affaires = $this->managerAffaires->getAffairesByEtablissementId($etablissement->getEtablissementId());
-        foreach ($affaires as $affaire):
+        foreach ($this->db->select('*')->from('V1_chantier')->where('dossier_id', $affaire->getAffaireOriginId())->get()->result() as $chant):
 
-            foreach ($this->db->select('*')->from('V1_chantier')->where('dossier_id', $affaire->getAffaireOriginId())->get()->result() as $chant):
-
-                /* Evite les soucis de catégories fantômes */
-                $categorie = null;
-                if ($chant->id_categorie != 0):
-                    $categorieOrigin = $this->managerCategories->getCategorieByOriginId($chant->id_categorie);
-                    if ($categorieOrigin):
-                        $categorie = $categorieOrigin->getCategorieId();
-                    endif;
+            /* Evite les soucis de catégories fantômes */
+            $categorie = null;
+            if ($chant->id_categorie != 0):
+                $categorieOrigin = $this->managerCategories->getCategorieByOriginId($chant->id_categorie);
+                if ($categorieOrigin):
+                    $categorie = $categorieOrigin->getCategorieId();
                 endif;
+            endif;
 
-                $dataChantier = array(
-                    'chantierAffaireId' => $affaire->getAffaireId(),
-                    'chantierPlaceId' => $affaire->getAffairePlaceId(),
-                    'chantierOriginId' => $chant->id,
-                    'chantierCategorieId' => $categorie,
-                    'chantierObjet' => $chant->objet,
-                    'chantierPrix' => $chant->prix,
-                    'chantierEtat' => $chant->etat == 'Termine' ? 2 : 1,
-                    'chantierDateCloture' => $chant->cloture,
-                    'chantierHeuresPrevues' => $chant->nb_heures_prev,
-                    'chantierBudgetAchats' => $chant->budgetAchat,
-                    'chantierFraisGeneraux' => $chant->chantierFraisGeneraux,
-                    'chantierTauxHoraireMoyen' => $chant->chantierTxHoraireMoyen,
-                    'chantierRemarque' => $chant->remarque,
-                    'chantierCouleur' => $chant->couleur,
-                    'chantierCouleurSecondaire' => $this->couleurSecondaire($chant->couleur)
-                );
-                $chantier = new Chantier($dataChantier);
-                $this->managerChantiers->ajouter($chantier);
+            $dataChantier = array(
+                'chantierAffaireId' => $affaire->getAffaireId(),
+                'chantierPlaceId' => $affaire->getAffairePlaceId(),
+                'chantierOriginId' => $chant->id,
+                'chantierCategorieId' => $categorie,
+                'chantierObjet' => $chant->objet,
+                'chantierPrix' => $chant->prix,
+                'chantierEtat' => $chant->etat == 'Termine' ? 2 : 1,
+                'chantierDateCloture' => $chant->cloture,
+                'chantierHeuresPrevues' => $chant->nb_heures_prev,
+                'chantierBudgetAchats' => $chant->budgetAchat,
+                'chantierFraisGeneraux' => $chant->chantierFraisGeneraux,
+                'chantierTauxHoraireMoyen' => $chant->chantierTxHoraireMoyen,
+                'chantierRemarque' => $chant->remarque,
+                'chantierCouleur' => $chant->couleur,
+                'chantierCouleurSecondaire' => $this->couleurSecondaire($chant->couleur)
+            );
+            $chantier = new Chantier($dataChantier);
+            $this->managerChantiers->ajouter($chantier);
 
-                $this->importCouts($chantier);
+            $this->importCouts($chantier);
+            $this->importLivraisons($chantier);
 
-                $affaire->hydratePlace();
-                $this->importAffectations($chantier, $affaire);
+            $affaire->hydratePlace();
+            $this->importAffectations($chantier, $affaire);
 
-            endforeach;
+            $chantier->hydrateLivraisonsMigration();
+            if (!empty($chantier->getChantierLivraisons())):
+                foreach ($chantier->getChantierLivraisons() as $livraison):
+                    /* on recherche les liens incluant cette livraison dans la table V1 */
+                    foreach ($this->db->select('*')->from('V1_livraison_contrainte')->where('lcLivraisonId', $livraison->getLivraisonOriginId())->get()->result() as $contrainte):
+                        $affectation = $this->managerAffectations->getAffectationByOriginId($contrainte->lcAffectationId);
+                        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($affectation, true));
+                        if ($affectation):
+                            $this->db
+                                    ->set('livraisonId', $livraison->getLivraisonId())
+                                    ->set('affectationId', $affectation->getAffectationId())
+                                    ->insert('livraisons_affectations');
+                        endif;
+                    endforeach;
+                endforeach;
+            endif;
         endforeach;
     }
 
@@ -712,6 +749,26 @@ class Migration extends My_Controller {
             );
             $achat = new Achat($dataAchat);
             $this->managerAchats->ajouter($achat);
+
+        endforeach;
+    }
+
+    public function importLivraisons(Chantier $chantier) {
+        foreach ($this->db->select('*')->from('V1_livraison')->where('livraisonChantierId', $chantier->getChantierOriginId())->get()->result() as $liv):
+
+            $fournisseur = $this->managerFournisseurs->getFournisseurByOriginId($liv->livraisonFournisseurId);
+
+            $dataLivraison = array(
+                'livraisonOriginId' => $liv->livraisonId,
+                'livraisonChantierId' => $chantier->getChantierId(),
+                'livraisonFournisseurId' => $fournisseur ? $fournisseur->getFournisseurId() : null,
+                'livraisonDate' => $liv->livraisonDate,
+                'livraisonRemarque' => $liv->livraisonRemarque,
+                'livraisonEtat' => $liv->livraisonEtat + 1
+            );
+            $livraison = new Livraison($dataLivraison);
+            $this->managerLivraisons->ajouter($livraison);
+            unset($livraison);
 
         endforeach;
     }

@@ -12,6 +12,7 @@
 class Fournisseur {
 
     protected $fournisseurId;
+    protected $fournisseurOriginId;
     protected $fournisseurEtablissementId;
     protected $fournisseurNom;
     protected $fournisseurAdresse;
@@ -19,6 +20,7 @@ class Fournisseur {
     protected $fournisseurVille;
     protected $fournisseurTelephone;
     protected $fournisseurEmail;
+    protected $fournisseurLivraisons;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -32,6 +34,11 @@ class Fournisseur {
             if (method_exists($this, $method))
                 $this->$method($value);
         endforeach;
+    }
+
+    public function hydrateLivraisons() {
+        $CI = & get_instance();
+        $this->fournisseurLivraisons = $CI->managerLivraisons->getLivraisons(array('livraisonFournisseurId' => $this->fournisseurId), 'livraisonEtat ASC', 'object');
     }
 
     function getFournisseurId() {
@@ -96,6 +103,22 @@ class Fournisseur {
 
     function setFournisseurEmail($fournisseurEmail) {
         $this->fournisseurEmail = $fournisseurEmail;
+    }
+
+    function getFournisseurLivraisons() {
+        return $this->fournisseurLivraisons;
+    }
+
+    function setFournisseurLivraisons($fournisseurLivraisons) {
+        $this->fournisseurLivraisons = $fournisseurLivraisons;
+    }
+
+    function getFournisseurOriginId() {
+        return $this->fournisseurOriginId;
+    }
+
+    function setFournisseurOriginId($fournisseurOriginId) {
+        $this->fournisseurOriginId = $fournisseurOriginId;
     }
 
 }

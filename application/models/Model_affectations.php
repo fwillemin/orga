@@ -103,6 +103,14 @@ class Model_affectations extends MY_model {
         return $this->retourne($query, $type, self::classe, true);
     }
 
+    public function getAffectationByOriginId($affectationId, $type = 'object') {
+        $query = $this->db->select('a.*')
+                ->from('affectations a')
+                ->where(array('a.affectationOriginId' => $affectationId))
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
     public function getAffectationsPlanning($premierJour, $dernierJour, $etat = 1, $tri = 'affectationDebutDate ASC', $type = 'object') {
         $query = $this->db->select('a.*, c.chantierEtat AS affectationChantierEtat')
                 ->from('affectations a')

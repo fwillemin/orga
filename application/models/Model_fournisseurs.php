@@ -15,6 +15,7 @@ class Model_fournisseurs extends MY_model {
      */
     public function ajouter(Fournisseur $fournisseur) {
         $this->db
+                ->set('fournisseurOriginId', $fournisseur->getFournisseurOriginId())
                 ->set('fournisseurEtablissementId', $fournisseur->getFournisseurEtablissementId())
                 //->set('fournisseurEtablissementId', $this->session->userdata('etablissementId'))
                 ->set('fournisseurNom', $fournisseur->getFournisseurNom())
@@ -87,6 +88,15 @@ class Model_fournisseurs extends MY_model {
                 ->from($this->table)
                 ->where('fournisseurEtablissementId', $this->session->userdata('etablissementId'))
                 ->where('fournisseurId', $fournisseurId)
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getFournisseurByOriginId($fournisseurOriginId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from($this->table)
+                ->where('fournisseurEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('fournisseurOriginId', $fournisseurOriginId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
     }

@@ -135,9 +135,36 @@ class My_Controller extends CI_Controller {
         endif;
     }
 
+    public function existAffectationMigration($affectationId, $chantierId) {
+        $this->form_validation->set_message('existAffectation', 'Cette affectation est introuvable.');
+        if ($this->managerAffectations->count(array('affectationId' => $affectationId)) == 1 || !$affectationId) :
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
     public function existHeure($heureId) {
         $this->form_validation->set_message('existHeure', 'Cette heure est introuvable.');
         if ($this->managerHeures->count(array('heureId' => $heureId)) == 1 || !$heureId) :
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
+    public function existFournisseur($fournisseurId) {
+        $this->form_validation->set_message('existFournisseur', 'Ce fournisseur est introuvable.');
+        if ($this->managerFournisseurs->count(array('fournisseurId' => $fournisseurId)) == 1 || !$fournisseurId) :
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
+    public function existLivraison($livraisonId) {
+        $this->form_validation->set_message('existLivraison', 'Cette livraison est introuvable.');
+        if ($this->managerLivraisons->count(array('livraisonId' => $livraisonId)) == 1 || !$livraisonId) :
             return true;
         else :
             return false;

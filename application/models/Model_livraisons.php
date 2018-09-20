@@ -15,6 +15,7 @@ class Model_livraisons extends MY_model {
      */
     public function ajouter(Livraison $livraison) {
         $this->db
+                ->set('livraisonOriginId', $livraison->getLivraisonOriginId())
                 ->set('livraisonChantierId', $livraison->getLivraisonChantierId())
                 ->set('livraisonFournisseurId', $livraison->getLivraisonFournisseurId() ?: null)
                 ->set('livraisonDate', $livraison->getLivraisonDate())
@@ -85,6 +86,38 @@ class Model_livraisons extends MY_model {
                 ->where('livraisonId', $livraisonId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getLivraisonsByAffectationId($affectationId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from('livraisons l')
+                ->join('chantiers c', 'c.chantierId = l.livraisonChantierId')
+                ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
+                ->join('livraisons_affectations la', 'la.livraisonId = l.livraisonId')
+                ->where('a.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('la.affectationId', $affectationId)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
+    public function getLivraisonsByChantierId($chantierId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from('livraisons l')
+                ->join('chantiers c', 'c.chantierId = l.livraisonChantierId')
+                ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
+                ->where('a.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('c.chantierId', $chantierId)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
+    public function getLivraisonsByChantierIdMigration($chantierId, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from('livraisons l')
+                ->join('chantiers c', 'c.chantierId = l.livraisonChantierId')
+                ->where('c.chantierId', $chantierId)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
     }
 
 }
