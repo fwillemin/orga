@@ -21,6 +21,8 @@ class Livraison {
     protected $livraisonRemarque;
     protected $livraisonEtat;
     protected $livraisonEtatText;
+    protected $livraisonNbContraintes;
+    protected $livraisonContraintesIds;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -46,6 +48,17 @@ class Livraison {
                 $this->livraisonEtatText = 'Receptionnée';
                 break;
         endswitch;
+        $CI = & get_instance();
+        $this->livraisonContraintesIds = array();
+        $query = $CI->db->select('affectationId')
+                ->from('livraisons_affectations')
+                ->where('livraisonId', $this->livraisonId)
+                ->get();
+
+        foreach ($query->result() AS $row):
+            $this->livraisonContraintesIds[] = $row->affectationId;
+        endforeach;
+        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($this->livraisonContraintesIds, true));
     }
 
     public function hydrateChantier() {
@@ -60,6 +73,10 @@ class Livraison {
 
     function getLivraisonId() {
         return $this->livraisonId;
+    }
+
+    function getLivraisonOriginId() {
+        return $this->livraisonOriginId;
     }
 
     function getLivraisonChantierId() {
@@ -94,8 +111,20 @@ class Livraison {
         return $this->livraisonEtatText;
     }
 
+    function getLivraisonNbContraintes() {
+        return $this->livraisonNbContraintes;
+    }
+
+    function getLivraisonContraintesIds() {
+        return $this->livraisonContraintesIds;
+    }
+
     function setLivraisonId($livraisonId) {
         $this->livraisonId = $livraisonId;
+    }
+
+    function setLivraisonOriginId($livraisonOriginId) {
+        $this->livraisonOriginId = $livraisonOriginId;
     }
 
     function setLivraisonChantierId($livraisonChantierId) {
@@ -130,12 +159,12 @@ class Livraison {
         $this->livraisonEtatText = $livraisonEtatText;
     }
 
-    function getLivraisonOriginId() {
-        return $this->livraisonOriginId;
+    function setLivraisonNbContraintes($livraisonNbContraintes) {
+        $this->livraisonNbContraintes = $livraisonNbContraintes;
     }
 
-    function setLivraisonOriginId($livraisonOriginId) {
-        $this->livraisonOriginId = $livraisonOriginId;
+    function setLivraisonContraintesIds($livraisonContraintesIds) {
+        $this->livraisonContraintesIds = $livraisonContraintesIds;
     }
 
 }

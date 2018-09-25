@@ -165,50 +165,33 @@
                                                     </tr>
                                                     <tr>
                                                         <td>Prévisionnel</td>
-                                                        <td style="text-align: right;"><?= $chantier->getChantierHeuresPlanifiees() . 'h'; ?></td>
+                                                        <td style="text-align: right;"><?= $chantier->getChantierBudgetPrevu() . '€'; ?></td>
                                                         <td style="text-align: right;">
                                                             <?php
-                                                            if ($chantier->getChantierHeuresPlanifiees() > $chantier->getChantierBudgetAchats()):
+                                                            if ($chantier->getChantierBudgetPrevu() > $chantier->getChantierBudgetAchats()):
                                                                 $budgetColor = 'red';
                                                             else:
                                                                 $budgetColor = 'green';
                                                             endif;
-                                                            echo '<span style="color: ' . $budgetColor . ';">' . ($chantier->getChantierHeuresPlanifiees() && $chantier->getChantierHeuresPrevues() > 0 ? floor($chantier->getChantierHeuresPlanifiees() / $chantier->getChantierHeuresPrevues() * 100) : '-' ) . '%</span>';
+                                                            echo '<span style="color: ' . $budgetColor . ';">' . ($chantier->getChantierBudgetPrevu() && $chantier->getChantierBudgetAchats() > 0 ? floor($chantier->getChantierBudgetPrevu() / $chantier->getChantierBudgetAchats() * 100) : '-' ) . '%</span>';
                                                             ?>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>Dépensé</td>
-                                                        <td style="text-align: right;"><?= ($chantier->getChantierHeuresPointees() ?: '0') . 'h'; ?></td>
+                                                        <td style="text-align: right;"><?= ($chantier->getChantierBudgetConsomme() ?: '0') . '€'; ?></td>
                                                         <td style="text-align: right;">
                                                             <?php
-                                                            if ($chantier->getChantierHeuresPointees() > $chantier->getChantierBudgetAchats()):
+                                                            if ($chantier->getChantierBudgetConsomme() > $chantier->getChantierBudgetAchats()):
                                                                 $budgetColor = 'red';
                                                             else:
                                                                 $budgetColor = 'green';
                                                             endif;
-                                                            echo '<span style="color: ' . $budgetColor . ';">' . ($chantier->getChantierHeuresPointees() && $chantier->getChantierHeuresPrevues() > 0 ? floor($chantier->getChantierHeuresPointees() / $chantier->getChantierHeuresPrevues() * 100) : '-' ) . '%</span>';
+                                                            echo '<span style="color: ' . $budgetColor . ';">' . ($chantier->getChantierBudgetConsomme() && $chantier->getChantierBudgetAchats() > 0 ? floor($chantier->getChantierBudgetConsomme() / $chantier->getChantierBudgetAchats() * 100) : '-' ) . '%</span>';
                                                             ?>
                                                         </td>
                                                     </tr>
                                                 </table>
-                                                <?php
-                                                echo 'Budget : ' . $chantier->getChantierBudgetAchats() . '€';
-                                                /* Prévisionnel */
-                                                if ($chantier->getChantierBudgetPrevu() > $chantier->getChantierBudgetAchats()):
-                                                    $budgetColor = 'red';
-                                                else:
-                                                    $budgetColor = 'green';
-                                                endif;
-                                                echo '<br>Prévisionnel : ' . $chantier->getChantierBudgetPrevu() . '€ soit <span style="color: ' . $budgetColor . ';">' . ($chantier->getChantierBudgetPrevu() && $chantier->getChantierBudgetAchats() > 0 ? floor($chantier->getChantierBudgetPrevu() / $chantier->getChantierBudgetAchats() * 100) : '-' ) . '%</span>';
-                                                /* Consommé */
-                                                if ($chantier->getChantierBudgetConsomme() > $chantier->getChantierBudgetAchats()):
-                                                    $budgetColor = 'red';
-                                                else:
-                                                    $budgetColor = 'green';
-                                                endif;
-                                                echo '<br>Dépensé : ' . $chantier->getChantierBudgetConsomme() . '€ soit <span style="color: ' . $budgetColor . ';">' . ($chantier->getChantierBudgetConsomme() && $chantier->getChantierBudgetAchats() > 0 ? floor($chantier->getChantierBudgetConsomme() / $chantier->getChantierBudgetAchats() * 100) : '-' ) . '%</span>';
-                                                ?>
                                             </div>
                                         </div>
                                     </div>

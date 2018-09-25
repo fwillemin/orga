@@ -135,10 +135,17 @@
                                                         </a>
                                                     </div>
                                                 <?php endif; ?>
+                                                <?php if ($this->ion_auth->in_group(array(61))): ?>
+                                                    <div class="col-12" style="min-height: 25px;">
+                                                        <a href="<?= site_url('fournisseurs/listeFst'); ?>" style="color: lightsteelblue;">
+                                                            <div style="width:25px; float: left;"><i class="fas fa-parachute-box"></i></div> Fournisseurs
+                                                        </a>
+                                                    </div>
+                                                <?php endif; ?>
                                                 <?php if ($this->ion_auth->in_group(array(40))): ?>
                                                     <div class="col-12" style="min-height: 25px;">
                                                         <a href="<?= site_url('categories/liste'); ?>" style="color: lightsteelblue;">
-                                                            <div style="width:25px; float: left;"><i class="fas fa-object-group"></i></div> Catégories de chantiers
+                                                            <div style="width:25px; float: left;"><i class="fas fa-object-group"></i></div> Catégories Affaires/Chantiers
                                                         </a>
                                                     </div>
                                                 <?php endif; ?>

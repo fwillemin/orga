@@ -5,6 +5,10 @@ if (!defined('BASEPATH'))
 
 class Model_livraisons extends MY_model {
 
+    /**
+     * Utlisé pour les migrations depuis la V1
+     * Model à supprimer une fois les migrations terminées.
+     */
     protected $table = 'livraisons';
 
     const classe = 'Livraison';
@@ -67,6 +71,19 @@ class Model_livraisons extends MY_model {
                 ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
                 ->where('a.affaireEtablissementId', $this->session->userdata('etablissementId'))
                 ->where($where)
+                ->order_by($tri)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
+    public function getLivraisonsPlanning($dateDebut, $dateFin, $tri = 'livraisonDate ASC', $type = 'object') {
+        $query = $this->db->select('*')
+                ->from('livraisons l')
+                ->join('chantiers c', 'c.chantierId = l.livraisonChantierId')
+                ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
+                ->where('a.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('c.chantierEtat', 1)
+                ->where(array('livraisonDate >=' => $dateDebut, 'livraisonDate <=' => $dateFin))
                 ->order_by($tri)
                 ->get();
         return $this->retourne($query, $type, self::classe);

@@ -42,7 +42,6 @@ class Migration extends My_Controller {
         $this->db->query("ALTER TABLE `affectations` auto_increment = 1;");
         $this->db->query("ALTER TABLE `heures` auto_increment = 1;");
         $this->db->query("ALTER TABLE `fournisseurs` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `livraisons` auto_increment = 1;");
     }
 
     public function migrerRS($rsId = null) {
@@ -198,7 +197,7 @@ class Migration extends My_Controller {
             $dataFst = array(
                 'fournisseurOriginId' => $fst->fournisseurId,
                 'fournisseurEtablissementId' => $etablissement->getEtablissementId(),
-                'fournisseurNom' => $fst->fournisseurNom,
+                'fournisseurNom' => strtoupper($fst->fournisseurNom),
                 'fournisseurAdresse' => $fst->fournisseurAdresse,
                 'fournisseurCp' => $fst->fournisseurCp,
                 'fournisseurVille' => $fst->fournisseurVille,
@@ -502,7 +501,7 @@ class Migration extends My_Controller {
 
     public function importDossiers(Etablissement $etablissement) {
 
-        foreach ($this->db->select('*')->from('V1_dossier')->where(array('id_etablissement' => $etablissement->getEtablissementOriginId()))->order_by('dossierId ASC')->limit(10, 0)->get()->result() as $dossier):
+        foreach ($this->db->select('*')->from('V1_dossier')->where(array('id_etablissement' => $etablissement->getEtablissementOriginId()))->order_by('dossierId DESC')->limit(15, 50)->get()->result() as $dossier):
 
             /**
              * Si on a une date de signature, on la prend comme date de création également
@@ -745,30 +744,45 @@ class Migration extends My_Controller {
                 'achatQte' => $cout->coutPrevisionnel ? 0 : $cout->coutQuantite,
                 'achatQtePrevisionnel' => $cout->coutQuantite,
                 'achatprix' => round($cout->coutPrix / $cout->coutQuantite, 2),
-                'achatPrixPrevisionnel' => round($cout->coutPrix / $cout->coutQuantite, 2)
+                'achatPrixPrevisionnel' => round($cout->coutPrix / $cout->coutQuantite, 2),
+                'achatFournisseurId' => null,
+                'achatLivraisonDate' => null,
+                'achatLivraisonOriginId' => null,
+                'achatLivraisonAvancement' => null
             );
             $achat = new Achat($dataAchat);
             $this->managerAchats->ajouter($achat);
+            unset($achat);
 
         endforeach;
     }
 
     public function importLivraisons(Chantier $chantier) {
+
+        /**
+         * Pour chaque livraison de la V1, on créé un achat sans valeur dans le chantier correspondant afin de créer les contraintes sur les affectations
+         */
         foreach ($this->db->select('*')->from('V1_livraison')->where('livraisonChantierId', $chantier->getChantierOriginId())->get()->result() as $liv):
 
             $fournisseur = $this->managerFournisseurs->getFournisseurByOriginId($liv->livraisonFournisseurId);
 
-            $dataLivraison = array(
-                'livraisonOriginId' => $liv->livraisonId,
-                'livraisonChantierId' => $chantier->getChantierId(),
-                'livraisonFournisseurId' => $fournisseur ? $fournisseur->getFournisseurId() : null,
-                'livraisonDate' => $liv->livraisonDate,
-                'livraisonRemarque' => $liv->livraisonRemarque,
-                'livraisonEtat' => $liv->livraisonEtat + 1
+            $dataAchat = array(
+                'achatChantierId' => $chantier->getChantierId(),
+                'achatDate' => $liv->livraisonDate,
+                'achatDescription' => '[Livr V1] ' . $liv->livraisonRemarque,
+                'achatType' => 2,
+                'achatQte' => 1,
+                'achatQtePrevisionnel' => 1,
+                'achatprix' => 0,
+                'achatPrixPrevisionnel' => 0,
+                'achatFournisseurId' => $fournisseur ? $fournisseur->getFournisseurId() : null,
+                'achatLivraisonDate' => $liv->livraisonDate,
+                'achatLivraisonOriginId' => $liv->livraisonId,
+                'achatLivraisonAvancement' => ($liv->livraisonEtat + 1)
             );
-            $livraison = new Livraison($dataLivraison);
-            $this->managerLivraisons->ajouter($livraison);
-            unset($livraison);
+            $achat = new Achat($dataAchat);
+            $this->managerAchats->ajouter($achat);
+            unset($achat);
 
         endforeach;
     }

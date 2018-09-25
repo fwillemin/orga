@@ -89,7 +89,7 @@ table {
     @include border-radius(4px, 4px);
 }
 .affectation {
-     position: absolute;
+    position: absolute;
 }
 .affectationEnPage {
     position: relative;
@@ -113,7 +113,7 @@ table {
     color: #FFF;
 }
 
-small{
+small, .form-row label{
     line-height: 75%;
     font-size : 12px;
     &.light{
@@ -187,13 +187,13 @@ small{
 }
 .progress-bar {
     height: 3px;
-    @include border-radius(0px, 0px);
+    @include border-radius(0px);
 }
 #datepicker-container {
     display: none;
     background-color: #f7f7fa;
     border: 1px solid steelblue;
-    @include border-radius(4px, 4px);
+    @include border-radius(4px);
     padding: 0px 45px;
     margin-bottom:10px;
     text-align: center;
@@ -318,6 +318,33 @@ small{
     & a{
         color: steelblue;
     }
+}
+#masquePlanning {  
+    display: none;
+    position : absolute;
+    background-color: $noir;
+    opacity : 0.7;
+    z-index:10;    
+    height: calc(100% - 55px);
+}
+
+
+.livraison {
+    height : 30px;
+    width : 45%;
+    text-align: center;
+    font-size: 12px;
+    @include border-radius(4px);
+    cursor:pointer;
+    position:relative;
+    float:right;
+    margin-right : 2px;
+    padding:5px 3px 3px 2px;
+    z-index:2;
+}
+.popover{
+    min-width: 400px;
+    z-index:50;
 }
 
 

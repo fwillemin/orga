@@ -570,6 +570,26 @@ $config = array(
             'rules' => 'trim'
         ),
         array(
+            'field' => 'addAchatFournisseurId',
+            'label' => 'ID Fournisseur',
+            'rules' => 'callback_existFournisseur'
+        ),
+        array(
+            'field' => 'addAchatLivraisonDate',
+            'label' => 'Date',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addAchatLivraisonAvancement',
+            'label' => 'Avancement de la livraison',
+            'rules' => 'in_list[0,1,2,3]'
+        ),
+        array(
+            'field' => 'addAchatLivraisonOriginId',
+            'label' => 'ID livraison V1',
+            'rules' => 'trim|numeric'
+        ),
+        array(
             'field' => 'addAchatDescription',
             'label' => 'Description',
             'rules' => 'required|trim'
@@ -766,46 +786,46 @@ $config = array(
             'rules' => 'valid_email|trim'
         )
     ),
-    /* get Livraison */
-    'getLivraison' => array(
-        array(
-            'field' => 'LivraisonId',
-            'label' => 'ID Livraison',
-            'rules' => 'required|callback_existLivraison'
-        )
-    ),
-    /* Add Heure */
-    'addFournisseur' => array(
-        array(
-            'field' => 'addLivraisonId',
-            'label' => 'ID Livraison',
-            'rules' => 'callback_existLivraison'
-        ),
-        array(
-            'field' => 'addLivraisonChantierId',
-            'label' => 'ID Chantier',
-            'rules' => 'required|callback_existChantier'
-        ),
-        array(
-            'field' => 'addLivraisonFournisseurId',
-            'label' => 'ID fournisseur',
-            'rules' => 'callback_existFournisseur'
-        ),
-        array(
-            'field' => 'addLivraisonDate',
-            'label' => 'Date',
-            'rules' => 'required'
-        ),
-        array(
-            'field' => 'addLivraisonEtat',
-            'label' => 'Etat',
-            'rules' => 'required|in_list[1,2,3]'
-        ),
-        array(
-            'field' => 'addLivraisonRemarque',
-            'label' => 'Remarque',
-            'rules' => 'trim'
-        )
-    )
+        /* get Livraison */
+//    'getLivraison' => array(
+//        array(
+//            'field' => 'LivraisonId',
+//            'label' => 'ID Livraison',
+//            'rules' => 'required|callback_existLivraison'
+//        )
+//    ),
+        /* Add Livraison */
+//    'addLivraison' => array(
+//        array(
+//            'field' => 'addLivraisonId',
+//            'label' => 'ID Livraison',
+//            'rules' => 'callback_existLivraison'
+//        ),
+//        array(
+//            'field' => 'addLivraisonChantierId',
+//            'label' => 'ID Chantier',
+//            'rules' => 'required|callback_existChantier'
+//        ),
+//        array(
+//            'field' => 'addLivraisonFournisseurId',
+//            'label' => 'ID fournisseur',
+//            'rules' => 'callback_existFournisseur'
+//        ),
+//        array(
+//            'field' => 'addLivraisonDate',
+//            'label' => 'Date',
+//            'rules' => 'required'
+//        ),
+//        array(
+//            'field' => 'addLivraisonEtat',
+//            'label' => 'Etat',
+//            'rules' => 'required|in_list[1,2,3]'
+//        ),
+//        array(
+//            'field' => 'addLivraisonRemarque',
+//            'label' => 'Remarque',
+//            'rules' => 'trim'
+//        )
+//    )
 );
 ?>

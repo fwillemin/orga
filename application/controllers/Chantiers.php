@@ -28,10 +28,16 @@ class Chantiers extends My_Controller {
         $chantier = $this->managerChantiers->getChantierById($chantierId);
         $chantier->hydratePlace();
         $chantier->hydrateAchats();
+        if (!empty($chantier->getChantierAchats())):
+            foreach ($chantier->getChantierAchats()as $achat):
+                $achat->hydrateFournisseur();
+            endforeach;
+        endif;
         $chantier->hydrateClient(); /* hydrate aussi l'affaire */
         $chantier->getChantierClient()->hydratePlaces();
 
         $data = array(
+            'fournisseurs' => $this->managerFournisseurs->getFournisseurs(),
             'categories' => $this->managerCategories->getCategories(),
             'chantier' => $chantier,
             'affaire' => $chantier->getChantierAffaire(),
@@ -162,18 +168,25 @@ class Chantiers extends My_Controller {
                 $achat->setAchatQtePrevisionnel($this->input->post('addAchatQtePrevisionnel'));
                 $achat->setAchatPrix($this->input->post('addAchatPrix'));
                 $achat->setAchatPrixPrevisionnel($this->input->post('addAchatPrixPrevisionnel'));
+                $achat->setAchatLivraisonDate($this->input->post('addAchatLivraisonDate') ? $this->own->mktimeFromInputDate($this->input->post('addAchatLivraisonDate')) : null);
+                $achat->setAchatLivraisonAvancement($this->input->post('addAchatLivraisonAvancement') ?: null );
+                $achat->setAchatFournisseurId($this->input->post('addAchatFournisseurId') ?: null );
                 $this->managerAchats->editer($achat);
             else:
 
                 $dataAchat = array(
                     'achatChantierId' => $this->input->post('addAchatChantierId'),
+                    'achatLivraisonOriginId' => null,
                     'achatDate' => $this->own->mktimeFromInputDate($this->input->post('addAchatDate')),
                     'achatDescription' => $this->input->post('addAchatDescription'),
                     'achatType' => $this->input->post('addAchatType'),
                     'achatQte' => $this->input->post('addAchatQte'),
                     'achatQtePrevisionnel' => $this->input->post('addAchatQtePrevisionnel'),
                     'achatprix' => $this->input->post('addAchatPrix'),
-                    'achatPrixPrevisionnel' => $this->input->post('addAchatPrixPrevisionnel')
+                    'achatPrixPrevisionnel' => $this->input->post('addAchatPrixPrevisionnel'),
+                    'achatLivraisonDate' => $this->input->post('addAchatLivraisonDate') ? $this->own->mktimeFromInputDate($this->input->post('addAchatLivraisonDate')) : null,
+                    'achatLivraisonAvancement' => $this->input->post('addAchatLivraisonAvancement') ?: null,
+                    'achatFournisseurId' => $this->input->post('addAchatFournisseurId') ?: null
                 );
                 $achat = new Achat($dataAchat);
                 $this->managerAchats->ajouter($achat);

@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-lg-8 offset-lg-2 fond">
+    <div class="col-12 col-lg-10 offset-md-1 fond">
         <div class="row">
             <div class="col-12" style="margin-bottom: 30px;">
                 <br>
@@ -9,7 +9,7 @@
                     </a>
                     <?php
                     $client = $chantier->getChantierClient();
-                    echo '<small class=light>Chantier : </small>' . $chantier->getChantierObjet() . '<span style="color:grey; font-size:12px; position: absolute; top:60px; left: 55px;">[Affaire ' . $affaire->getAffaireId() . '] [client : ' . $client->getClientNom() . ']</span> ';
+                    echo '<small class="danger">Chantier : </small>' . $chantier->getChantierObjet() . '<span style="color:grey; font-size:12px; position: absolute; top:60px; left: 55px;">[Affaire ' . $affaire->getAffaireId() . '] [client : ' . $client->getClientNom() . ']</span> ';
                     ?>
                 </h2>
                 <div style="position : absolute; bottom: 5px; right: 10px; text-align: right; font-size:14px;">
@@ -102,7 +102,7 @@
                         <i class = "fas fa-edit"></i> Ajouter un achat
                     </button>
 
-                    <div id = "containerAddAchat" class = "inPageForm" style = "padding:3px; <?= !empty($achat) ? '' : 'display: none;' ?>">
+                    <div id="containerAddAchat" class ="inPageForm col-md-12 col-lg-7" style = "padding:3px; <?= !empty($achat) ? '' : 'display: none;' ?>">
                         <?= form_open('chantiers/addAchat', array('id' => 'formAddAchat'));
                         ?>
                         <input type="hidden" name="addAchatId" id="addAchatId" value="<?= !empty($achat) ? $achat->getAchatId() : ''; ?>">
@@ -124,6 +124,25 @@
                                     <option value="4" <?= !empty($achat) && $achat->getAchatType() == 4 ? 'selected' : ''; ?>>Sous-traitance</option>
                                 </select>
                             </div>
+                            <div class="col-4">
+                                <label for="addAchatFournisseurId">Fournisseur</label>
+                                <select name="addAchatFournisseurId" id="addAchatFournisseurId" class="form-control form-control-sm">
+                                    <option value="0">Non référencé</option>
+                                    <?php
+                                    if (!empty($fournisseurs)):
+                                        foreach ($fournisseurs as $fournisseur):
+                                            $isFournisseurSelect = '';
+                                            if (!empty($achat) && $fournisseur->getFournisseurId() == $achat->getAchatFournisseurId()):
+                                                $isFournisseurSelect = 'selected';
+                                            endif;
+                                            echo '<option value="' . $fournisseur->getFournisseurId() . '"' . $isFournisseurSelect . '>' . $fournisseur->getFournisseurNom() . '</option>';
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row" style="margin-top: 4px;">
                             <div class="col">
                                 <label for="addAchatDescription">Description</label>
                                 <input type="text" class="form-control form-control-sm" id="addAchatDescription" name="addAchatDescription" placeholder="Description de l'achat" value="<?= !empty($achat) ? $achat->getAchatDescription() : ''; ?>">
@@ -161,6 +180,26 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-row" style="margin-top: 4px;">
+                            <div class="col-2">
+                                <div style="position: relative; top:30px; text-align: right; font-size: 18px;">
+                                    Livraison  <i class="fas fa-truck-loading" style="margin-left: 15px;"></i>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <label for="addAchatLivraisonDate">Date</label>
+                                <input type="date" class="form-control form-control-sm" id="addAchatLivraisonDate" name="addAchatLivraisonDate" value="<?= !empty($achat) && $achat->getAchatLivraisonDate() ? date('Y-m-d', $achat->getAchatLivraisonDate()) : ''; ?>">
+                            </div>
+                            <div class="col-3">
+                                <label for="addAchatLivraisonAvancement">Type</label>
+                                <select name="addAchatLivraisonAvancement" id="addAchatLivraisonAvancement" class="form-control form-control-sm">
+                                    <option value="0" <?= empty($achat) || !$achat->getAchatLivraisonAvancement() ? 'selected' : ''; ?>>Non concerné</option>
+                                    <option value="1" <?= !empty($achat) && $achat->getAchatLivraisonAvancement() == 1 ? 'selected' : ''; ?>>En attente</option>
+                                    <option value="2" <?= !empty($achat) && $achat->getAchatLivraisonAvancement() == 2 ? 'selected' : ''; ?>>Confirmée</option>
+                                    <option value="3" <?= !empty($achat) && $achat->getAchatLivraisonAvancement() == 3 ? 'selected' : ''; ?>>Récéptionée</option>
+                                </select>
+                            </div>
+                        </div>
                         <button type="button" class="btn btn-sm btn-link js-onAchatMod" id="btnDelAchat" style="<?= !$this->uri->segment(4) ? 'display:none;' : ''; ?> color: red; position: absolute; bottom: 0px;">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -185,6 +224,7 @@
                             <td colspan="3" style="border-left:1px solid lightgrey; text-align: center;">Prévisionnel</td>
                             <td colspan="3" style="border-left:1px solid lightgrey; border-right:1px solid lightgrey; text-align: center;">Réel</td>
                             <td rowspan="2" style="width: 50px;"></td>
+                            <td colspan="3" style="border-left:1px solid lightgrey; text-align: center;">Livraison</td>
                         </tr>
                         <tr>
                             <td style="width:80px; border-left:1px solid lightgrey; text-align: right;">Qte</td>
@@ -193,6 +233,9 @@
                             <td style="width:80px; border-left:1px solid lightgrey; text-align: right;">Qte</td>
                             <td style="width:80px; text-align: right;">Prix</td>
                             <td style="width:80px; text-align: right;">Total</td>
+                            <td style="width:80px; border-left:1px solid lightgrey;">Fournisseur</td>
+                            <td style="width:80px;">Date</td>
+                            <td style="width:80px;">Avancement</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -215,13 +258,16 @@
                                 echo '<tr data-achatid="' . $a->getAchatId() . '"' . $style . '>'
                                 . '<td>' . $this->cal->dateFrancais($a->getAchatDate(), 'DMA') . '</td>'
                                 . '<td>' . $a->getAchatDescription() . '</td>'
-                                . '<td style=" text-align: right; border-left: 1px solid black;">' . $a->getAchatQtePrevisionnel() . '</td>'
-                                . '<td style=" text-align: right;">' . $a->getAchatPrixPrevisionnel() . '</td>'
-                                . '<td style=" text-align: right;">' . $a->getAchatTotalPrevisionnel() . '</td>'
-                                . '<td style=" text-align: right; border-left: 1px solid black;">' . $a->getAchatQte() . '</td>'
-                                . '<td style=" text-align: right;">' . $a->getAchatPrix() . '</td>'
-                                . '<td style=" text-align: right; border-right: 1px solid black;">' . $a->getAchatTotal() . '</td>'
+                                . '<td style="text-align: right; border-left: 1px solid black;">' . $a->getAchatQtePrevisionnel() . '</td>'
+                                . '<td style="text-align: right;">' . $a->getAchatPrixPrevisionnel() . '</td>'
+                                . '<td style="text-align: right;">' . $a->getAchatTotalPrevisionnel() . '</td>'
+                                . '<td style="text-align: right; border-left: 1px solid black;">' . $a->getAchatQte() . '</td>'
+                                . '<td style="text-align: right;">' . $a->getAchatPrix() . '</td>'
+                                . '<td style="text-align: right; border-right: 1px solid black;">' . $a->getAchatTotal() . '</td>'
                                 . '<td style="text-align: right; color:' . $statColor . ';">' . ($a->getAchatTotalPrevisionnel() > 0 ? floor($a->getAchatTotal() / $a->getAchatTotalPrevisionnel() * 100) : '-' ) . '%</td>'
+                                . '<td style="border-left: 1px solid black;">' . (!is_null($a->getAchatFournisseur()) ? $a->getAchatFournisseur()->getFournisseurNom() : '-') . '</td>'
+                                . '<td>' . $this->cal->dateFrancais($a->getAchatLivraisonDate(), 'Dma') . '</td>'
+                                . '<td style="border-right: 1px solid black;">' . $a->getAchatLivraisonAvancementText() . '</td>'
                                 . '</tr>';
 
                             endforeach;

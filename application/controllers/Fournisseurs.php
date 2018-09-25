@@ -15,7 +15,7 @@ class Fournisseurs extends My_Controller {
         endif;
     }
 
-    public function liste() {
+    public function listeFst() {
 
         $fournisseurs = $this->managerFournisseurs->getFournisseurs();
         $data = array(
@@ -34,11 +34,11 @@ class Fournisseurs extends My_Controller {
 
         if (!$fournisseurId || !$this->existFournisseur($fournisseurId)):
             log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Fournisseur introuvable');
-            redirect('fournisseurs/liste');
+            redirect('fournisseurs/listeFst');
         endif;
 
-        $fournisseur = $this->managerFournisseurs->getFournisseurById();
-        $fournisseur->hydrateLivraisons();
+        $fournisseur = $this->managerFournisseurs->getFournisseurById($fournisseurId);
+        //$fournisseur->hydrateAchats();
 
         $data = array(
             'fournisseur' => $fournisseur,
@@ -49,86 +49,56 @@ class Fournisseurs extends My_Controller {
         $this->load->view('template/content', $data);
     }
 
-    public function addChantier() {
+    public function addFournisseur() {
 
-        if (!$this->ion_auth->in_group(54)):
-            redirect('affaires/ficheAffaire/' . $this->input->post('addChantierAffaireId'));
+        if (!$this->ion_auth->in_group(70)):
+            redirect('fournisseurs/listeFst/');
             exit;
         endif;
 
-        if (!$this->form_validation->run('addChantier')):
-            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
-            exit;
-        else:
+        if ($this->form_validation->run('addFournisseur')):
 
-            if ($this->input->post('addChantierId')):
-                $chantier = $this->managerFournisseurs->getChantierById($this->input->post('addChantierId'));
-                $chantier->setChantierPlaceId($this->input->post('addChantierPlaceId') ?: null);
-                $chantier->setChantierCategorieId($this->input->post('addChantierCategorieId') ?: null);
-                $chantier->setChantierObjet(ucfirst($this->input->post('addChantierObjet')));
-                $chantier->setChantierPrix($this->input->post('addChantierPrix'));
-                $chantier->setChantierCouleur($this->input->post('addChantierCouleur'));
-                $chantier->setChantierCouleurSecondaire($this->couleurSecondaire($this->input->post('addChantierCouleur')));
-                $chantier->setChantierRemarque($this->input->post('addChantierRemarque'));
-                $chantier->setChantierHeuresPrevues($this->input->post('addChantierHeuresPrevues'));
-                $chantier->setChantierBudgetAchats($this->input->post('addChantierBudgetAchats'));
-                $chantier->setChantierFraisGeneraux($this->input->post('addChantierFraisGeneraux'));
-                $chantier->setChantierTauxHoraireMoyen($this->input->post('addChantierTauxHoraireMoyen'));
-                $this->managerFournisseurs->editer($chantier);
-            /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
+            if ($this->input->post('addFournisseurId')):
+                $fournisseur = $this->managerFournisseurs->getFournisseurById($this->input->post('addFournisseurId'));
+                $fournisseur->setFournisseurNom(strtoupper($this->input->post('addFournisseurNom')));
+                $fournisseur->setFournisseurAdresse($this->input->post('addFournisseurAdresse'));
+                $fournisseur->setFournisseurCp($this->input->post('addFournisseurCp'));
+                $fournisseur->setFournisseurVille($this->input->post('addFournisseurVille'));
+                $fournisseur->setFournisseurTelephone($this->input->post('addFournisseurTelephone'));
+                $fournisseur->setFournisseurEmail($this->input->post('addFournisseurEmail'));
+                $this->managerFournisseurs->editer($fournisseur);
 
             else:
 
-                $dataChantier = array(
-                    'chantierAffaireId' => $this->input->post('addChantierAffaireId'),
-                    'chantierPlaceId' => $this->input->post('addChantierPlaceId') ?: null,
-                    'chantierCategorieId' => $this->input->post('addChantierCategorieId') ?: null,
-                    'chantierObjet' => ucfirst($this->input->post('addChantierObjet')),
-                    'chantierPrix' => $this->input->post('addChantierPrix'),
-                    'chantierCouleur' => $this->input->post('addChantierCouleur'),
-                    'chantierCouleurSecondaire' => $this->couleurSecondaire($this->input->post('addChantierCouleur')),
-                    'chantierRemarque' => $this->input->post('addChantierRemarque'),
-                    'chantierEtat' => 1,
-                    'chantierDateCloture' => null,
-                    'chantierHeuresPrevues' => $this->input->post('addChantierHeuresPrevues'),
-                    'chantierBudgetAchats' => $this->input->post('addChantierBudgetAchats'),
-                    'chantierTauxHoraireMoyen' => $this->input->post('addChantierTauxHoraireMoyen'),
-                    'chantierFraisGeneraux' => $this->input->post('addChantierFraisGeneraux')
+                $dataFournisseur = array(
+                    'fournisseurOriginId' => null,
+                    'fournisseurEtablissementId' => $this->session->userdata('etablissementId'),
+                    'fournisseurNom' => strtoupper($this->input->post('addFournisseurNom')),
+                    'fournisseurAdresse' => $this->input->post('addFournisseurAdresse'),
+                    'fournisseurCp' => $this->input->post('addFournisseurCp'),
+                    'fournisseurVille' => $this->input->post('addFournisseurVille'),
+                    'fournisseurTelephone' => $this->input->post('addFournisseurTelephone'),
+                    'fournisseurEmail' => $this->input->post('addFournisseurEmail')
                 );
-                $chantier = new Chantier($dataChantier);
-                $this->managerFournisseurs->ajouter($chantier);
-            /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
+                $fournisseur = new Fournisseur($dataFournisseur);
+                $this->managerFournisseurs->ajouter($fournisseur);
+
             endif;
 
-            echo json_encode(array('type' => 'success', 'chantierId' => $chantier->getChantierId()));
+            echo json_encode(array('type' => 'success', 'fournisseurId' => $fournisseur->getFournisseurId()));
+
+        else:
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         endif;
     }
 
-    public function clotureChantier() {
-        if (!$this->ion_auth->in_group(54)):
-            echo json_encode(array('type' => 'error', 'message' => 'Vous n\'avez pas les droits pour clôturer un chantier'));
-        elseif (!$this->form_validation->run('getChantier')) :
+    public function delFournisseur() {
+
+        if (!$this->ion_auth->in_group(54) || !$this->form_validation->run('getFournisseur')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
-
-            /* Cloture du chantier */
-            $chantier = $this->managerFournisseurs->getChantierById($this->input->post('chantierId'));
-            $chantier->setChantierEtat(2);
-            $chantier->setChantierDateCloture(time());
-
-            $this->managerFournisseurs->editer($chantier);
-            /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
-            echo json_encode(array('type' => 'success'));
-        endif;
-    }
-
-    public function delChantier() {
-
-        if (!$this->ion_auth->in_group(54) || !$this->form_validation->run('getChantier')):
-            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
-        else:
-            $chantier = $this->managerFournisseurs->getChantierById($this->input->post('chantierId'));
-            $this->managerFournisseurs->delete($chantier);
+            $fournisseur = $this->managerFournisseurs->getFournisseurById($this->input->post('chantierId'));
+            $this->managerFournisseurs->delete($fournisseur);
             /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
 
             echo json_encode(array('type' => 'success'));
@@ -138,7 +108,7 @@ class Fournisseurs extends My_Controller {
     public function addAchat() {
 
         if (!$this->ion_auth->in_group(55)):
-            redirect('fournisseurs/ficheChantier/' . $this->input->post('addAchatChantierId'));
+            redirect('fournisseurs/ficheFournisseur/' . $this->input->post('addAchatFournisseurId'));
             exit;
         endif;
 
@@ -159,7 +129,7 @@ class Fournisseurs extends My_Controller {
             else:
 
                 $dataAchat = array(
-                    'achatChantierId' => $this->input->post('addAchatChantierId'),
+                    'achatFournisseurId' => $this->input->post('addAchatFournisseurId'),
                     'achatDate' => $this->own->mktimeFromInputDate($this->input->post('addAchatDate')),
                     'achatDescription' => $this->input->post('addAchatDescription'),
                     'achatType' => $this->input->post('addAchatType'),
@@ -179,7 +149,7 @@ class Fournisseurs extends My_Controller {
     public function delAchat() {
 
         if (!$this->ion_auth->in_group(55)):
-            redirect('fournisseurs/ficheChantier/' . $this->input->post('addAchatChantierId'));
+            redirect('fournisseurs/ficheFournisseur/' . $this->input->post('addAchatFournisseurId'));
             exit;
         endif;
 

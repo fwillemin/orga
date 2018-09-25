@@ -15,8 +15,12 @@ class Model_achats extends MY_model {
      */
     public function ajouter(Achat $achat) {
         $this->db
+                ->set('achatLivraisonOriginId', $achat->getAchatLivraisonOriginId())
                 ->set('achatChantierId', $achat->getAchatChantierId())
                 ->set('achatDate', $achat->getAchatDate())
+                ->set('achatFournisseurId', $achat->getAchatFournisseurId())
+                ->set('achatLivraisonDate', $achat->getAchatLivraisonDate())
+                ->set('achatLivraisonAvancement', $achat->getAchatLivraisonAvancement())
                 ->set('achatDescription', $achat->getAchatDescription())
                 ->set('achatType', $achat->getAchatType())
                 ->set('achatQtePrevisionnel', $achat->getAchatQtePrevisionnel())
@@ -35,6 +39,9 @@ class Model_achats extends MY_model {
     public function editer(Achat $achat) {
         $this->db
                 ->set('achatDate', $achat->getAchatDate())
+                ->set('achatFournisseurId', $achat->getAchatFournisseurId())
+                ->set('achatLivraisonDate', $achat->getAchatLivraisonDate())
+                ->set('achatLivraisonAvancement', $achat->getAchatLivraisonAvancement())
                 ->set('achatDescription', $achat->getAchatDescription())
                 ->set('achatType', $achat->getAchatType())
                 ->set('achatQtePrevisionnel', $achat->getAchatQtePrevisionnel())

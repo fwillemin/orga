@@ -171,8 +171,6 @@ class Planning extends My_Controller {
             unset($chantier);
         endif;
 
-        /* les livraisons de ces chantiers */
-//        $livraisons = $this->managerLivraisons->listeInArrayChantiers($listeChantiersPlanning);
         /* le planning va s'afficher sur N semaines */
         $n = ceil(($dernierJourPlanning - $premierJourPlanning) / 604800);
 
@@ -210,6 +208,13 @@ class Planning extends My_Controller {
 //                $realise += $c->getPrix();
 //            endforeach;
 //        endif;
+//        $livraisons = $this->managerLivraisons->getLivraisonsPlanning($premierJourPlanning, $dernierJourPlanning);
+//        if (!empty($livraisons)):
+//            foreach ($livraisons as $livraison):
+//                $livraison->hydrateChantier();
+//                $livraison->hydrateFournisseur();
+//            endforeach;
+//        endif;
 
         $data = array(
             'section' => 'planning',
@@ -226,7 +231,7 @@ class Planning extends My_Controller {
             //'liste_chantier' => $chantiers,
             'affectationsPlanning' => $affectations,
             //'liste_heure' => $heures,
-            //'listeLivraison' => $livraisons,
+            'livraisonsPlanning' => array(),
             //'listeFournisseurs' => $this->managerFournisseurs->liste(),
             'dateFocus' => $debut, /* Date à partir de laquelle tout est calculé */
             'premierJourPlanning' => $premierJourPlanning,
@@ -455,7 +460,7 @@ class Planning extends My_Controller {
                 $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
                 echo json_encode(array('type' => 'error', 'message' => 'Il y a des heures saisies le <b>' . $this->cal->dateFrancais($limite, 'JDM') . '</b> donc hors des nouvelles limites de cette affectation.<br>Redimensionnement impossible', 'html' => $affectation->getAffectationHTML()));
             else:
-                if ($this->input->post('nbDemi') % 2 == 1):
+                if ($this->input->post('nbCases') % 2 == 1):
                     $newMomentFin = $affectation->getAffectationDebutMoment();
                 elseif ($affectation->getAffectationDebutMoment() == 1):
                     $newMomentFin = 2;

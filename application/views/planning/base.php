@@ -41,8 +41,9 @@
                 </div>
 
                 <div class="col-10" id="divPlanning" today="<?= $today; ?>" style="overflow-x: scroll; padding-left: 0px;">
-                    <table cellspacing="0" border="0" id="tablePlanning">
+                    <div id="masquePlanning" style="width: <?= ($nbSemainesPlanning * 7 * ((($this->largeur + 1) * 2))) . 'px'; ?>;"></div>
 
+                    <table cellspacing="0" border="0" id="tablePlanning">
                         <!-- semaines -->
                         <tr>
                             <?php
@@ -123,28 +124,34 @@
                                     ?>
                                     <td colspan="2" class="cellLivraison">
                                         <?php
-                                        if (!empty($listeLivraison)):
-                                            foreach ($listeLivraison as $l):
-                                                if (date('Y-m-d', $l->getLivraisonDate()) == $listeDate[$i]):
+                                        if (!empty($livraisonsPlanning)):
+                                            foreach ($livraisonsPlanning as $livraison):
+                                                if ($livraison->getLivraisonDate() == $listeDate[$i]):
                                                     ?>
-                                                    <a style="border:1px solid <?= $this->organibat->SetBright($l->getLivraisonCouleur(), 110); ?>; color:<?= $this->organibat->SetBright($l->getLivraisonCouleur(), 110); ?>; background-color:<?= $l->getLivraisonCouleur(); ?>; cursor:pointer; position:relative;"
-                                                       class="markerLivraison <?= 'lc' . $l->getLivraisonChantierId(); ?>"
-                                                       id="<?= 'liv' . $l->getLivraisonId(); ?>"
-                                                       data-toggle="popover"
-                                                       data-trigger="manual"
-                                                       data-title=" "
-                                                       data-content=" "
-                                                       tabindex="0"
-                                                       data-placement="bottom">
-
-                                                        <?php if ($l->getLivraisonNbContrainte() > 0): ?>
-                                                            <i class="glyphicon glyphicon-link"></i>
+                                                    <div style="border:1px solid <?= $livraison->getLivraisonChantier()->getChantierCouleurSecondaire(); ?>; color: <?= $livraison->getLivraisonChantier()->getChantierCouleurSecondaire(); ?>; background-color:<?= $livraison->getLivraisonChantier()->getChantierCouleur(); ?>;"
+                                                         class="livraison"
+                                                         data-livraisonid="<?= $livraison->getLivraisonId(); ?>"
+                                                         data-chantierid="<?= $livraison->getLivraisonChantierId(); ?>"
+                                                         data-toggle="popover"
+                                                         data-placement="bottom"
+                                                         data-contraintes = "<?= implode(',', $livraison->getLivraisonContraintesIds()); ?>"
+                                                         title="<?= '<small class=\'medium\'>Chantier : </small><span style=\'font-size:13px;\'>' . $livraison->getLivraisonChantier()->getChantierObjet() . '</span>'; ?>"
+                                                         data-content="<?=
+                                                         ($livraison->getLivraisonFournisseurId() ? 'Fournisseur : ' . $livraison->getLivraisonFournisseur()->getFournisseurNom() . '<br>' : '')
+                                                         . '<small class=\'medium\'>' . $livraison->getLivraisonEtatText() . ' pour <b>' . sizeof($livraison->getLivraisonContraintesIds()) . ' affectation(s)</b></small>'
+                                                         . '<br>' . nl2br($livraison->getLivraisonRemarque())
+                                                         . '<button class=\'btn btn-outline-dark btn-sm\' style=\'position:absolute; right:3px; bottom: 3px;\'><i class=\'fas fa-edit\'></i> Modifier</button>';
+                                                         ?>"
+                                                         >
+                                                             <?php if (sizeof($livraison->getLivraisonContraintesIds()) > 0): ?>
+                                                            <i class="fas fa-link"></i>
                                                         <?php endif; ?>
-                                                    </a>
+                                                    </div>
                                                     <?php
                                                 else:
-                                                    if (date('Y-m-d', $l->getLivraisonDate()) > date('Y-m-d', $currentDate))
+                                                    if ($livraison->getLivraisonDate() > $listeDate[$i]):
                                                         break;
+                                                    endif;
                                                 endif;
                                             endforeach;
                                         endif;
@@ -291,387 +298,46 @@ if ($this->ion_auth->in_group(array(25))):
     </div>
 </div>
 
-
-
 <?php
-if ($this->ion_auth->in_group(array(100))):
+if ($this->ion_auth->in_group(array(61))):
     ?>
-    <div class="modal fade" id="modal_add_affect" tabindex="-1" role="dialog" aria-labelledby="Ajouter une affectation" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header" style="background: #428bca; color:#FFF;">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="glyphicon glyphicon-remove" style="color:#f50a1c;"> </i></button>
-                    <h4 class="modal-title"><strong>Ajouter au planning</strong></h4>
+    <!--Modal Livraisons-->
+    <div class="modal fade" id="modalLivraison">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="font-size:14px;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="headerModalLivraison"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
                 <div class="modal-body">
-
-                    <ul class="nav nav-tabs" role="tablist" id="affectTabList">
-                        <li class="active"><a href="#affectTab" role="tab" data-toggle="tab">Affectation</a></li>
-                        <li><a href="#indispoTab" role="tab" data-toggle="tab">Indisponibilité</a></li>
-                    </ul>
-
-                    <div class="tab-content">
-                        <div class="tab-pane active" style="padding:10px;" id="affectTab">
-                            <?= form_open('planning/ajouter_affect', array('class' => 'form-horizontal', 'id' => 'formAddAffect')); ?>
-
-                            <input type="hidden" id="add_affect_personnel" name="personnel" value="" />
-                            <input type="hidden" id="add_affect_debut" name="debut" value="" />
-                            <input type="hidden" id="add_affect_demi" name="demi" value="" />
-                            <input type="hidden" id="add_affect_premier_jour" name="premier_jour" value="<?= $premierJourPlanning; ?>" />
-                            <input type="hidden" name="etat" id="addAffectEtat" value="Encours" />
-                            <input type="hidden" name="addAffectGps" id="addAffectGps" value="" />
-
-                            <div class="form-group">
-                                <label for="addAffectChantier" class="col-lg-3 col-md-3 col-sm-4 col-xs-12">Chantier</label>
-                                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
-                                    <select name="chantier" class="superselect" data-width="100%" id="addAffectChantier">
-                                        <option value="" disabled="" selected>Choississez un chantier</option>
-                                        <?php
-                                        if (!empty($liste_chantier)):
-                                            foreach ($liste_chantier as $chantier):
-                                                if ($chantier->getEtat() <> 'Termine'):
-                                                    echo '<option value="' . $chantier->getId() . '" data-content="<span style=\'font-size:12px;\'>' . $chantier->getClient() . '</span> - <span style=\'color:blue; font-size:10px;\'>' . $chantier->getChantierCategorie() . '</span><span style=\'font-weight:bold; color:grey; font-size:8px; position:relative; top:5px;\' class=\'pull-right\'>' . $chantier->getVille() . '</span><br/><span style=\'font-size:11px;\'>' . $chantier->getObjet() . '</span>">' . $chantier->getClient() . ' | ' . $chantier->getVille() . '</option>';
-                                                endif;
-                                            endforeach;
-                                        endif;
-                                        ?>
-                                    </select>
-                                    <span id="addAffectLieu" style="font-size:10px;"></span>
-                                    <input type="checkbox" name="addAffectModAdresse" id="addAffectModAdresse" value="1" /> <span style="color:#428bca; font-size:10px;">Autre adresse</span>
-                                </div>
-                            </div>
-
-                            <div id="addAffectLocalisation" style="display:none;">
-                                <div class="form-group">
-                                    <label for="addAffectAdresse" class="col-lg-3 col-md-3 col-sm-3 col-xs-4">Adresse</label>
-                                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                                        <input type="text" name="addAffectAdresse" id="addAffectAdresse" value="" placeholder="Adresse" class="form-control input-sm" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3" for="addAffectCp">Code postal</label>
-                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-9">
-                                        <input type="text" class="form-control input-sm" name="addAffectCp" id="addAffectCp" placeholder="Code postal" value="" />
-                                    </div>
-                                    <label class="col-lg-1 col-md-1 col-sm-1 col-xs-3 control-label" for="addAffectVille">Ville</label>
-                                    <div class="col-lg-5 col-md-5 col-sm-5 col-xs-9">
-                                        <select name="addAffectVille" id="addAffectVille" class="form-control input-sm">
-
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="addAffectNbDemi" class="col-lg-3 col-md-3 col-sm-4 col-xs-12">Durée</label>
-                                <div class="col-lg-3 col-md-3 col-sm-7 col-xs-12">
-                                    <div class="input-group">
-                                        <select name="nb_demi" id="addAffectNbDemi" class="form-control">
-                                            <?php
-                                            for ($i = 1; $i < 91; $i++):
-                                                echo '<option>' . $i . '</option>';
-                                            endfor;
-                                            ?>
-                                        </select>
-                                        <span class="input-group-addon">&frac12;j</span>
-                                    </div>
-                                </div>
-
-                                <label for="addAffectType" class="col-lg-1 col-md-1 col-sm-2 col-xs-12">Type</label>
-                                <div class="col-lg-4 col-md-4 col-sm-8 col-xs-12">
-                                    <select class="form-control" name="type" required id="addAffectType">
-                                        <option value="0">Chantier</option>
-                                        <option value="1">SAV - Dépannage</option>
-                                        <option value="2">Atelier</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="addAffectCommentaire" class="col-lg-3 col-md-3 col-sm-4 col-xs-12">Commentaire</label>
-                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-                                    <textarea class="form-control" rows="3" name="commentaire" id="addAffectCommentaire"></textarea>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i> Ajouter</button>
-                            <?= form_close(); ?>
+                    <?= form_open('planning/addLivraison/', array('id' => 'formAddLivraison')); ?>
+                    <input type="hidden" name="addLivraisonId" id="addLivraisonId" value="" >
+                    <div class="form-row" style="margin-top: 4px;">
+                        <div class="col">
+                            <label for="addLivraisonDate" class="">Le</label>
+                            <input type="date" name="addLivraisonDate" id="addLivraisonDate" value="" class="form-control" required >
                         </div>
-
-                        <div class="tab-pane" id="indispoTab" style="padding:10px;">
-
-                            <?= form_open('rh/addIndispo', array('class' => 'form-horizontal', 'id' => 'formAddIndispo')); ?>
-                            <input type="hidden" name="addIndispoId" value="" id="addIndispoId" />
-                            <input type="hidden" name="addIndispoPersonnelId" value="" id="addIndispoPersonnelId" />
-                            <input type="hidden" name="addIndispoRedirect" value="planning" id="addIndispoRedirect" />
-
-                            <div class="form-group">
-                                <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3">Débute le</label>
-                                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                    <input type="date" required name="addIndispoDebut" value="" class="form-control" id="addIndispoDebut" />
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-3">
-                                    <select class="form-control" name="addIndispoDebutDemi" id="addIndispoDebutDemi">
-                                        <option value="0">Matin</option>
-                                        <option value="1">Après-midi</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3">Fini le</label>
-                                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                                    <input type="date" required name="addIndispoFin" value="" class="form-control" id="addIndispoFin" />
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-3">
-                                    <select class="form-control" name="addIndispoFinDemi" id="addIndispoFinDemi">
-                                        <option value="0">Matin</option>
-                                        <option value="1">Après-midi</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-6 col-md-6 col-sm-3 col-xs-4"><span style="color:green; padding-right:20px;"> OU </span>Nombre de 1/2j</label>
-                                <div class="col-lg-3 col-ms-3 col-sm-3 col-xs-8">
-                                    <select name="addIndispoNbDemi" class="form-control" id="addIndispoNbDemi" style="color:#fff;">
-
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-3 col-ms-3 col-sm-3 col-xs-4">Motif</label>
-                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-8">
-                                    <select class="form-control" name="addIndispoType" id="addIndispoType">
-                                        <option value="6">Intempéries</option>
-                                        <option value="1">Maladie</option>
-                                        <option value="2">RTT</option>
-                                        <option value="3">Congés</option>
-                                        <option value="4">AT</option>
-                                        <option value="8">Sans solde</option>
-                                        <option value="7">Injustifiée</option>
-                                        <option value="5">Férié</option>
-                                        <option value="0">Formation</option>
-                                        <option value="9">CFA</option>
-                                        <option value="10">Autorisé</option>
-                                        <option value="11">Paternité/Maternité</option>
-                                        <option value="12">Evenements familiaux</option>
-                                        <option value="13">Mise à pied</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-lg-3 col-md-3 col-sm-3 col-xs-4">Ajouter à tous</label>
-                                <div class="col-lg-3 col-ms-3 col-sm-3 col-xs-8">
-                                    <input type="checkbox" name="addIndispoGlobal" id="addIndispoGlobal" value="1" />
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-info" id="formAddIndispoSubmit" style="display:none;"><i class="glyphicon glyphicon-plus"></i> Ajouter</button>
-
-                            <?= form_close(); ?>
-                            <button class="btn btn-xs btn-danger tooltipOk pull-right btnDelIndispo" cible="" data-placement="left" title="Double-click pour supprimer"><i class="glyphicon glyphicon-trash"></i> Supprimer</button>
-                        </div>
-
                     </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modifier une affect ------------------------------------------------------- -->
-    <div class="modal fade" id="mod_affect" tabindex="-1" role="dialog" aria-labelledby="Modifier une affectation" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background: #428bca; color:#FFF;">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="glyphicon glyphicon-remove" style="color:#f50a1c;"> </i></button>
-                    <h4 class="modal-title"><strong>Modifier une affectation</strong></h4>
-                </div>
-                <div class="modal-body">
-
-                    <?= form_open('planning/addAffectation/', array('class' => 'form-horizontal', 'id' => 'formModAffect')); ?>
-                    <input type="hidden" id="mod_affect_id" name="id" value="" />
-                    <input type="hidden" id="modAffectGps" name="addAffectGps" value="" />
-                    <input type="hidden" id="mod_affect_premier_jour" name="premier_jour" value="<?= $premierJourPlanning; ?>" />
-                    <input type="hidden" id="modAffectEtat" name="etat" value="" />
-                    <div class="form-group">
-                        <label for="mod_affect_personnel" class="col-lg-3 col-md-3 col-sm-4 col-xs-4">Personnel</label>
-                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-9">
-                            <select name="personnel" id="mod_affect_personnel" class="form-control">
+                    <div class="form-row" style="margin-top: 4px;">
+                        <div class="col">
+                            <label for="addLivraisonChantier" class="col-lg-3 col-md-3 col-sm-3 col-xs-6">Chantier</label>
+                            <select name="addLivraisonChantier" id="addLivraisonChantier" class="superselect" data-width="100%" data-show-subtext="true">
+                                <option value="0">Selectionnez un chantier...</option>
                                 <?php
-                                foreach ($personnelsPlanning as $personnel):
-                                    echo '<option value="' . $personnel->getPersonnelId() . '">' . $personnel->getPersonnelNom() . ' ' . $personnel->getPersonnelPrenom() . '</option>';
+                                foreach ($liste_chantier as $chantier):
+                                    if ($chantier->getEtat() <> 'Termine'):
+                                        echo '<option value="' . $chantier->getId() . '" data-content="<span style=\'font-size:12px;\'>' . $chantier->getClient() . '</span> - <span style=\'color:blue;\'>' . $chantier->getChantierCategorie() . '</span><span style=\'font-weight:bold; color:grey; font-size:8px; position:relative; top:5px;\' class=\'pull-right\'>' . $chantier->getVille() . '</span>">' . $chantier->getClient() . ' | ' . $chantier->getVille() . '</option>';
+                                    endif;
                                 endforeach;
                                 ?>
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="mod_affect_chantier" class="col-lg-3 col-md-3 col-sm-4 col-xs-4">Chantier</label>
-                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-9">
-                            <select name="chantier" id="mod_affect_chantier" class="form-control" data-width="100%" data-show-subtext="true">
-                                <?php
-                                if (!empty($liste_chantier)):
-                                    foreach ($liste_chantier as $chantier):
-                                        if ($chantier->getEtat() <> 'Termine'):
-                                            ?>
-                                            <option value="<?= $chantier->getId(); ?>"><?= $chantier->getClient() . ' - ' . $chantier->getChantierCategorie(); ?></option>
-                                            <?php
-                                        endif;
-                                    endforeach;
-                                endif;
-                                ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="modAffectAdresse" class="col-lg-3 col-md-3 col-sm-3 col-xs-4">Adresse</label>
-                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                            <input type="text" name="addAffectAdresse" id="modAffectAdresse" value="" class="form-control input-sm" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3" for="modAffectCp">Code postal</label>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-9">
-                            <input type="text" class="form-control input-sm" name="addAffectCp" id="modAffectCp" placeholder="Code postal" value="" />
-                        </div>
-                        <label class="col-lg-1 col-md-1 col-sm-1 col-xs-3 control-label" for="modAffectVille">Ville</label>
-                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-9">
-                            <select name="addAffectVille" id="modAffectVille" class="form-control input-sm">
-
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="mod_affect_debut" class="col-lg-3 col-md-3 col-sm-4 col-xs-12">Débute le</label>
-                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-7">
-                            <input type="date" name="debut" id="mod_affect_debut" class="form-control" value="" />
-                        </div>
-                        <div class="col-lg-4 col-md-4 col-sm-3 col-xs-5">
-                            <select name="demi" id="mod_affect_demi" class="form-control">
-                                <option value="0">Matin</option>
-                                <option value="1">Après-midi</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="mod_affect_nb_demi" class="col-lg-3 col-md-3 col-sm-4 col-xs-4">Pour</label>
-                        <div class="input-group col-lg-4 col-md-4 col-sm-4 col-xs-7">
-                            <select name="nb_demi" id="mod_affect_nb_demi" class="form-control">
-                                <?php
-                                for ($i = 1; $i < 91; $i++): echo '<option value="' . $i . '">' . $i . '</option>';
-                                endfor;
-                                ?>
-                            </select>
-                            <span class="input-group-addon">&frac12;j</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="mod_affect_type" class="col-lg-3 col-md-3 col-sm-4 col-xs-4">Type</label>
-                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-9">
-                            <select class="form-control" name="type" required id="mod_affect_type">
-                                <option value="0">Chantier</option>
-                                <option value="1">SAV - Dépannage</option>
-                                <option value="2">Atelier</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="mod_affect_commentaire" class="col-lg-3 col-md-3 col-sm-4 col-xs-4">Commentaire</label>
-                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-9">
-                            <textarea name="commentaire" rows="2" id="mod_affect_commentaire" class="form-control"></textarea>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary"><i class="glyphicon glyphicon-repeat"> </i> Modifier</button>
-                    <?= form_close(); ?>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- div d'action sur affectation ---------------------------------------------- -->
-    <div class="modal fade" id="action_affect" cible="" tabindex="-1" role="dialog" aria-labelledby="Visualisation et actions sur une affectation" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content modal-lg">
-                <div class="modal-header" style="background: #428bca; color:#FFF;">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="glyphicon glyphicon-remove" style="color:#f50a1c;"> </i></button>
-                    <h5 class="modal-title"></h5>
-                </div>
-                <div class="modal-body">
-                    <p style="font-size:14px;">
-                        <i class="" id="isVolOiseau"></i><br/><span id="adresse_affectation"></span><br/>
-                        <span id="distanceAffectation"></span> (<i class="glyphicon glyphicon-plane"></i> <span id="distanceAffectationVO"></span>)<br/>
-                        <strong>Objet du chantier : </strong><span id="objetChantier_affectation"></span><br/>
-                        <strong>type : </strong><span id="type_affectation"></span><br/>
-                        <strong>Heures prévues pour ce chantier : </strong><span id="previsionnel_affectation"></span><br/>
-                        <strong>Commentaire : </strong><span id="commentaire_affectation"></span>
-                    </p>
-                    <hr/>
-                    <div class="form-group btnGroupActionAffect">
-                        <?php echo form_open('planning/diviserAffectation', array('class' => 'form-inline', 'id' => 'formDiviseAffect')); ?>
-                        <input type="hidden" name="diviseAffectId" id="diviseAffectId" value="" />
-
-                        <label width="20%">Diviser au </label>
-                        <input type="date" name="diviseAffectDate" id="diviseAffectDate" value="" class="form-control input-sm"/>
-                        <select name="diviseAffectMoment" id="diviseAffectMoment" class="form-control input-sm">
-                            <option value="0">Fin de matinée</option>
-                            <option value="1">Soir</option>
-                        </select>
-                        <button type="submit" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-scissors"></i></button>
-                        <?php echo form_close(); ?>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <a href="" class="btn btn-sm btn-default pull-left" id="btnLinkChantier"><i class="glyphicon glyphicon-link"> </i> Fiche chantier</a>
-                    <div class="row" id="loadLocalisation" style="position:absolute; left:300px; display: none;">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
-                            <div class="circle"></div>
-                            <div class="circle1"></div>
-                        </div>
-                    </div>
-                    <div class="btn-group btnGroupActionAffect">
-                        <button class="btn btn-sm btn-default" id="btnRelocaliserAffectation" cible=""><i class="glyphicon glyphicon-screenshot"> </i> Relocaliser</button>
-                        <button class="btn btn-sm btn-info" id="btnModAffect" cible=""><i class="glyphicon glyphicon-pencil"> </i> Modifier</button>
-                        <button class="btn btn-sm btn-danger pull-right" id="btn_remove_affect" cible=""><i class="glyphicon glyphicon-fire"> </i> Supprimer</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal pour l'ajout d'une livraison fournisseur ----------------- -->
-    <div class="modal fade" id="modalLivraison" cible="" tabindex="-1" role="dialog" aria-labelledby="Ajouter une livraison fournisseur" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background: #428bca; color:#FFF;">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="glyphicon glyphicon-remove" style="color:#f50a1c;"> </i></button>
-                    <h4 class="modal-title"></h4>
-                </div>
-                <div class="modal-body">
-
-                    <?= form_open('planning/addLivraison/', array('class' => 'form-horizontal', 'id' => 'formAddLivraison')); ?>
-                    <input type="hidden" name="addLivraisonId" id="addLivraisonId" value="" />
-                    <div class="form-group">
-                        <label for="addLivraisonDate" class="col-lg-3 col-md-3 col-sm-3 col-xs-4">Le</label>
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-8">
-                            <input type="date" name="addLivraisonDate" id="addLivraisonDate" value="" class="form-control" required />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="addLivraisonChantier" class="col-lg-3 col-md-3 col-sm-3 col-xs-6">Chantier</label>
-                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-6">
-                            <select name="addLivraisonChantier" id="addLivraisonChantier" class="superselect" data-width="100%" data-show-subtext="true">
-                                <option value="0">Selectionnez un chantier...</option>
-                                <?php
-                                if (!empty($liste_chantier)):
-                                    foreach ($liste_chantier as $chantier):
-                                        if ($chantier->getEtat() <> 'Termine'):
-                                            echo '<option value="' . $chantier->getId() . '" data-content="<span style=\'font-size:12px;\'>' . $chantier->getClient() . '</span> - <span style=\'color:blue;\'>' . $chantier->getChantierCategorie() . '</span><span style=\'font-weight:bold; color:grey; font-size:8px; position:relative; top:5px;\' class=\'pull-right\'>' . $chantier->getVille() . '</span>">' . $chantier->getClient() . ' | ' . $chantier->getVille() . '</option>';
-                                        endif;
-                                    endforeach;
-                                endif;
-                                ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="addLivraisonFournisseur" class="col-lg-3 col-md-3 col-sm-3 col-xs-6">Founisseur</label>
-                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-6">
+                    <div class="form-row" style="margin-top: 4px;">
+                        <div class="col">
+                            <label for="addLivraisonFournisseur" class="col-6 col-sm-3">Founisseur</label>
                             <select name="addLivraisonFournisseur" id="addLivraisonFournisseur" class="form-control" data-width="100%">
                                 <option value="0">Selectionnez un fournisseur...</option>
                                 <?php
@@ -684,33 +350,38 @@ if ($this->ion_auth->in_group(array(100))):
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="addLivraisonRemarque" class="col-lg-3 col-md-3 col-sm-3 col-xs-6">Remarque</label>
-                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-6">
+                    <div class="form-row" style="margin-top: 4px;">
+                        <div class="col">
+                            <label for="addLivraisonRemarque" class="col-lg-3 col-md-3 col-sm-3 col-xs-6">Remarque</label>
                             <textarea class="form-control" name="addLivraisonRemarque" id="addLivraisonRemarque"></textarea>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="addLivraisonEtat" class="col-lg-3 col-md-3 col-sm-3 col-xs-6">Avancement</label>
-                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-6">
-                            <select name="addLivraisonEtat" id="addLivraisonEtat" class="form-control" data-width="100%">
-                                <option value="0">Attente</option>
-                                <option value="1">Confirmée</option>
-                                <option value="2">Reçue</option>
-                            </select>
+                    <div class="form-row" style="margin-top: 4px;">
+                        <div class="col">
+                            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-6">
+                                <select name="addLivraisonEtat" id="addLivraisonEtat" class="form-control" data-width="100%">
+                                    <option value="0">Attente</option>
+                                    <option value="1">Confirmée</option>
+                                    <option value="2">Reçue</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="addLivraisonContrainte" class="col-lg-3 col-md-3 col-sm-3 col-xs-6">Nécessaire pour</label>
-                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-6" id="addLivraisonListeContrainte">
+                        <div class="form-row" style="margin-top: 4px;">
+                            <div class="col">
+                                <label for="addLivraisonContrainte" class="col-lg-3 col-md-3 col-sm-3 col-xs-6">Nécessaire pour</label>
+                                <div id="addLivraisonListeContrainte">
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="btn btn-primary pull-right" type="submit" id="livraisonSubmit"><i class="glyphicon glyphicon-plus"></i> Ajouter cette livraison</button>
+                            <?= form_close(); ?>
+                            <button class="btn btn-sm btn-danger tooltipOk pull-left" id="btnDeleteLivraison" data-placement="right" title="Double-click pour supprimer"><i class="glyphicon glyphicon-trash"></i> Supprimer</button>
 
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary pull-right" type="submit" id="livraisonSubmit"><i class="glyphicon glyphicon-plus"></i> Ajouter cette livraison</button>
-                    <?= form_close(); ?>
-                    <button class="btn btn-sm btn-danger tooltipOk pull-left" id="btnDeleteLivraison" data-placement="right" title="Double-click pour supprimer"><i class="glyphicon glyphicon-trash"></i> Supprimer</button>
                 </div>
             </div>
         </div>
@@ -740,7 +411,7 @@ if ($this->ion_auth->in_group(array(100))):
                                     <tr class="ligneLivraison" semaine="<?= date('W', $l->getLivraisonDate()); ?>" annee="<?= date('Y', $l->getLivraisonDate()); ?>">
                                         <td style="background-color:<?= $l->getLivraisonCouleur(); ?>;"></td>
                                         <td><?= date('d/m/Y', $l->getLivraisonDate()); ?></td>
-                                        <td><?= $l->getLivraisonFournisseur() . '<br/>' . $l->getLivraisonFournisseurTelephone(); ?></td>
+                                        <td><?= $l->getLivraisonFournisseur() . '<br>' . $l->getLivraisonFournisseurTelephone(); ?></td>
                                         <td><?= $l->getLivraisonClient(); ?></td>
                                         <td><?= $l->getLivraisonRemarque(); ?></td>
                                     </tr>

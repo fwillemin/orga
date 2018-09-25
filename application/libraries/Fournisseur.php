@@ -20,7 +20,7 @@ class Fournisseur {
     protected $fournisseurVille;
     protected $fournisseurTelephone;
     protected $fournisseurEmail;
-    protected $fournisseurLivraisons;
+    protected $fournisseurAchats;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -36,13 +36,17 @@ class Fournisseur {
         endforeach;
     }
 
-    public function hydrateLivraisons() {
+    public function hydrateAchats() {
         $CI = & get_instance();
-        $this->fournisseurLivraisons = $CI->managerLivraisons->getLivraisons(array('livraisonFournisseurId' => $this->fournisseurId), 'livraisonEtat ASC', 'object');
+        $this->fournisseurAchats = $CI->managerLivraisons->getLivraisons(array('livraisonFournisseurId' => $this->fournisseurId), 'livraisonEtat ASC', 'object');
     }
 
     function getFournisseurId() {
         return $this->fournisseurId;
+    }
+
+    function getFournisseurOriginId() {
+        return $this->fournisseurOriginId;
     }
 
     function getFournisseurEtablissementId() {
@@ -73,8 +77,16 @@ class Fournisseur {
         return $this->fournisseurEmail;
     }
 
+    function getFournisseurAchats() {
+        return $this->fournisseurAchats;
+    }
+
     function setFournisseurId($fournisseurId) {
         $this->fournisseurId = $fournisseurId;
+    }
+
+    function setFournisseurOriginId($fournisseurOriginId) {
+        $this->fournisseurOriginId = $fournisseurOriginId;
     }
 
     function setFournisseurEtablissementId($fournisseurEtablissementId) {
@@ -105,20 +117,8 @@ class Fournisseur {
         $this->fournisseurEmail = $fournisseurEmail;
     }
 
-    function getFournisseurLivraisons() {
-        return $this->fournisseurLivraisons;
-    }
-
-    function setFournisseurLivraisons($fournisseurLivraisons) {
-        $this->fournisseurLivraisons = $fournisseurLivraisons;
-    }
-
-    function getFournisseurOriginId() {
-        return $this->fournisseurOriginId;
-    }
-
-    function setFournisseurOriginId($fournisseurOriginId) {
-        $this->fournisseurOriginId = $fournisseurOriginId;
+    function setFournisseurAchats($fournisseurAchats) {
+        $this->fournisseurAchats = $fournisseurAchats;
     }
 
 }

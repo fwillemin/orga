@@ -19,13 +19,17 @@ $(document).ready(function () {
 
     $('#rowPlanning').fadeIn();
     $('#rowLoading').fadeOut();
-      
+
+    $('[data-toggle="popover"]').popover({
+        html: true
+    });
+
     $("#divPlanning").animate({scrollLeft: getCookie('positionPlanning')}, 800);
     if ($('#divPlanning').scrollLeft() == 0) {
         $('#divPlanning').scrollLeft($('#divPlanning').attr('today'));
     }
-    
-    $('#divPlanning').scroll(function () {        
+
+    $('#divPlanning').scroll(function () {
         var trs = document.getElementById('divPlanning').scrollLeft;
         document.cookie = "positionPlanning" + "=" + escape(trs) + ';path=/';
     });
@@ -381,6 +385,26 @@ $(document).ready(function () {
                 text: 'Annuler'
             }
         }
+    });
+
+    $('.livraison').on('click', function () {
+        $('#masquePlanning').fadeIn(300);
+        $('.affectation, .livraison').css('z-index', 2);
+        $(this).css('z-index', 15);
+
+        /* Surbrillance des affectations contraintes */
+        var affectations = $(this).attr('data-contraintes').split(",");
+               
+        for (i = 0; affectations.length > i; i++) {
+            var affectation = $('div.affectation[data-affectationid="' + affectations[i] + '"]');
+            affectation.css('z-index', 15);            
+        }
+
+    });
+    $('#masquePlanning').on('click', function () {
+        $(this).fadeOut(200);
+        $('.affectation, .livraison').css('z-index', 2);
+        $('.livraison').popover('hide');
     });
 
 });
