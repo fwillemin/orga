@@ -38,7 +38,7 @@ class Fournisseurs extends My_Controller {
         endif;
 
         $fournisseur = $this->managerFournisseurs->getFournisseurById($fournisseurId);
-        //$fournisseur->hydrateAchats();
+        $fournisseur->hydrateAchats();
 
         $data = array(
             'fournisseur' => $fournisseur,

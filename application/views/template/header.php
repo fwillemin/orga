@@ -96,6 +96,14 @@
                                 </a>
                             </div>
                             <div class="nav-divider"></div>
+                            <?php if ($this->ion_auth->in_group(array(61))): ?>
+                                <div class="nav-item">
+                                    <a class="nav-link" href="<?= site_url('fournisseurs/listeFst'); ?>">
+                                        <i class="fas fa-parachute-box"></i> Fournisseurs
+                                    </a>
+                                </div>
+                                <div class="nav-divider"></div>
+                            <?php endif; ?>
 
                         </div>
                         <div class="nav navbar-nav navbar-right">
@@ -132,13 +140,6 @@
                                                     <div class="col-12" style="min-height: 25px;">
                                                         <a href="<?= site_url('utilisateurs/liste'); ?>" style="color: lightsteelblue;">
                                                             <div style="width:25px; float: left;"><i class="fas fa-user-edit"></i></div> Utilisateurs administratifs
-                                                        </a>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <?php if ($this->ion_auth->in_group(array(61))): ?>
-                                                    <div class="col-12" style="min-height: 25px;">
-                                                        <a href="<?= site_url('fournisseurs/listeFst'); ?>" style="color: lightsteelblue;">
-                                                            <div style="width:25px; float: left;"><i class="fas fa-parachute-box"></i></div> Fournisseurs
                                                         </a>
                                                     </div>
                                                 <?php endif; ?>

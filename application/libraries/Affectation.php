@@ -131,7 +131,7 @@ class Affectation {
         endif;
         $this->hydrateHeures();
 
-        $positionLeft = ceil(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
+        $positionLeft = floor(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
         //si on commence de l'aprem, on ajoute une 1/2 journée
         if ($this->affectationDebutMoment == 2) {
             $positionLeft += $largeur;

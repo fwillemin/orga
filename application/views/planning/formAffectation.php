@@ -10,7 +10,7 @@
                     if ($affaire && !empty($affaire->getAffaireChantiers())):
                         foreach ($affaire->getAffaireChantiers() as $chantier):
                             echo '<option value="' . $chantier->getChantierId() . '"'
-                            . 'data-content="<span class=\'selectpickerClient\'>' . $affaire->getAffaireClient()->getClientNom() . '</span> <span class=\'selectpickerChantier\'>' . $chantier->getChantierObjet() . '</span>">' . $affaire->getAffaireClient()->getClientNom() . ' ' . $chantier->getChantierObjet() . '</option>';
+                            . 'data-content="<span class=\'selectpickerClient\'>' . $affaire->getAffaireClient()->getClientNom() . '</span> <span class=\'selectpickerAnnotation\'>' . $affaire->getAffaireObjet() . ' > ' . $chantier->getChantierObjet() . '</span>">' . $affaire->getAffaireClient()->getClientNom() . ' ' . $chantier->getChantierObjet() . '</option>';
                         endforeach;
                     endif;
                 endforeach;
@@ -100,6 +100,10 @@
         <i class="fas fa-plus-square"></i> Ajouter
     </button
     <i class="fas fa-circle-notch fa-spin formloader" id="loaderAddAffectation"></i>
+    <br>
+    <button type="button" class="btn btn-sm btn-link" id="btnAddIndispo" style="color: black;">
+        <i class="fab fa-snapchat-ghost"></i> Indisponibilité
+    </button>
 </center>
 <?= form_close(); ?>
 

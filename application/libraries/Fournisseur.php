@@ -38,7 +38,7 @@ class Fournisseur {
 
     public function hydrateAchats() {
         $CI = & get_instance();
-        $this->fournisseurAchats = $CI->managerLivraisons->getLivraisons(array('livraisonFournisseurId' => $this->fournisseurId), 'livraisonEtat ASC', 'object');
+        $this->fournisseurAchats = $CI->managerAchats->getAchatsByFournisseurId($this->fournisseurId, array(), 'achatDate DESC', 'object');
     }
 
     function getFournisseurId() {

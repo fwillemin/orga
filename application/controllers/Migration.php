@@ -42,6 +42,7 @@ class Migration extends My_Controller {
         $this->db->query("ALTER TABLE `affectations` auto_increment = 1;");
         $this->db->query("ALTER TABLE `heures` auto_increment = 1;");
         $this->db->query("ALTER TABLE `fournisseurs` auto_increment = 1;");
+        $this->db->query("ALTER TABLE `indisponibilites` auto_increment = 1;");
     }
 
     public function migrerRS($rsId = null) {
@@ -351,6 +352,8 @@ class Migration extends My_Controller {
             );
             $personnel = new Personnel($arrayPersonnel);
             $this->managerPersonnels->ajouter($personnel);
+
+            $this->importIndisponibilites($personnel);
         endforeach;
     }
 
@@ -689,18 +692,17 @@ class Migration extends My_Controller {
             $affaire->hydratePlace();
             $this->importAffectations($chantier, $affaire);
 
-            $chantier->hydrateLivraisonsMigration();
-            if (!empty($chantier->getChantierLivraisons())):
-                foreach ($chantier->getChantierLivraisons() as $livraison):
+            $chantier->hydrateAchats();
+            if (!empty($chantier->getChantierAchats())):
+                foreach ($chantier->getChantierAchats() as $achat):
                     /* on recherche les liens incluant cette livraison dans la table V1 */
-                    foreach ($this->db->select('*')->from('V1_livraison_contrainte')->where('lcLivraisonId', $livraison->getLivraisonOriginId())->get()->result() as $contrainte):
+                    foreach ($this->db->select('*')->from('V1_livraison_contrainte')->where('lcLivraisonId', $achat->getAchatLivraisonOriginId())->get()->result() as $contrainte):
                         $affectation = $this->managerAffectations->getAffectationByOriginId($contrainte->lcAffectationId);
-                        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($affectation, true));
                         if ($affectation):
                             $this->db
-                                    ->set('livraisonId', $livraison->getLivraisonId())
+                                    ->set('achatId', $achat->getAchatId())
                                     ->set('affectationId', $affectation->getAffectationId())
-                                    ->insert('livraisons_affectations');
+                                    ->insert('achats_affectations');
                         endif;
                     endforeach;
                 endforeach;
@@ -875,6 +877,26 @@ class Migration extends My_Controller {
             );
             $newHeure = new Heure($dataHeure);
             $this->managerHeures->ajouter($newHeure);
+
+        endforeach;
+    }
+
+    public function importIndisponibilites(Personnel $personnel) {
+        foreach ($this->db->select('*')->from('V1_indisponible')->where(array('id_personnel' => $personnel->getPersonnelOriginId(), 'debut >= ' => 1535752800))->get()->result() as $indispo):
+
+            $dataIndispo = array(
+                'indispoPersonnelId' => $personnel->getPersonnelId(),
+                'indispoDebutDate' => $indispo->debut,
+                'indispoDebutMoment' => $indispo->debut_journee + 1,
+                'indispoFinDate' => $indispo->fin,
+                'indispoFinMoment' => $indispo->demi_fin + 1,
+                'indispoMotifId' => ($indispo->type > 0) ? $indispo->type : 14,
+                'indispoAffichage' => $indispo->affichage,
+                'indispoNbDemi' => $indispo->nb_demi,
+                'indispoCases' => $this->cal->nbCasesEntreDates($indispo->debut, ($indispo->debut_journee + 1), $indispo->fin, ($indispo->demi_fin + 1))
+            );
+            $newIndispo = new Indisponibilite($dataIndispo);
+            $this->managerIndisponibilites->ajouter($newIndispo);
 
         endforeach;
     }

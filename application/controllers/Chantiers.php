@@ -190,8 +190,10 @@ class Chantiers extends My_Controller {
                 );
                 $achat = new Achat($dataAchat);
                 $this->managerAchats->ajouter($achat);
+
             endif;
-            echo json_encode(array('type' => 'success'));
+            $achat->genereHTML();
+            echo json_encode(array('type' => 'success', 'achatHTML' => $achat->getAchatHTML()));
 
         endif;
     }
@@ -209,6 +211,20 @@ class Chantiers extends My_Controller {
             $achat = $this->managerAchats->getAchatById($this->input->post('achatId'));
             $this->managerAchats->delete($achat);
             echo json_encode(array('type' => 'success'));
+        endif;
+    }
+
+    public function listeAchatsChantier() {
+        if (!$this->form_validation->run('getChantier')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $achats = $this->managerAchats->getAchats($this->input->post('chantierId'), array(), 'achatLivraisonDate DESC', 'array');
+            if (!empty($achats)):
+                foreach ($achats as $achat):
+                    $achat->achatLivraisonDate = $this->cal->dateFrancais($achat->achatLivraisonDate);
+                endforeach;
+            endif;
+            echo json_encode(array('type' => 'success', 'achats' => $achats));
         endif;
     }
 

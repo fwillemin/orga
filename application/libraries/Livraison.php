@@ -58,7 +58,6 @@ class Livraison {
         foreach ($query->result() AS $row):
             $this->livraisonContraintesIds[] = $row->affectationId;
         endforeach;
-        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($this->livraisonContraintesIds, true));
     }
 
     public function hydrateChantier() {

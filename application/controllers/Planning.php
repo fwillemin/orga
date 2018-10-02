@@ -17,20 +17,6 @@ class Planning extends My_Controller {
         /* Définition des variables de planning */
         $this->nbSemainesAvant = $this->session->userdata('parametres')['nbSemainesAvant'];
         $this->nbSemainesApres = $this->session->userdata('parametres')['nbSemainesApres'];
-        switch ($this->session->userdata('parametres')['tailleAffectations']):
-            case 1:
-                $this->hauteur = 40;
-                $this->largeur = 30;
-                break;
-            case 2:
-                $this->hauteur = 50;
-                $this->largeur = 35;
-                break;
-            case 3:
-                $this->hauteur = 60;
-                $this->largeur = 40;
-                break;
-        endswitch;
     }
 
     /* Permet la selection ou non des chantiers terminés dans le slide gauche */
@@ -65,8 +51,11 @@ class Planning extends My_Controller {
         /* Le dernier jour du planning est le premier jour auquel on additionne
          * les semaines avant et apres la dateFocus et la derniere semaine en cours
          */
-        $dernierJourPlanning = $premierJourPlanning + (1 + $this->nbSemainesAvant + $this->nbSemainesApres) * 604800;
-
+        if ($debut >= date('Y-m-d')):
+            $dernierJourPlanning = null;
+        else:
+            $dernierJourPlanning = $premierJourPlanning + (1 + $this->nbSemainesAvant + $this->nbSemainesApres) * 604800;
+        endif;
 
         /* Récuperation des données */
         $personnelsActifs = $this->managerPersonnels->getPersonnels(array('personnelActif' => 1), 'personnelEquipeId DESC, personnelNom, personnelPrenom ASC');
@@ -83,7 +72,7 @@ class Planning extends My_Controller {
         $listeAffairesClotureesPlanning = array(); /* Liste des ID des affaires cloturées ayant une affectation dans le panning généré */
         if ($affectations):
             /* Initialisations */
-            $dernier = $dernierJourPlanning;
+            $dernier = $dernierJourPlanning ?: 0;
 
             /* Permier et dernier jours du planning */
             if ($affectations[0]->getAffectationDebutDate() < $premierJourPlanning):
@@ -113,7 +102,13 @@ class Planning extends My_Controller {
             unset($affectation);
 
             /* Mise à jour des variables du planning */
-            $dernierJourPlanning = $this->cal->dernierJourSemaine($dernier, $this->nbSemainesApres);
+            if ($dernierJourPlanning):
+                /* Plannning contraint par le calendrier (dateFocus < today) */
+                $dernierJourPlanning = $this->cal->dernierJourSemaine($dernier);
+            else:
+                /* Planning libre sur le futur (dateFocus >= today) on ajoute 2 semaines libres */
+                $dernierJourPlanning = $this->cal->dernierJourSemaine($dernier) + 86400 * 14;
+            endif;
 
         endif;
         $this->session->set_userdata('planningPersonnelsIds', $listePersonnel);
@@ -146,21 +141,13 @@ class Planning extends My_Controller {
         $this->session->set_userdata('premierJourPlanning', $premierJourPlanning);
         $this->session->set_userdata('dernierJourPlanning', $dernierJourPlanning);
 
-        /* Recherche du personnel Forcé Inactif */
-//        $personnelsForceInactif = $this->managerPersonnels->liste(array('actif' => 0));
-//        /* Si on est sur le planning des Terminés ou le Full, on ne retire pas les forcés Inactifs pour pouvoir afficher l'hotorique */
-//        if (!empty($personnelsForceInactif) && $this->session->userdata('dossierEtat') == 'Encours'):
-//            foreach ($personnelsForceInactif as $pfi):
-//                if (in_array($pfi->getId(), $personnelListe)):
-//                    /* On retire l'id su personnel dans la liste */
-//                    $key = array_search($pfi->getId(), $personnelListe);
-//                    unset($personnelListe[$key]);
-//                endif;
-//            endforeach;
-//        endif;
-
         /* recherche des indisponibilités pour cette periode */
-        //$indisponibilites = $this->managerIndisponibilites->liste(array('fin >=' => $premierJourPlanning, 'debut <=' => $derniereAffectation), 'i.fin ASC');
+        $indisponibilitesPlanning = $this->managerIndisponibilites->getIndisponibilitesPlanning($premierJourPlanning, $dernierJourPlanning);
+        if (!empty($indisponibilitesPlanning)):
+            foreach ($indisponibilitesPlanning as $indispo):
+                $indispo->genereHTML($premierJourPlanning, $personnelsPlanning, null, $this->hauteur, $this->largeur);
+            endforeach;
+        endif;
 
         /* les chantiers */
         $chantiers = $this->managerChantiers->getChantiers(array('chantierEtat' => 1));
@@ -208,13 +195,17 @@ class Planning extends My_Controller {
 //                $realise += $c->getPrix();
 //            endforeach;
 //        endif;
-//        $livraisons = $this->managerLivraisons->getLivraisonsPlanning($premierJourPlanning, $dernierJourPlanning);
-//        if (!empty($livraisons)):
-//            foreach ($livraisons as $livraison):
-//                $livraison->hydrateChantier();
-//                $livraison->hydrateFournisseur();
-//            endforeach;
-//        endif;
+//
+        /* Les livraisons sont des instances d'objet Achat */
+        $achats = $this->managerAchats->getAchatsPlanning($premierJourPlanning, $dernierJourPlanning);
+        if (!empty($achats)):
+            foreach ($achats as $achat):
+                $achat->hydrateChantier();
+                $achat->hydrateFournisseur();
+                $achat->genereHTML();
+            endforeach;
+        endif;
+
 
         $data = array(
             'section' => 'planning',
@@ -227,12 +218,13 @@ class Planning extends My_Controller {
             /* Personnels */
             'personnelsActifs' => $personnelsActifs, /* Pour la sélection dans le formulaire d'ajout d'affectations */
             'personnelsPlanning' => $personnelsPlanning, /* Personnels affichés sur le planning */
-            //'indisponibilite' => $indisponibilites,
+            'indisposPlanning' => $indisponibilitesPlanning,
+            'motifs' => $this->managerMotifs->getMotifs(),
             //'liste_chantier' => $chantiers,
             'affectationsPlanning' => $affectations,
             //'liste_heure' => $heures,
-            'livraisonsPlanning' => array(),
-            //'listeFournisseurs' => $this->managerFournisseurs->liste(),
+            'achatsPlanning' => $achats,
+            'fournisseurs' => $this->managerFournisseurs->getFournisseurs(),
             'dateFocus' => $debut, /* Date à partir de laquelle tout est calculé */
             'premierJourPlanning' => $premierJourPlanning,
             'dernierJourPlanning' => $dernierJourPlanning,
@@ -542,6 +534,133 @@ class Planning extends My_Controller {
                 endif;
 
             endif;
+        endif;
+    }
+
+    public function returnModalLivraion() {
+
+        if (!$this->form_validation->run('getAchat')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+
+            $achat = $this->managerAchats->getAchatById($this->input->post('achatId'));
+            $chantier = $this->managerChantiers->getChantierById($achat->getAchatChantierId());
+            $chantier->hydrateClient();
+
+            $retour = $this->generationModalAchatPlanning($achat);
+
+
+            echo json_encode(array('type' => 'success', 'contraintes' => $retour, 'titre' => 'Livraison d\'un achat pour le client ' . $chantier->getChantierClient()->getClientNom()));
+        endif;
+    }
+
+    public function saveContraintes() {
+        if (!$this->form_validation->run('getAchat')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            /* Suppression de toutes les contraintes de cet achat */
+            $this->db->where('achatId', $this->input->post('achatId'))
+                    ->delete('achats_affectations');
+
+            if (!empty($this->input->post('contraintes'))):
+                foreach ($this->input->post('contraintes') as $affectationId):
+                    $this->db
+                            ->set('achatId', $this->input->post('achatId'))
+                            ->set('affectationId', $affectationId)
+                            ->insert('achats_affectations');
+                endforeach;
+            endif;
+
+            $achat = $this->managerAchats->getAchatById($this->input->post('achatId'));
+            $achat->genereHTML();
+
+            /* On regénère la modal pour le planning */
+            $retourModal = $this->generationModalAchatPlanning($this->managerAchats->getAchatById($this->input->post('achatId')));
+            echo json_encode(array('type' => 'success', 'contraintes' => $retourModal, 'achatHTML' => $achat->getAchatHTML()));
+
+        endif;
+    }
+
+    private function generationModalAchatPlanning(Achat $achat) {
+        $achat->hydrateFournisseur();
+
+        $chantier = $this->managerChantiers->getChantierById($achat->getAchatChantierId());
+        $chantier->hydrateAffectations();
+        $chantier->hydrateClient();
+
+        $entete = ($achat->getAchatFournisseurId() ? '<small>Fournisseur : </small>' . $achat->getAchatFournisseur()->getFournisseurNom() . '<br>' : '')
+                . '<div><small>Avancement : </small>' . str_replace('"', '\'', $achat->getAchatLivraisonAvancementText()) . '</div>'
+                . '<small>Achat : </small>' . nl2br($achat->getAchatDescription())
+                . '<a href=\'' . site_url('chantiers/ficheChantier/' . $achat->getAchatChantierId() . '/a' . $achat->getAchatId()) . '\' class=\'btn btn-outline-dark btn-sm\' style=\'position:absolute; right:3px; top: 2px;\'><i class=\'fas fa-edit\' style=\'position:relative; top:1px; left:1px;\'></i></a><hr>';
+
+
+        $contraintes = '';
+        if (sizeof($achat->getAchatContraintesIds()) > 0):
+            $contraintes = 'Cette livraison est nécessaire pour <b>' . sizeof($achat->getAchatContraintesIds()) . ' affectation(s)</b> :';
+            foreach ($achat->getAchatContraintesIds() as $affectationContrainteId):
+                foreach ($chantier->getChantierAffectations() as $affectation):
+                    if ($affectation->getAffectationId() == $affectationContrainteId):
+                        $affectation->hydratePersonnel();
+                        $contraintes .= "<div class='row' style='margin: 3px; border: 1px solid " . $chantier->getChantierCouleur() . ";'>"
+                                . "<div class='col-1' style='text-align: center; background-color:" . $chantier->getChantierCouleur() . "; color:" . $chantier->getChantierCouleurSecondaire() . "; padding:5px;'>"
+                                . "<i class='fas fa-check'></i>"
+                                . "</div>"
+                                . "<div class='col' style='padding:10px 5px 5px 10px; font-size:14px;'>"
+                                . "Le " . $this->cal->dateFrancais($affectation->getAffectationDebutDate(), 'JDMA') . " pour <b>" . $affectation->getAffectationPersonnel()->getPersonnelNom() . "</b>"
+                                . "</div>"
+                                . "</div>";
+                        break;
+                    endif;
+                endforeach;
+                unset($affectation);
+            endforeach;
+        endif;
+        /* On ajoute la liste des chantiers des affectations de ce chantier pour selection des contraites */
+        $contraintes .= "<br><select name='selectionContraintes[]' class='selectpicker col-10' id='selectionContraintes' multiple title='Achat nécessaire pour...' data-style='btn-secondary' >";
+        if (!empty($chantier->getChantierAffectations())):
+            foreach ($chantier->getChantierAffectations() as $affectation):
+                $affectation->hydratePersonnel();
+                $isSelect = '';
+                if (in_array($affectation->getAffectationId(), $achat->getAchatContraintesIds())):
+                    $isSelect = 'selected';
+                endif;
+                $contraintes .= "<option " . $isSelect . " value='" . $affectation->getAffectationId() . "' data-content='Le " . $this->cal->dateFrancais($affectation->getAffectationDebutDate(), 'JDma') . " avec " . $affectation->getAffectationPersonnel()->getPersonnelNom() . " pour " . $affectation->getAffectationNbDemi() . " demi-journée(s)'>" . $affectation->getAffectationId() . "</option>";
+            endforeach;
+        endif;
+        $contraintes .= "</select><button class='btn btn-dark' id='btnSaveContraintes' data-achatid='" . $achat->getAchatId() . "'><i class='fas fa-save'></i></button>";
+
+        return $entete . $contraintes;
+    }
+
+    public function addDateLivraison() {
+
+        if (!$this->existChantier($this->input->post('addLivraisonChantierId')) || !$this->existAchat($this->input->post('addLivraisonAchatId'))):
+            echo json_encode(array('type' => 'error', 'message' => 'Cet achat et/ou le chantier liés ne sont pas valables'));
+        else:
+            $achat = $this->managerAchats->getAchatById($this->input->post('addLivraisonAchatId'));
+            $achat->setAchatLivraisonDate($this->own->mktimeFromInputDate($this->input->post('addLivraisonDate')));
+            $achat->setAchatLivraisonAvancement($this->input->post('addLivraisonAvancement'));
+
+            $this->managerAchats->editer($achat);
+            $achat->genereHTML();
+
+            echo json_encode(array('type' => 'success', 'achatHTML' => $achat->getAchatHTML()));
+        endif;
+    }
+
+    public function dragLivraison() {
+        if (!$this->form_validation->run('getAchat')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $achat = $this->managerAchats->getAchatById($this->input->post('achatId'));
+            if ($this->input->post('decalageX') > 0):
+                $newDate = $achat->getAchatLivraisonDate() + floor($this->input->post('decalageX') / (2 * $this->largeur)) * 86400;
+            else:
+                $newDate = $achat->getAchatLivraisonDate() + ceil($this->input->post('decalageX') / (2 * $this->largeur)) * 86400;
+            endif;
+            $achat->setAchatLivraisonDate($newDate);
+            $this->managerAchats->editer($achat);
+            echo json_encode(array('type' => 'success'));
         endif;
     }
 

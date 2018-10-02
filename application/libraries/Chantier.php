@@ -31,8 +31,9 @@ class Chantier {
     protected $chantierFraisGeneraux;
     protected $chantierTauxHoraireMoyen;
     protected $chantierRemarque;
+//    protected $chantierLivraisons;
     protected $chantierAchats;
-    protected $chantierLivraisons;
+    protected $chantierAffectations;
     /* TRIGGERED */
     protected $chantierBudgetPrevu; /* Somme des achats prévus */
     protected $chantierBudgetConsomme; /* Somme des achats réalisés */
@@ -69,15 +70,15 @@ class Chantier {
         $this->chantierPlace = $CI->managerPlaces->getPlaceById($this->chantierPlaceId);
     }
 
-    public function hydrateLivraisons() {
-        $CI = & get_instance();
-        $this->chantierLivraisons = $CI->managerLivraisons->getLivraisonsByChantierId($this->chantierId);
-    }
-
-    public function hydrateLivraisonsMigration() {
-        $CI = & get_instance();
-        $this->chantierLivraisons = $CI->managerLivraisons->getLivraisonsByChantierIdMigration($this->chantierId);
-    }
+//    public function hydrateLivraisons() {
+//        $CI = & get_instance();
+//        $this->chantierLivraisons = $CI->managerLivraisons->getLivraisonsByChantierId($this->chantierId);
+//    }
+//
+//    public function hydrateLivraisonsMigration() {
+//        $CI = & get_instance();
+//        $this->chantierLivraisons = $CI->managerLivraisons->getLivraisonsByChantierIdMigration($this->chantierId);
+//    }
 
     public function hydrateAffaire() {
         $CI = & get_instance();
@@ -96,6 +97,11 @@ class Chantier {
     public function hydrateAchats() {
         $CI = & get_instance();
         $this->chantierAchats = $CI->managerAchats->getAchats($this->chantierId);
+    }
+
+    public function hydrateAffectations() {
+        $CI = & get_instance();
+        $this->chantierAffectations = $CI->managerAffectations->getAffectations(array('affectationChantierId' => $this->chantierId));
     }
 
     public function cloturer($dateCloture) {
@@ -313,6 +319,14 @@ class Chantier {
 
     function setChantierLivraisons($chantierLivraisons) {
         $this->chantierLivraisons = $chantierLivraisons;
+    }
+
+    function getChantierAffectations() {
+        return $this->chantierAffectations;
+    }
+
+    function setChantierAffectations($chantierAffectations) {
+        $this->chantierAffectations = $chantierAffectations;
     }
 
 }

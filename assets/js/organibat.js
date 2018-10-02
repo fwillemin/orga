@@ -2,6 +2,21 @@ var path = 'http://192.168.0.1/organibat2';
 var chemin = path + '/index.php/';
 var cheminJs = path + '/assets/js/';
 
+function refactorDate(timeDate,type) {
+    type = type || 'input';
+    if(timeDate > 0){
+        var refactor = new Date(timeDate*1000);
+        var jour_refactor = refactor.getDate(); if(jour_refactor < 10){
+            jour_refactor = '0'+jour_refactor;
+        };
+        var mois_refactor = refactor.getMonth()+1; if(mois_refactor < 10){
+            mois_refactor = '0' + mois_refactor;
+        };
+        if(type == 'input'){ return refactor.getFullYear() + '-' + mois_refactor + '-' + jour_refactor; }
+        else{ return jour_refactor + '/' + mois_refactor + '/' + refactor.getFullYear(); }
+   }else{ return ''; }
+}
+
 $(document).ready(function () {
 
     /* Affichage de la session avec ESP+ESC */

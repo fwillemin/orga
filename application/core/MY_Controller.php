@@ -8,6 +8,20 @@ class My_Controller extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
+        switch ($this->session->userdata('parametres')['tailleAffectations']):
+            case 1:
+                $this->hauteur = 40;
+                $this->largeur = 30;
+                break;
+            case 2:
+                $this->hauteur = 50;
+                $this->largeur = 35;
+                break;
+            case 3:
+                $this->hauteur = 60;
+                $this->largeur = 40;
+                break;
+        endswitch;
     }
 
     public function passwordCheck($str) {
@@ -165,6 +179,15 @@ class My_Controller extends CI_Controller {
     public function existLivraison($livraisonId) {
         $this->form_validation->set_message('existLivraison', 'Cette livraison est introuvable.');
         if ($this->managerLivraisons->count(array('livraisonId' => $livraisonId)) == 1 || !$livraisonId) :
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
+    public function existIndispo($indispoId) {
+        $this->form_validation->set_message('existIndispo', 'Cette indisponibilité est introuvable.');
+        if ($this->managerIndisponibilites->count(array('indispoId' => $indispoId)) == 1 || !$indispoId) :
             return true;
         else :
             return false;

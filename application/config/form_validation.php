@@ -575,17 +575,17 @@ $config = array(
             'rules' => 'callback_existFournisseur'
         ),
         array(
-            'field' => 'addAchatLivraisonDate',
+            'field' => 'addAchatIndispoDate',
             'label' => 'Date',
             'rules' => 'trim'
         ),
         array(
-            'field' => 'addAchatLivraisonAvancement',
+            'field' => 'addAchatIndispoAvancement',
             'label' => 'Avancement de la livraison',
             'rules' => 'in_list[0,1,2,3]'
         ),
         array(
-            'field' => 'addAchatLivraisonOriginId',
+            'field' => 'addAchatIndispoOriginId',
             'label' => 'ID livraison V1',
             'rules' => 'trim|numeric'
         ),
@@ -786,46 +786,51 @@ $config = array(
             'rules' => 'valid_email|trim'
         )
     ),
-        /* get Livraison */
-//    'getLivraison' => array(
+    /* get Indispo */
+    'getIndispo' => array(
+        array(
+            'field' => 'indispoId',
+            'label' => 'ID Indispo',
+            'rules' => 'required|callback_existIndispo'
+        )
+    ),
+    /* Add Indispo */
+    'addIndispo' => array(
+        array(
+            'field' => 'addIndispoId',
+            'label' => 'ID Indispo',
+            'rules' => 'callback_existIndispo'
+        ),
 //        array(
-//            'field' => 'LivraisonId',
-//            'label' => 'ID Livraison',
-//            'rules' => 'required|callback_existLivraison'
-//        )
-//    ),
-        /* Add Livraison */
-//    'addLivraison' => array(
-//        array(
-//            'field' => 'addLivraisonId',
-//            'label' => 'ID Livraison',
-//            'rules' => 'callback_existLivraison'
-//        ),
-//        array(
-//            'field' => 'addLivraisonChantierId',
-//            'label' => 'ID Chantier',
-//            'rules' => 'required|callback_existChantier'
-//        ),
-//        array(
-//            'field' => 'addLivraisonFournisseurId',
-//            'label' => 'ID fournisseur',
-//            'rules' => 'callback_existFournisseur'
-//        ),
-//        array(
-//            'field' => 'addLivraisonDate',
-//            'label' => 'Date',
+//            'field' => 'addIndispoPersonnelsIds',
+//            'label' => 'ID Personnels',
 //            'rules' => 'required'
 //        ),
-//        array(
-//            'field' => 'addLivraisonEtat',
-//            'label' => 'Etat',
-//            'rules' => 'required|in_list[1,2,3]'
-//        ),
-//        array(
-//            'field' => 'addLivraisonRemarque',
-//            'label' => 'Remarque',
-//            'rules' => 'trim'
-//        )
-//    )
+        array(
+            'field' => 'addIndispoDebutDate',
+            'label' => 'Date de début',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'addIndispoDebutMoment',
+            'label' => 'Moment de début',
+            'rules' => 'required|in_list[1,2]'
+        ),
+        array(
+            'field' => 'addIndispoFinDate',
+            'label' => 'Date de fin',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'addIndispoFinMoment',
+            'label' => 'Moment de fin',
+            'rules' => 'required|in_list[1,2]'
+        ),
+        array(
+            'field' => 'addIndispoMotifId',
+            'label' => 'ID du motif',
+            'rules' => 'required|in_list[1,2,3,5,6,7,8,9,10,11,12,13,14]'
+        )
+    )
 );
 ?>

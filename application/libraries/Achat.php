@@ -14,6 +14,7 @@ class Achat {
     protected $achatId;
     protected $achatDate;
     protected $achatChantierId;
+    protected $achatChantier;
     protected $achatFournisseurId;
     protected $achatFournisseur;
     protected $achatLivraisonOriginId;
@@ -22,6 +23,7 @@ class Achat {
     protected $achatLivraisonAvancementText;
     protected $achatDescription;
     protected $achatType;
+    protected $achatTypeText;
     protected $achatQte;
     protected $achatQtePrevisionnel;
     protected $achatPrix;
@@ -29,7 +31,8 @@ class Achat {
     protected $achatTotal;
     protected $achatTotalPrevisionnel;
     protected $achatNbContraintes;
-    protected $achatsContraintesIds;
+    protected $achatContraintesIds;
+    protected $achatHTML;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -57,6 +60,20 @@ class Achat {
             default :
                 $this->achatLivraisonAvancementText = '-';
         endswitch;
+        switch ($this->achatType):
+            case 1:
+                $this->achatTypeText = 'Matière première';
+                break;
+            case 2:
+                $this->achatTypeText = 'Matériel';
+                break;
+            case 3:
+                $this->achatTypeText = 'Outillage';
+                break;
+            case 4:
+                $this->achatTypeText = 'Sous-traitance';
+                break;
+        endswitch;
         $CI = & get_instance();
         $this->achatContraintesIds = array();
         $query = $CI->db->select('affectationId')
@@ -69,6 +86,30 @@ class Achat {
         endforeach;
     }
 
+    public function genereHTML() {
+
+        if ($this->achatLivraisonDate):
+            if (!$this->achatChantier):
+                $this->hydrateChantier();
+            endif;
+            $html = '<div style="border:1px solid ' . $this->achatChantier->getChantierCouleurSecondaire() . ';'
+                    . ' color: ' . $this->achatChantier->getChantierCouleurSecondaire() . ';'
+                    . ' background-color: ' . $this->achatChantier->getChantierCouleur() . '"'
+                    . ' class="livraison draggable"'
+                    . ' data-achatid="' . $this->achatId . '"'
+                    . ' data-chantierid="' . $this->achatChantierId . '"'
+                    . ' data-contraintes = "' . implode(',', $this->achatContraintesIds) . '">';
+
+            if (sizeof($this->achatContraintesIds) > 0):
+                $html .= '<i class="fas fa-link"></i>';
+            endif;
+            $html .= '</div>';
+            $this->achatHTML = $html;
+        else:
+            $this->achatHTML = null;
+        endif;
+    }
+
     public function hydrateFournisseur() {
         if ($this->achatFournisseurId):
             $CI = & get_instance();
@@ -76,6 +117,11 @@ class Achat {
         else:
             $this->achatFournisseur = null;
         endif;
+    }
+
+    public function hydrateChantier() {
+        $CI = & get_instance();
+        $this->achatChantier = $CI->managerChantiers->getChantierById($this->achatChantierId);
     }
 
     function getAchatId() {
@@ -88,6 +134,10 @@ class Achat {
 
     function getAchatChantierId() {
         return $this->achatChantierId;
+    }
+
+    function getAchatChantier() {
+        return $this->achatChantier;
     }
 
     function getAchatFournisseurId() {
@@ -122,6 +172,10 @@ class Achat {
         return $this->achatType;
     }
 
+    function getAchatTypeText() {
+        return $this->achatTypeText;
+    }
+
     function getAchatQte() {
         return $this->achatQte;
     }
@@ -150,8 +204,8 @@ class Achat {
         return $this->achatNbContraintes;
     }
 
-    function getAchatsContraintesIds() {
-        return $this->achatsContraintesIds;
+    function getAchatContraintesIds() {
+        return $this->achatContraintesIds;
     }
 
     function setAchatId($achatId) {
@@ -164,6 +218,10 @@ class Achat {
 
     function setAchatChantierId($achatChantierId) {
         $this->achatChantierId = $achatChantierId;
+    }
+
+    function setAchatChantier($achatChantier) {
+        $this->achatChantier = $achatChantier;
     }
 
     function setAchatFournisseurId($achatFournisseurId) {
@@ -198,6 +256,10 @@ class Achat {
         $this->achatType = $achatType;
     }
 
+    function setAchatTypeText($achatTypeText) {
+        $this->achatTypeText = $achatTypeText;
+    }
+
     function setAchatQte($achatQte) {
         $this->achatQte = $achatQte;
     }
@@ -226,8 +288,16 @@ class Achat {
         $this->achatNbContraintes = $achatNbContraintes;
     }
 
-    function setAchatsContraintesIds($achatsContraintesIds) {
-        $this->achatsContraintesIds = $achatsContraintesIds;
+    function setAchatContraintesIds($achatContraintesIds) {
+        $this->achatContraintesIds = $achatContraintesIds;
+    }
+
+    function getAchatHTML() {
+        return $this->achatHTML;
+    }
+
+    function setAchatHTML($achatHTML) {
+        $this->achatHTML = $achatHTML;
     }
 
 }

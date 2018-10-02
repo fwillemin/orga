@@ -81,6 +81,19 @@ class Model_achats extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function getAchatsPlanning($dateDebut, $dateFin, $tri = 'achatLivraisonDate ASC', $type = 'object') {
+        $query = $this->db->select('*')
+                ->from('achats a')
+                ->join('chantiers c', 'c.chantierId = a.achatChantierId')
+                ->join('affaires af', 'af.affaireId = c.chantierAffaireId')
+                ->where('af.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('c.chantierEtat', 1)
+                ->where(array('a.achatLivraisonDate >=' => $dateDebut, 'a.achatLivraisonDate <=' => $dateFin))
+                ->order_by($tri)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
     /**
      * Retourne un objet de la classe Achat correspondant à l'id
      * @param integer $achatId ID de l'raisonSociale
@@ -92,6 +105,18 @@ class Model_achats extends MY_model {
                 ->where('achatId', $achatId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getAchatsByFournisseurId($fournisseurId, $where = array(), $tri = 'achatDate ASC', $type = 'object') {
+        $query = $this->db->select('*')
+                ->from('achats a')
+                ->join('fournisseurs f', 'f.fournisseurId = a.achatFournisseurId')
+                ->where('f.fournisseurEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('achatFournisseurId', $fournisseurId)
+                ->where($where)
+                ->order_by($tri)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
     }
 
 }

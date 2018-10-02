@@ -11,6 +11,13 @@
         <br>
         <h4><i class="fas fa-chevron-circle-right"></i> Gestion des clients</h4>
         Historiques des chantiers par client, ...
+        <br>
+        <br>
+        <h4><i class="fas fa-chevron-circle-right"></i> Nouvelles fonctionnalités de planning</h4>
+        Décallage de mutiples affectations
+        <br>Insersion d'affectation sur plusieurs personnels
+        <br>Glisser/Déposer des livraisons
+        <br>Ajout d'achats et de livraisons depuis le planning
     </div>
 
     <div class="col-12 col-sm-3 offset-sm-2">

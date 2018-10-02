@@ -81,19 +81,25 @@ table {
     cursor: pointer;
 }
 
-.affectation, .affectationEnPage {  
+.affectation, .affectationEnPage, .indispo {  
     z-index: 2;
     border: 1px solid;    
     padding:2px 3px 2px 2px;
     font-size:12px;
     @include border-radius(4px, 4px);
 }
-.affectation {
+.affectation, .indispo {
     position: absolute;
 }
 .affectationEnPage {
     position: relative;
     width: 100%;
+}
+.indispo {
+    color: lighten($noir, 70);
+    background-color: $noir;
+    border-color: lighten($noir, 50);
+    /*border-color: lighten($noir,80);*/
 }
 
 .cadre {
@@ -272,6 +278,7 @@ small, .form-row label{
 .we, .weLivraison {
     background: #2e3541;
     width : 50%;
+    text-align: right;
 }
 .cellLivraison {
     background : #e8ebf0;
@@ -285,7 +292,7 @@ small, .form-row label{
     transition-property: all;
     transition-duration : 0.6s;	
 }
-.planningDivText {
+.planningDivText, .planningIndispoText {
     position:relative;
     left:2px;
     top:-3px;
@@ -305,7 +312,12 @@ small, .form-row label{
     color:steelblue;
     font-weight: bold;
 }
-.selectpickerChantier {
+.selectpickerAchat {
+    font-size:13px;
+    color:steelblue;
+    font-weight: bold;
+}
+.selectpickerAnnotation {
     font-size:12px;
     color:gray;
     font-style: italic;
@@ -328,7 +340,6 @@ small, .form-row label{
     height: calc(100% - 55px);
 }
 
-
 .livraison {
     height : 30px;
     width : 45%;
@@ -340,7 +351,7 @@ small, .form-row label{
     float:right;
     margin-right : 2px;
     padding:5px 3px 3px 2px;
-    z-index:2;
+    z-index:10;
 }
 .popover{
     min-width: 400px;

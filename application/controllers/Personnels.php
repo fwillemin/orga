@@ -253,4 +253,102 @@ class Personnels extends My_Controller {
         endif;
     }
 
+    public function addIndisponibilite() {
+        if (!$this->form_validation->run('addIndispo')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            /* Personnels du planning */
+            $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($this->session->userdata('planningPersonnelsIds'));
+            if (!empty($personnelsPlanning)):
+                foreach ($personnelsPlanning as $personnel):
+                    $personnel->hydrateEquipe();
+                endforeach;
+            endif;
+
+            $debutDate = $this->own->mktimeFromInputDate($this->input->post('addIndispoDebutDate'));
+            $finDate = $this->own->mktimeFromInputDate($this->input->post('addIndispoFinDate'));
+            $nbDemi = $this->cal->nbDemiEntreDates($debutDate, $this->input->post('addIndispoDebutMoment'), $finDate, $this->input->post('addIndispoFinMoment'));
+            $cases = $this->cal->nbCasesEntreDates($debutDate, $this->input->post('addIndispoDebutMoment'), $finDate, $this->input->post('addIndispoFinMoment'));
+
+            if ($this->input->post('addIndispoId')):
+                $indispo = $this->managerIndisponibilites->getIndisponibiliteById($this->input->post('addIndispoId'));
+                $indispo->setIndispoDebutDate($debutDate);
+                $indispo->setIndispoFinDate($finDate);
+                $indispo->setIndispoDebutMoment($this->input->post('addIndispoDebutMoment'));
+                $indispo->setIndispoFinMoment($this->input->post('addIndispoFinMoment'));
+                $indispo->setIndispoNbDemi($nbDemi);
+                $indispo->setIndispoCases($cases);
+                $indispo->setIndispoMotifId($this->input->post('addIndispoMotifId'));
+
+                $this->managerIndisponibilites->editer($indispo);
+                $indispo->hydrateMotif();
+                $indispo->genereHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
+                $HTML = $indispo->getIndispoHTML();
+
+            else:
+                $HTML = '';
+                $arrayIndispo = array(
+                    'indispoDebutDate' => $debutDate,
+                    'indispoFinDate' => $finDate,
+                    'indispoDebutMoment' => $this->input->post('addIndispoDebutMoment'),
+                    'indispoFinMoment' => $this->input->post('addIndispoFinMoment'),
+                    'indispoNbDemi' => $nbDemi,
+                    'indispoCases' => $cases,
+                    'indispoMotifId' => $this->input->post('addIndispoMotifId'),
+                    'indispoAffichage' => 1
+                );
+
+                foreach ($this->input->post('addIndispoPersonnelsIds') as $personnelId):
+
+                    $arrayIndispo['indispoPersonnelId'] = $personnelId;
+                    $indispo = new Indisponibilite($arrayIndispo);
+                    $this->managerIndisponibilites->ajouter($indispo);
+                    $indispo->genereHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
+                    $HTML .= $indispo->getIndispoHTML();
+                    unset($indispo);
+
+                endforeach;
+
+            endif;
+            echo json_encode(array('type' => 'success', 'HTML' => $HTML));
+        endif;
+    }
+
+    public function getIndisponibiliteDetails() {
+        if (!$this->form_validation->run('getIndispo')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $indispo = $this->managerIndisponibilites->getIndisponibiliteById($this->input->post('indispoId'), 'array');
+
+            echo json_encode(array('type' => 'success', 'indispo' => $indispo));
+        endif;
+    }
+
+    /* Passe l'affectation à un affichage FULL, BAS, HAUT */
+
+    public function indisponibiliteToggleAffichage() {
+        if (!$this->form_validation->run('getIndispo')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $indispo = $this->managerIndisponibilites->getIndisponibiliteById($this->input->post('indispoId'));
+            $indispo->toggleAffichage();
+            $indispo->genereHTML($this->session->userdata('premierJourPlanning'), array(), $this->input->post('ligne'), $this->hauteur, $this->largeur);
+            $this->managerIndisponibilites->editer($indispo);
+            echo json_encode(array('type' => 'success', 'html' => $indispo->getIndispoHTML()));
+        endif;
+    }
+
+    public function delIndisponibilite() {
+        if (!$this->ion_auth->in_group(26)):
+            echo json_encode(array('type' => 'error', 'message' => 'Vous ne possédez pas les droits necessaires'));
+        elseif (!$this->form_validation->run('getIndispo')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+
+            $indispo = $this->managerIndisponibilites->getIndisponibiliteById($this->input->post('indispoId'));
+            $this->managerIndisponibilites->delete($indispo);
+            echo json_encode(array('type' => 'success'));
+        endif;
+    }
+
 }

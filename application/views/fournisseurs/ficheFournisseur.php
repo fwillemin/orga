@@ -35,17 +35,24 @@
                         <tr>
                             <td style="width:30px;"></td>
                             <td>Description</td>
-                            <td style="width: 50px; text-align: center;">Qté</td>
-                            <td style="width: 80px;">Type</td>
-                            <td style="width: 120px; text-align: right;">Date liv.</td>
-                            <td style="width: 80px; text-align: right;">Etat</td>
+                            <td style="width: 110px; text-align: center;">Qté</td>
+                            <td style="width: 120px;">Type</td>
+                            <td style="width: 180px;">Date livraison</td>
+                            <td style="width: 90px; text-align: right;">Avancement</td>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         if (!empty($fournisseur->getFournisseurAchats())):
-                            foreach ($fournisseur->getFournisseurAchats as $achat):
-
+                            foreach ($fournisseur->getFournisseurAchats() as $achat):
+                                echo '<tr class="ligneClikable" data-chantierid="' . $achat->getAchatChantierId() . '" data-achatId="' . $achat->getAchatId() . '">'
+                                . '<td></td>'
+                                . '<td>' . $achat->getAchatDescription() . '</td>'
+                                . '<td style="text-align:center;">' . ($achat->getAchatQte() > 0 ?: $achat->getAchatQtePrevisionnel() . ' (prévision)') . '</td>'
+                                . '<td>' . $achat->getAchatTypeText() . '</td>'
+                                . '<td>' . ($achat->getAchatLivraisonDate() ? $this->cal->dateFrancais($achat->getAchatLivraisonDate()) : '-') . '</td>'
+                                . '<td>' . ($achat->getAchatLivraisonAvancement() ? $achat->getAchatLivraisonAvancementText() : '-') . '</td>'
+                                . '</tr>';
                             endforeach;
                         endif;
                         ?>

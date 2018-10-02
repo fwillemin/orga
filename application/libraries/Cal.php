@@ -12,9 +12,9 @@ class Cal {
         return $jour - (mdate('%N', $jour) - 1) * 86400;
     }
 
-    public function dernierJourSemaine($debut, $nbSemainesApres = 0) {
-        $jour = $debut + ($nbSemainesApres * 7 * 86400);
-        return $jour + (7 - mdate('%N', $jour)) * 86400;
+    public function dernierJourSemaine($debut) {
+        //$jour = $debut + ($nbSemainesApres * 7 * 86400);
+        return $debut + (7 - mdate('%N', $debut)) * 86400;
     }
 
     public function dateFrancais($date = null, $compo = 'JDMA') {

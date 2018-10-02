@@ -113,6 +113,10 @@ $(document).ready(function () {
             }
         })
     });
+    
+    $('#tableFournisseurAchats tr').on('click', function(){        
+        window.location.assign(chemin + 'chantiers/ficheChantier/' + $(this).attr('data-chantierid') + '/a');
+    });
 
 });
 
