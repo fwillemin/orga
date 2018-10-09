@@ -68,8 +68,7 @@ $(document).ready(function () {
     $('#formAddPlace').on('submit', function (e) {
         e.preventDefault();
         var donnees = $(this).serialize();
-        $.post(chemin + 'clients/addPlace', donnees, function (retour) {
-            console.log(retour);
+        $.post(chemin + 'clients/addPlace', donnees, function (retour) {            
             switch (retour.type) {
                 case 'error':
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});

@@ -31,6 +31,7 @@ class Model_heures extends MY_model {
      */
     public function editer(Heure $heure) {
         $this->db
+                ->set('heureAffectationId', $heure->getHeureAffectationId())
                 ->set('heureDate', $heure->getHeureDate())
                 ->set('heureDuree', $heure->getHeureDuree())
                 ->set('heureValide', $heure->getHeureValide())
@@ -57,10 +58,13 @@ class Model_heures extends MY_model {
      * @param array $tri Critères de tri des raisonSociales
      * @return array Liste d'objets de la classe Heure
      */
-    public function getHeures($where = array(), $tri = 'heureDate ASC', $type = 'object') {
+    public function getHeures($where = array(), $tri = 'h.heureDate ASC', $type = 'object') {
         $query = $this->db->select('*')
-                ->from($this->table)
-                ->where('heureEtablissementId', $this->session->userdata('etablissementId'))
+                ->from('heures h')
+                ->join('affectations a', 'a.affectationId = h.heureAffectationId', 'left')
+                ->join('chantiers c', 'c.chantierId = a.affectationChantierId', 'left')
+                ->join('affaires af', 'af.affaireId = c.chantierAffaireId', 'left')
+                ->where('af.affaireEtablissementId', $this->session->userdata('etablissementId'))
                 ->where($where)
                 ->order_by($tri)
                 ->get();

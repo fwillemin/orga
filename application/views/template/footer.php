@@ -42,7 +42,7 @@
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-datepicker.min.js'); ?>"></script>
     <?php
 endif;
-if ($this->uri->segment(1) === 'planning'):
+if ($this->uri->segment(1) === 'planning' || $this->uri->segment(1) === 'heures'):
     ?>
     <script defer type="text/javascript" src="<?= base_url('assets/jquery-ui/jquery-ui.min.js'); ?>"></script>
 <?php endif; ?>

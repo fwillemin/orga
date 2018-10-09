@@ -77,6 +77,76 @@ class Horaire {
         endforeach;
     }
 
+    /* Retourne le nombre de minute pour une journée */
+
+    public function getHoraireMinutes($jour, $moment = 3) {
+        switch ($jour):
+            case 0:
+                if ($moment == 3):
+                    return $this->horaireDim * 60;
+                elseif ($moment == 1):
+                    return $this->horaireDimAM * 60;
+                else:
+                    return $this->horaireDimPM * 60;
+                endif;
+                break;
+            case 1:
+                if ($moment == 3):
+                    return $this->horaireLun * 60;
+                elseif ($moment == 1):
+                    return $this->horaireLunAM * 60;
+                else:
+                    return $this->horaireLunPM * 60;
+                endif;
+                break;
+            case 2:
+                if ($moment == 3):
+                    return $this->horaireMar * 60;
+                elseif ($moment == 1):
+                    return $this->horaireMarAM * 60;
+                else:
+                    return $this->horaireMarPM * 60;
+                endif;
+                break;
+            case 3:
+                if ($moment == 3):
+                    return $this->horaireMer * 60;
+                elseif ($moment == 1):
+                    return $this->horaireMerAM * 60;
+                else:
+                    return $this->horaireMerPM * 60;
+                endif;
+                break;
+            case 4:
+                if ($moment == 3):
+                    return $this->horaireJeu * 60;
+                elseif ($moment == 1):
+                    return $this->horaireJeuAM * 60;
+                else:
+                    return $this->horaireJeuPM * 60;
+                endif;
+                break;
+            case 5:
+                if ($moment == 3):
+                    return $this->horaireVen * 60;
+                elseif ($moment == 1):
+                    return $this->horaireVenAM * 60;
+                else:
+                    return $this->horaireVenPM * 60;
+                endif;
+                break;
+            case 6:
+                if ($moment == 3):
+                    return $this->horaireSam * 60;
+                elseif ($moment == 1):
+                    return $this->horaireSamAM * 60;
+                else:
+                    return $this->horaireSamPM * 60;
+                endif;
+                break;
+        endswitch;
+    }
+
     function getHoraireId() {
         return $this->horaireId;
     }

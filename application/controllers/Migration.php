@@ -24,30 +24,35 @@ class Migration extends My_Controller {
      *
      */
 
-    public function resetDB() {
-        $this->db->query("DELETE FROM `raisonsSociales`");
-        $this->db->query("ALTER TABLE `raisonsSociales` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `etablissements` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `users` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `users_groups` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `horaires` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `personnels` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `tauxHoraires` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `categories` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `clients` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `places` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `affaires` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `chantiers` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `achats` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `affectations` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `heures` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `fournisseurs` auto_increment = 1;");
-        $this->db->query("ALTER TABLE `indisponibilites` auto_increment = 1;");
+    public function resetDB($rsId = null) {
+        if (!$rsId):
+            echo 'Vous devez renseigner un ID RS valide;';
+        else:
+            $this->db->query("DELETE FROM `raisonsSociales` WHERE rsId = " . $rsId);
+            $this->db->query("ALTER TABLE `raisonsSociales` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `etablissements` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `users` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `users_groups` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `horaires` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `personnels` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `tauxHoraires` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `categories` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `clients` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `places` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `affaires` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `chantiers` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `achats` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `affectations` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `heures` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `fournisseurs` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `indisponibilites` auto_increment = 1;");
+            $this->db->query("ALTER TABLE `pointages` auto_increment = 1;");
+        endif;
     }
 
-    public function migrerRS($rsId = null) {
+    public function migrerRS($rsId = null, $migrationPlace = 0) {
 
-        $this->resetDB();
+        $this->resetDB($rsId);
 
         if (!$rsId):
             echo 'Vous devez renseigner un ID RS valide;';
@@ -63,7 +68,7 @@ class Migration extends My_Controller {
             $this->importPersonnels($etablissement);
             $this->importTauxHoraire($etablissement);
             $this->importCategories($rs);
-            $this->importDossiers($etablissement);
+            $this->importDossiers($etablissement, $migrationPlace);
 
             echo 'Import terminé avec succès !';
 
@@ -354,6 +359,7 @@ class Migration extends My_Controller {
             $this->managerPersonnels->ajouter($personnel);
 
             $this->importIndisponibilites($personnel);
+            $this->importPointages($personnel);
         endforeach;
     }
 
@@ -502,9 +508,13 @@ class Migration extends My_Controller {
 
      */
 
-    public function importDossiers(Etablissement $etablissement) {
+    public function importDossiers(Etablissement $etablissement, $migrationPlace) {
 
-        foreach ($this->db->select('*')->from('V1_dossier')->where(array('id_etablissement' => $etablissement->getEtablissementOriginId()))->order_by('dossierId DESC')->limit(15, 50)->get()->result() as $dossier):
+        foreach ($this->db->select('*')->from('V1_dossier')
+                ->where(array('id_etablissement' => $etablissement->getEtablissementOriginId()))
+                ->order_by('dossierId DESC')
+                //->limit(5, 0)
+                ->get()->result() as $dossier):
 
             /**
              * Si on a une date de signature, on la prend comme date de création également
@@ -515,53 +525,74 @@ class Migration extends My_Controller {
             endif;
 
             $this->db->trans_start();
-            /* Création du client */
-            /* Recherche d'une place identique et donc d'un client déjà validé */
-            $result = $this->maps->geocode(urlencode($dossier->adresse . ' ' . $dossier->cp . ' ' . $dossier->ville . ' FRANCE'), $etablissement);
-            if ($result):
-                $placeExistante = $this->managerPlaces->getPlaceByGoogle($result['placeGoogleId'], $etablissement->getEtablissementId());
-                if ($placeExistante):
-                    $client = $this->managerClients->getClientByIdMigration($placeExistante->getPlaceClientId());
-                    $place = $placeExistante;
-                else:
-                    $dataClient = array(
-                        'clientEtablissementId' => $etablissement->getEtablissementId(),
-                        'clientNom' => mb_strtoupper($dossier->client),
-                        'clientAdresse' => $dossier->adresse,
-                        'clientCp' => $dossier->cp,
-                        'clientVille' => $dossier->ville,
-                        'clientPays' => 'FRANCE',
-                        'clientFixe' => ( strlen($dossier->tel) > 9 ? $dossier->tel : ''),
-                        'clientPortable' => '',
-                        'clientEmail' => $dossier->email
-                    );
-                    $client = new Client($dataClient);
-                    $this->managerClients->ajouter($client);
 
-                    $volOiseau = $this->maps->distanceVolOiseau(explode(',', $etablissement->getEtablissementGps())[0], explode(',', $etablissement->getEtablissementGps())[1], $result['latitude'], $result['longitude']);
-                    $zone = floor($volOiseau / 10000) + 1;
-                    if ($zone > 6):
-                        $zone = 6;
+            if ($migrationPlace == 1):
+
+                /* Création du client */
+                /* Recherche d'une place identique et donc d'un client déjà validé */
+
+                $result = $this->maps->geocode(urlencode($dossier->adresse . ' ' . $dossier->cp . ' ' . $dossier->ville . ' FRANCE'), $etablissement);
+                if ($result):
+                    $placeExistante = $this->managerPlaces->getPlaceByGoogle($result['placeGoogleId'], $etablissement->getEtablissementId());
+                    if ($placeExistante):
+                        $client = $this->managerClients->getClientByIdMigration($placeExistante->getPlaceClientId());
+                        $place = $placeExistante;
+                    else:
+
+                        $dataClient = array(
+                            'clientEtablissementId' => $etablissement->getEtablissementId(),
+                            'clientNom' => mb_strtoupper($dossier->client),
+                            'clientAdresse' => $dossier->adresse,
+                            'clientCp' => $dossier->cp,
+                            'clientVille' => $dossier->ville,
+                            'clientPays' => 'FRANCE',
+                            'clientFixe' => ( strlen($dossier->tel) > 9 ? $dossier->tel : ''),
+                            'clientPortable' => '',
+                            'clientEmail' => $dossier->email
+                        );
+                        $client = new Client($dataClient);
+                        $this->managerClients->ajouter($client);
+
+                        $volOiseau = $this->maps->distanceVolOiseau(explode(',', $etablissement->getEtablissementGps())[0], explode(',', $etablissement->getEtablissementGps())[1], $result['latitude'], $result['longitude']);
+                        $zone = floor($volOiseau / 10000) + 1;
+                        if ($zone > 6):
+                            $zone = 6;
+                        endif;
+
+                        $arrayPlace = array(
+                            'placeClientId' => $client->getClientId(),
+                            'placeEtablissementId' => $etablissement->getEtablissementId(),
+                            'placeLat' => $result['latitude'],
+                            'placeLon' => $result['longitude'],
+                            'placeAdresse' => $result['adresse'],
+                            'placeVille' => $result['ville'],
+                            'placeGoogleId' => $result['placeGoogleId'],
+                            'placeDistance' => $result['distance'],
+                            'placeDuree' => $result['duree'],
+                            'placeZone' => $zone,
+                            'placeVolOiseau' => $volOiseau
+                        );
+
+                        $place = new Place($arrayPlace);
+                        $this->managerPlaces->ajouter($place);
                     endif;
-
-                    $arrayPlace = array(
-                        'placeClientId' => $client->getClientId(),
-                        'placeEtablissementId' => $etablissement->getEtablissementId(),
-                        'placeLat' => $result['latitude'],
-                        'placeLon' => $result['longitude'],
-                        'placeAdresse' => $result['adresse'],
-                        'placeGoogleId' => $result['placeGoogleId'],
-                        'placeDistance' => $result['distance'],
-                        'placeDuree' => $result['duree'],
-                        'placeZone' => $zone,
-                        'placeVolOiseau' => $volOiseau
-                    );
-
-                    $place = new Place($arrayPlace);
-                    $this->managerPlaces->ajouter($place);
+                else:
+                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
                 endif;
             else:
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
+                $dataClient = array(
+                    'clientEtablissementId' => $etablissement->getEtablissementId(),
+                    'clientNom' => mb_strtoupper($dossier->client),
+                    'clientAdresse' => $dossier->adresse,
+                    'clientCp' => $dossier->cp,
+                    'clientVille' => $dossier->ville,
+                    'clientPays' => 'FRANCE',
+                    'clientFixe' => ( strlen($dossier->tel) > 9 ? $dossier->tel : ''),
+                    'clientPortable' => '',
+                    'clientEmail' => $dossier->email
+                );
+                $client = new Client($dataClient);
+                $this->managerClients->ajouter($client);
             endif;
 
             /* Evite les soucis de catégories fantômes */
@@ -611,7 +642,7 @@ class Migration extends My_Controller {
 
             $this->db->trans_complete();
 
-            $this->importChantiers($affaire);
+            $this->importChantiers($affaire, $migrationPlace);
 
         endforeach;
     }
@@ -653,7 +684,7 @@ class Migration extends My_Controller {
       ALTER TABLE `chantiers` ADD FOREIGN KEY (`affairePlaceId`) REFERENCES `places`(`placeId`) ON DELETE SET NULL ON UPDATE RESTRICT;
 
      */
-    public function importChantiers(Affaire $affaire) {
+    public function importChantiers(Affaire $affaire, $migrationPlace) {
 
         foreach ($this->db->select('*')->from('V1_chantier')->where('dossier_id', $affaire->getAffaireOriginId())->get()->result() as $chant):
 
@@ -690,7 +721,7 @@ class Migration extends My_Controller {
             $this->importLivraisons($chantier);
 
             $affaire->hydratePlace();
-            $this->importAffectations($chantier, $affaire);
+            $this->importAffectations($chantier, $affaire, $migrationPlace);
 
             $chantier->hydrateAchats();
             if (!empty($chantier->getChantierAchats())):
@@ -699,10 +730,13 @@ class Migration extends My_Controller {
                     foreach ($this->db->select('*')->from('V1_livraison_contrainte')->where('lcLivraisonId', $achat->getAchatLivraisonOriginId())->get()->result() as $contrainte):
                         $affectation = $this->managerAffectations->getAffectationByOriginId($contrainte->lcAffectationId);
                         if ($affectation):
-                            $this->db
-                                    ->set('achatId', $achat->getAchatId())
-                                    ->set('affectationId', $affectation->getAffectationId())
-                                    ->insert('achats_affectations');
+                            $nbExist = $this->db->select('COUNT(*) as nb')->from('achats_affectations')->where(array('affectationId' => $affectation->getAffectationId(), 'achatId' => $achat->getAchatId()))->get()->result()[0]->nb;
+                            if ($nbExist == 0):
+                                $this->db
+                                        ->set('achatId', $achat->getAchatId())
+                                        ->set('affectationId', $affectation->getAffectationId())
+                                        ->insert('achats_affectations');
+                            endif;
                         endif;
                     endforeach;
                 endforeach;
@@ -789,7 +823,7 @@ class Migration extends My_Controller {
         endforeach;
     }
 
-    public function importAffectations(Chantier $chantier, Affaire $affaire) {
+    public function importAffectations(Chantier $chantier, Affaire $affaire, $migrationPlace = 0) {
         foreach ($this->db->select('*')->from('V1_affectation')->where('id_chantier', $chantier->getChantierOriginId())->get()->result() as $affect):
 
             if ($affect->etat == 'Termine'):
@@ -798,40 +832,44 @@ class Migration extends My_Controller {
                 $etat = 1;
             endif;
 
-            similar_text(strtoupper($affect->affectationAdresse), strtoupper(explode(',', $affaire->getAffairePlace()->getPlaceAdresse())[0]), $percent);
+            if ($migrationPlace == 1):
 
-            if ($percent < 60 && $affect->affectationAdresse != ''):
-                /* On créé une nouvelle place pour ce client */
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ------------ Affect ' . $affect->id . ' -- ' . $percent . '% ----');
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Nouvelle place pour le client : ' . $affaire->getAffaireClientId());
-                $etablissement = $this->managerEtablissements->getEtablissementById($affaire->getAffaireEtablissementId());
-                $result = $this->maps->geocode(urlencode($affect->affectationAdresse . ', ' . $affect->affectationCp . ' ' . $affect->affectationVille . ', FRANCE'), $etablissement);
-                if ($result):
+                similar_text(strtoupper($affect->affectationAdresse), strtoupper(explode(',', $affaire->getAffairePlace()->getPlaceAdresse())[0]), $percent);
+                if ($percent < 60 && $affect->affectationAdresse != ''):
+                    /* On créé une nouvelle place pour ce client */
+                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ------------ Affect ' . $affect->id . ' -- ' . $percent . '% ----');
+                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Nouvelle place pour le client : ' . $affaire->getAffaireClientId());
+                    $etablissement = $this->managerEtablissements->getEtablissementById($affaire->getAffaireEtablissementId());
+                    $result = $this->maps->geocode(urlencode($affect->affectationAdresse . ', ' . $affect->affectationCp . ' ' . $affect->affectationVille . ', FRANCE'), $etablissement);
+                    if ($result):
 
-                    $volOiseau = $this->maps->distanceVolOiseau(explode(',', $etablissement->getEtablissementGps())[0], explode(',', $etablissement->getEtablissementGps())[1], $result['latitude'], $result['longitude']);
-                    $zone = floor($volOiseau / 10000) + 1;
-                    if ($zone > 6):
-                        $zone = 6;
+                        $volOiseau = $this->maps->distanceVolOiseau(explode(',', $etablissement->getEtablissementGps())[0], explode(',', $etablissement->getEtablissementGps())[1], $result['latitude'], $result['longitude']);
+                        $zone = floor($volOiseau / 10000) + 1;
+                        if ($zone > 6):
+                            $zone = 6;
+                        endif;
+
+                        $arrayPlace = array(
+                            'placeClientId' => $affaire->getAffaireClientId(),
+                            'placeEtablissementId' => $etablissement->getEtablissementId(),
+                            'placeLat' => $result['latitude'],
+                            'placeLon' => $result['longitude'],
+                            'placeAdresse' => $result['adresse'],
+                            'placeVille' => $result['ville'],
+                            'placeGoogleId' => $result['placeGoogleId'],
+                            'placeDistance' => $result['distance'],
+                            'placeDuree' => $result['duree'],
+                            'placeZone' => $zone,
+                            'placeVolOiseau' => $volOiseau
+                        );
+
+                        $place = new Place($arrayPlace);
+                        $this->managerPlaces->ajouter($place);
+                    else:
+                        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
                     endif;
-
-                    $arrayPlace = array(
-                        'placeClientId' => $affaire->getAffaireClientId(),
-                        'placeEtablissementId' => $etablissement->getEtablissementId(),
-                        'placeLat' => $result['latitude'],
-                        'placeLon' => $result['longitude'],
-                        'placeAdresse' => $result['adresse'],
-                        'placeGoogleId' => $result['placeGoogleId'],
-                        'placeDistance' => $result['distance'],
-                        'placeDuree' => $result['duree'],
-                        'placeZone' => $zone,
-                        'placeVolOiseau' => $volOiseau
-                    );
-
-                    $place = new Place($arrayPlace);
-                    $this->managerPlaces->ajouter($place);
-                else:
-                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
                 endif;
+
             endif;
 
             $personnel = $this->managerPersonnels->getPersonnelByIdMigration($affect->id_personnel);
@@ -843,9 +881,9 @@ class Migration extends My_Controller {
                     'affectationPersonnelId' => $personnel->getPersonnelId(),
                     'affectationPlaceId' => $chantier->getChantierPlaceId(),
                     'affectationNbDemi' => $affect->nb_demi,
-                    'affectationDebutDate' => $affect->debut,
+                    'affectationDebutDate' => $this->own->mktimeFromInputDate(date('Y-m-d', $affect->debut)),
                     'affectationDebutMoment' => $affect->debut_journee + 1,
-                    'affectationFinDate' => $affect->debut,
+                    'affectationFinDate' => $this->own->mktimeFromInputDate(date('Y-m-d', $affect->fin)),
                     'affectationFinMoment' => $affect->fin_journee + 1,
                     'affectationCases' => $affect->longueur,
                     'affectationEtat' => $etat,
@@ -882,7 +920,7 @@ class Migration extends My_Controller {
     }
 
     public function importIndisponibilites(Personnel $personnel) {
-        foreach ($this->db->select('*')->from('V1_indisponible')->where(array('id_personnel' => $personnel->getPersonnelOriginId(), 'debut >= ' => 1535752800))->get()->result() as $indispo):
+        foreach ($this->db->select('*')->from('V1_indisponible')->where(array('id_personnel' => $personnel->getPersonnelOriginId()))->get()->result() as $indispo):
 
             $dataIndispo = array(
                 'indispoPersonnelId' => $personnel->getPersonnelId(),
@@ -891,12 +929,28 @@ class Migration extends My_Controller {
                 'indispoFinDate' => $indispo->fin,
                 'indispoFinMoment' => $indispo->demi_fin + 1,
                 'indispoMotifId' => ($indispo->type > 0) ? $indispo->type : 14,
-                'indispoAffichage' => $indispo->affichage,
+                'indispoAffichage' => $indispo->affichage + 1,
                 'indispoNbDemi' => $indispo->nb_demi,
                 'indispoCases' => $this->cal->nbCasesEntreDates($indispo->debut, ($indispo->debut_journee + 1), $indispo->fin, ($indispo->demi_fin + 1))
             );
             $newIndispo = new Indisponibilite($dataIndispo);
             $this->managerIndisponibilites->ajouter($newIndispo);
+
+        endforeach;
+    }
+
+    public function importPointages(Personnel $personnel) {
+        foreach ($this->db->select('*')->from('V1_pointage')->where(array('pointagePersonnelId' => $personnel->getPersonnelOriginId()))->get()->result() as $pointage):
+
+            $dataPointage = array(
+                'pointagePersonnelId' => $personnel->getPersonnelId(),
+                'pointageMois' => $pointage->pointageMois,
+                'pointageAnnee' => $pointage->pointageAnnee,
+                'pointageHTML' => $pointage->pointageHTML
+            );
+            $pointage = new Pointage($dataPointage);
+            $this->managerPointages->ajouter($pointage);
+            unset($pointage);
 
         endforeach;
     }

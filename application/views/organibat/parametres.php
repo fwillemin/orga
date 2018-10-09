@@ -52,7 +52,7 @@
                                 <div class="input-group input-group-sm">
                                     <select name="nbSemainesAvant" id="nbSemainesAvant" class="form-control form-control-sm" style="text-align: right;">
                                         <?php
-                                        for ($i = 1; $i <= 5; $i++):
+                                        for ($i = 1; $i <= 25; $i++):
                                             echo '<option value="' . $i . '"' . ($this->session->userdata('parametres')['nbSemainesAvant'] == $i ? 'selected' : '') . '>' . $i . '</option>';
                                         endfor;
                                         ?>
@@ -73,7 +73,7 @@
                                 <div class="input-group input-group-sm">
                                     <select name="nbSemainesApres" id="nbSemainesApres" class="form-control form-control-sm" style="text-align: right;">
                                         <?php
-                                        for ($i = 1; $i <= 5; $i++):
+                                        for ($i = 1; $i <= 10; $i++):
                                             echo '<option value="' . $i . '"' . ($this->session->userdata('parametres')['nbSemainesApres'] == $i ? 'selected' : '') . '>' . $i . '</option>';
                                         endfor;
                                         ?>

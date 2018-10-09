@@ -131,7 +131,13 @@ class Affectation {
         endif;
         $this->hydrateHeures();
 
-        $positionLeft = floor(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
+        /* Un décallage de position apparait dans le cas ou la premier jour de planning est en heure d'hiver et que l'affectation est en haure d'été */
+        if (date('I', $premierJourPlanning) == 0 && date('I', $this->affectationDebutDate) == 1):
+            $positionLeft = ceil(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
+        else:
+            $positionLeft = floor(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
+        endif;
+
         //si on commence de l'aprem, on ajoute une 1/2 journée
         if ($this->affectationDebutMoment == 2) {
             $positionLeft += $largeur;
@@ -148,13 +154,15 @@ class Affectation {
             else:
                 $classes .= ' draggableHorizontal';
             endif;
-            $border = '1px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire();
+            $border = 'border : 1px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
             $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur(), 0.85);
         else:
-            $border = '1px dashed ' . $this->getAffectationChantier()->getChantierCouleurSecondaire();
+            $border = 'border : 1px dashed ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . '; border-left: 3px;';
             $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur(), 0.2);
         endif;
-        //$couleur = $this->getAffectationChantier()->getChantierCouleur();
+        if (!empty($this->affectationHeures)):
+            $border .= ' border-left: 3px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
+        endif;
 
         $txt = '<span class="planningDivText" data-toggle="tooltip" title="' . $this->getAffectationClient()->getClientNom() . ' [' . $this->getAffectationChantier()->getChantierCategorie() . ' - ' . $this->getAffectationChantier()->getChantierObjet() . ']" style="color:' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';">'
                 . substr($this->getAffectationClient()->getClientNom(), 0, floor($taille / 10))
@@ -183,7 +191,7 @@ class Affectation {
                 . 'top:' . $positionTop . 'px;'
                 . ' left:' . $positionLeft . 'px;'
                 . ' background-color:' . $background . ';'
-                . ' border:' . $border . ';'
+                . $border
                 . ' width:' . $taille . 'px;'
                 . ' height:' . $hauteurDiv . 'px;"'
                 . ' data-affectationid="' . $this->affectationId . '"'

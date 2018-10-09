@@ -90,10 +90,22 @@
                                 </div>
                             </div>
                             <div class="nav-divider"></div>
-                            <div class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <i class="fas fa-hourglass-end"></i> Pointages
-                                </a>
+                            <div class="nav-item dropdown">
+                                <a class="dropdown-toggle collapsed" href="#menu_pointages" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-hourglass-end"></i> Pointages</a>
+                                <div class="dropdown-menu col-xl-2 collapse animated" id="menu_pointages" style="max-width: 280px;">
+                                    <div class="dropdown-header">Gestion des pointages</div>
+                                    <div class="dropdown-divider m-0"></div>
+                                    <div class="dropdown-item">
+                                        <a href="<?= site_url('pointages/heures'); ?>">
+                                            <i class="fas fa-clock"></i> Heures
+                                        </a>
+                                    </div>
+                                    <div class="dropdown-item">
+                                        <a href="<?= site_url('pointages/feuilles'); ?>">
+                                            <i class="fas fa-file-invoice"></i> Feuilles
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                             <div class="nav-divider"></div>
                             <?php if ($this->ion_auth->in_group(array(61))): ?>

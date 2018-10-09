@@ -78,7 +78,11 @@
                                             <?= $chantier->getChantierObjet(); ?>
                                         </a>
                                         <?php
-                                        $ratio = round($chantier->getChantierHeuresPlanifiees() * 100 / $chantier->getChantierHeuresPrevues());
+                                        if ($chantier->getChantierHeuresPrevues() > 0):
+                                            $ratio = round($chantier->getChantierHeuresPlanifiees() * 100 / $chantier->getChantierHeuresPrevues());
+                                        else:
+                                            $ratio = 0;
+                                        endif;
                                         if ($ratio > 100):
                                             $bgClass = "progress-bar bg-danger";
                                             $ratio = 100;

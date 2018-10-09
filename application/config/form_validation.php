@@ -715,29 +715,24 @@ $config = array(
     /* Add Heure */
     'addHeure' => array(
         array(
-            'field' => 'addHeureId',
+            'field' => 'heureId',
             'label' => 'ID Heure',
             'rules' => 'callback_existHeure'
         ),
         array(
-            'field' => 'addHeureAffectationId',
+            'field' => 'affectationId',
             'label' => 'ID Affectation',
             'rules' => 'required|callback_existAffectation'
         ),
         array(
-            'field' => 'addHeureDate',
+            'field' => 'jour',
             'label' => 'Date',
             'rules' => 'required|trim'
         ),
         array(
-            'field' => 'addHeureDuree',
+            'field' => 'duree',
             'label' => 'Durée du pointage',
             'rules' => 'required|trim'
-        ),
-        array(
-            'field' => 'addHeureValide',
-            'label' => 'Heure confirmée',
-            'rules' => 'in_list[0,1]'
         )
     ),
     /* get fournisseur */
@@ -830,6 +825,32 @@ $config = array(
             'field' => 'addIndispoMotifId',
             'label' => 'ID du motif',
             'rules' => 'required|in_list[1,2,3,5,6,7,8,9,10,11,12,13,14]'
+        )
+    ),
+    /* get Pointage */
+    'getPointage' => array(
+        array(
+            'field' => 'pointageId',
+            'label' => 'ID Pointage',
+            'rules' => 'required|callback_existPointage'
+        )
+    ),
+    /* Add Pointage */
+    'addPointage' => array(
+        array(
+            'field' => 'personnelId',
+            'label' => 'ID Personnel',
+            'rules' => 'required|callback_existPersonnel'
+        ),
+        array(
+            'field' => 'periode',
+            'label' => 'Mois-Annee du pointage',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'pointageHTML',
+            'label' => 'HTML du pointage',
+            'rules' => 'trim'
         )
     )
 );

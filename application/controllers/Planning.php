@@ -69,10 +69,12 @@ class Planning extends My_Controller {
         /* On détermine un nouveau jour de début de planning avec le début le plus ancien des affectations selectionnées.
          * Pas de semaine avant cette date, le retour dans le passé est pris en compte dans la selection des affectations
          */
-        $listeAffairesClotureesPlanning = array(); /* Liste des ID des affaires cloturées ayant une affectation dans le panning généré */
+        $listeAffairesClotureesPlanning = array(); /* Liste des ID des affaires cloturées ayant une affectation dans le planning généré */
+        /* Initialisations */
+        //$dernier = $dernierJourPlanning ?: ($premierJourPlanning + (86400 * 7 * ($this->nbSemainesAvant + $this->nbSemainesApres)));
+        $dernier = $dernierJourPlanning;
+
         if ($affectations):
-            /* Initialisations */
-            $dernier = $dernierJourPlanning ?: 0;
 
             /* Permier et dernier jours du planning */
             if ($affectations[0]->getAffectationDebutDate() < $premierJourPlanning):
@@ -122,6 +124,16 @@ class Planning extends My_Controller {
             endforeach;
         endif;
 
+        /* recherche des indisponibilités pour cette periode */
+        $indisponibilitesPlanning = $this->managerIndisponibilites->getIndisponibilitesPlanning($premierJourPlanning, $dernierJourPlanning);
+        if (!empty($indisponibilitesPlanning)):
+            foreach ($indisponibilitesPlanning as $indispo):
+                if (!in_array($indispo->getIndispoPersonnelId(), $listePersonnel)):
+                    $listePersonnel[] = $indispo->getIndispoPersonnelId();
+                endif;
+            endforeach;
+        endif;
+
         /* Personnels du planning (Actifs et les inactifs associés à une affectation du planning généré) */
         $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($listePersonnel);
         if (!empty($personnelsPlanning)):
@@ -141,8 +153,7 @@ class Planning extends My_Controller {
         $this->session->set_userdata('premierJourPlanning', $premierJourPlanning);
         $this->session->set_userdata('dernierJourPlanning', $dernierJourPlanning);
 
-        /* recherche des indisponibilités pour cette periode */
-        $indisponibilitesPlanning = $this->managerIndisponibilites->getIndisponibilitesPlanning($premierJourPlanning, $dernierJourPlanning);
+
         if (!empty($indisponibilitesPlanning)):
             foreach ($indisponibilitesPlanning as $indispo):
                 $indispo->genereHTML($premierJourPlanning, $personnelsPlanning, null, $this->hauteur, $this->largeur);
@@ -355,8 +366,11 @@ class Planning extends My_Controller {
                 'affaireObjet' => $affectation->getAffectationAffaire()->getAffaireObjet(),
                 'affaireRemarque' => $affectation->getAffectationAffaire()->getAffaireRemarque()
             );
-
-            $ratio = round($affectation->getAffectationChantier()->getChantierHeuresPlanifiees() * 100 / $affectation->getAffectationChantier()->getChantierHeuresPrevues());
+            if ($affectation->getAffectationChantier()->getChantierHeuresPrevues() > 0):
+                $ratio = round($affectation->getAffectationChantier()->getChantierHeuresPlanifiees() * 100 / $affectation->getAffectationChantier()->getChantierHeuresPrevues());
+            else:
+                $ratio = 0;
+            endif;
             if ($ratio > 100):
                 $bgClass = "progress-bar bg-danger";
                 $ratio = 100;
@@ -369,9 +383,10 @@ class Planning extends My_Controller {
             $chantier = array(
                 'chantierId' => $affectation->getAffectationChantier()->getChantierId(),
                 'chantierObjet' => $affectation->getAffectationChantier()->getChantierObjet(),
-                'chantierPlace' => $affectation->getAffectationChantier()->getChantierPlace()->getPlaceAdresse(),
+                'chantierPlace' => !empty($affectation->getAffectationChantier()->getChantierPlace()) ? $affectation->getAffectationChantier()->getChantierPlace()->getPlaceAdresse() : '',
                 'chantierRemarque' => $affectation->getAffectationChantier()->getChantierRemarque(),
                 'chantierRatio' => $ratio,
+                'chantierEtat' => $affectation->getAffectationChantier()->getChantierEtat(),
                 'chantierProgressBar' => $bgClass
             );
 
@@ -407,7 +422,16 @@ class Planning extends My_Controller {
                 'personnelNom' => $affectation->getAffectationPersonnel()->getPersonnelNom() . ' ' . $affectation->getAffectationPersonnel()->getPersonnelPrenom()
             );
 
-            echo json_encode(array('type' => 'success', 'affectation' => $affect, 'affaire' => $affaire, 'chantier' => $chantier, 'client' => $client, 'personnel' => $personnel));
+            $affectation->hydrateHeures();
+            if (!empty($affectation->getAffectationHeures())):
+                foreach ($affectation->getAffectationHeures() as $heure):
+                    $heures[] = array('heureDate' => $this->cal->dateFrancais($heure->getHeureDate(), 'jDM'), 'heureDuree' => floor($heure->getHeureDuree() / 60) . 'h ' . $heure->getHeureDuree() % 60 . 'min');
+                endforeach;
+            else:
+                $heures = array();
+            endif;
+
+            echo json_encode(array('type' => 'success', 'affectation' => $affect, 'affaire' => $affaire, 'chantier' => $chantier, 'client' => $client, 'personnel' => $personnel, 'heures' => $heures));
         endif;
     }
 
@@ -429,47 +453,52 @@ class Planning extends My_Controller {
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
             $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
-
-            /* Personnels du planning */
-            $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($this->session->userdata('planningPersonnelsIds'));
-            if (!empty($personnelsPlanning)):
-                foreach ($personnelsPlanning as $personnel):
-                    $personnel->hydrateEquipe();
-                endforeach;
-            endif;
-
-            /* On recherche la dernière heure saisie sur cette affectation et donc la date minimum de fin d'affectation */
-            $affectation->hydrateHeures();
-            if (empty($affectation->getAffectationHeures())):
-                $limite = $affectation->getAffectationDebutDate();
+            $affectation->hydrateChantier();
+            if ($affectation->getAffectationChantier()->getChantierEtat() == 2):
+                echo json_encode(array('type' => 'error', 'message' => 'Impossible de modifier une affectation d\'un chantier clôturé.'));
             else:
-                $limite = $affectation->getAffectationHeures()[sizeof($affectation->getAffectationHeures()) - 1]->getHeureDate();
-            endif;
 
-            $newDateFin = $this->cal->calculeDateFinCases($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $this->input->post('nbCases'));
-
-            if ($newDateFin < $limite):
-                $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
-                echo json_encode(array('type' => 'error', 'message' => 'Il y a des heures saisies le <b>' . $this->cal->dateFrancais($limite, 'JDM') . '</b> donc hors des nouvelles limites de cette affectation.<br>Redimensionnement impossible', 'html' => $affectation->getAffectationHTML()));
-            else:
-                if ($this->input->post('nbCases') % 2 == 1):
-                    $newMomentFin = $affectation->getAffectationDebutMoment();
-                elseif ($affectation->getAffectationDebutMoment() == 1):
-                    $newMomentFin = 2;
-                else:
-                    $newMomentFin = 1;
+                /* Personnels du planning */
+                $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($this->session->userdata('planningPersonnelsIds'));
+                if (!empty($personnelsPlanning)):
+                    foreach ($personnelsPlanning as $personnel):
+                        $personnel->hydrateEquipe();
+                    endforeach;
                 endif;
-                $newNbDemi = $this->cal->nbDemiEntreDates($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $newDateFin, $newMomentFin);
 
-                $affectation->setAffectationNbDemi($newNbDemi);
-                $affectation->setAffectationFinDate($newDateFin);
-                $affectation->setAffectationFinMoment($newMomentFin);
-                $affectation->setAffectationCases($this->cal->nbCasesEntreDates($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $affectation->getAffectationFinDate(), $affectation->getAffectationFinMoment()));
-                $this->managerAffectations->editer($affectation);
+                /* On recherche la dernière heure saisie sur cette affectation et donc la date minimum de fin d'affectation */
+                $affectation->hydrateHeures();
+                if (empty($affectation->getAffectationHeures())):
+                    $limite = $affectation->getAffectationDebutDate();
+                else:
+                    $limite = $affectation->getAffectationHeures()[sizeof($affectation->getAffectationHeures()) - 1]->getHeureDate();
+                endif;
 
-                $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
-                echo json_encode(array('type' => 'success', 'html' => $affectation->getAffectationHTML()));
+                $newDateFin = $this->cal->calculeDateFinCases($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $this->input->post('nbCases'));
 
+                if ($newDateFin < $limite):
+                    $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
+                    echo json_encode(array('type' => 'error', 'message' => 'Il y a des heures saisies le <b>' . $this->cal->dateFrancais($limite, 'JDM') . '</b> donc hors des nouvelles limites de cette affectation.<br>Redimensionnement impossible', 'html' => $affectation->getAffectationHTML()));
+                else:
+                    if ($this->input->post('nbCases') % 2 == 1):
+                        $newMomentFin = $affectation->getAffectationDebutMoment();
+                    elseif ($affectation->getAffectationDebutMoment() == 1):
+                        $newMomentFin = 2;
+                    else:
+                        $newMomentFin = 1;
+                    endif;
+                    $newNbDemi = $this->cal->nbDemiEntreDates($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $newDateFin, $newMomentFin);
+
+                    $affectation->setAffectationNbDemi($newNbDemi);
+                    $affectation->setAffectationFinDate($newDateFin);
+                    $affectation->setAffectationFinMoment($newMomentFin);
+                    $affectation->setAffectationCases($this->cal->nbCasesEntreDates($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $affectation->getAffectationFinDate(), $affectation->getAffectationFinMoment()));
+                    $this->managerAffectations->editer($affectation);
+
+                    $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
+                    echo json_encode(array('type' => 'success', 'html' => $affectation->getAffectationHTML()));
+
+                endif;
             endif;
         endif;
     }
@@ -480,59 +509,64 @@ class Planning extends My_Controller {
         else:
 
             $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
-
-            /* Personnels du planning */
-            $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($this->session->userdata('planningPersonnelsIds'));
-            if (!empty($personnelsPlanning)):
-                foreach ($personnelsPlanning as $personnel):
-                    $personnel->hydrateEquipe();
-                endforeach;
-            endif;
-            $affectationOriginaleHTML = $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
-
-            if (!$this->ion_auth->in_group(60)):
-                $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
-                echo json_encode(array('type' => 'error', 'message' => 'Vous n\'avez pas les droits pour modifier une affectation', 'html' => $affectationOriginaleHTML));
+            $affectation->hydrateChantier();
+            $affectation->hydrateHeures();
+            if ($affectation->getAffectationChantier()->getChantierEtat() == 2 || !empty($affectation->getAffectationHeures())):
+                echo json_encode(array('type' => 'error', 'message' => 'Impossible de modifier une affectation d\'un chantier clôturé ou ayant des heures de validées.'));
             else:
 
-                $decalageLigne = floor($this->input->post('decalageY') / $this->hauteur);
-                $decalageNbDemi = floor($this->input->post('decalageX') / ($this->largeur + 1));
+                /* Personnels du planning */
+                $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($this->session->userdata('planningPersonnelsIds'));
+                if (!empty($personnelsPlanning)):
+                    foreach ($personnelsPlanning as $personnel):
+                        $personnel->hydrateEquipe();
+                    endforeach;
+                endif;
+                $affectationOriginaleHTML = $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
 
-                $affectation->hydrateHeures();
-                /* On ne peut changer de personnel que si aucune heure n'est saisie sur cette affectation */
-                if (empty($affectation->getAffectationHeures()) && $this->input->post('decalageY') != 0):
+                if (!$this->ion_auth->in_group(60)):
+                    $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
+                    echo json_encode(array('type' => 'error', 'message' => 'Vous n\'avez pas les droits pour modifier une affectation', 'html' => $affectationOriginaleHTML));
+                else:
 
-                    $nouvelleLigne = $this->input->post('ligne') + $decalageLigne;
-                    if ($nouvelleLigne > 0 && $nouvelleLigne <= sizeof($personnelsPlanning)):
+                    $decalageLigne = floor($this->input->post('decalageY') / $this->hauteur);
+                    $decalageNbDemi = floor($this->input->post('decalageX') / ($this->largeur + 1));
 
-                        $affectation->setAffectationPersonnelId($personnelsPlanning[$nouvelleLigne - 1]->getPersonnelId());
+                    $affectation->hydrateHeures();
+                    /* On ne peut changer de personnel que si aucune heure n'est saisie sur cette affectation */
+                    if (empty($affectation->getAffectationHeures()) && $this->input->post('decalageY') != 0):
 
+                        $nouvelleLigne = $this->input->post('ligne') + $decalageLigne;
+                        if ($nouvelleLigne > 0 && $nouvelleLigne <= sizeof($personnelsPlanning)):
+
+                            $affectation->setAffectationPersonnelId($personnelsPlanning[$nouvelleLigne - 1]->getPersonnelId());
+
+                        else:
+
+                            echo json_encode(array('type' => 'error', 'message' => 'Vous devez rester dans le planning', 'html' => $affectationOriginaleHTML));
+                        endif;
+
+                    endif;
+
+                    /* On gère les changements de date */
+                    $nouvellesDonnees = $this->cal->decalageNbDemi($affectation, $decalageNbDemi);
+                    if ($nouvellesDonnees['debutDate'] < $this->session->userdata('premierJourPlanning') || $nouvellesDonnees['debutDate'] > $this->session->userdata('dernierJourPlanning')):
+                        echo json_encode(array('type' => 'error', 'message' => 'Vous devez rester dans le planning', 'html' => $affectationOriginaleHTML));
                     else:
 
-                        echo json_encode(array('type' => 'error', 'message' => 'Vous devez rester dans le planning', 'html' => $affectationOriginaleHTML));
+                        $affectation->setAffectationDebutDate($nouvellesDonnees['debutDate']);
+                        $affectation->setAffectationDebutMoment($nouvellesDonnees['debutMoment']);
+                        $affectation->setAffectationFinDate($nouvellesDonnees['finDate']);
+                        $affectation->setAffectationFinMoment($nouvellesDonnees['finMoment']);
+                        $affectation->setAffectationCases($nouvellesDonnees['cases']);
+                        $this->managerAffectations->editer($affectation);
+
+                        $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
+                        echo json_encode(array('type' => 'success', 'html' => $affectation->getAffectationHtml()));
+
                     endif;
 
                 endif;
-
-                /* On gère les changements de date */
-                $nouvellesDonnees = $this->cal->decalageNbDemi($affectation, $decalageNbDemi);
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($nouvellesDonnees, true));
-                if ($nouvellesDonnees['debutDate'] < $this->session->userdata('premierJourPlanning') || $nouvellesDonnees['debutDate'] > $this->session->userdata('dernierJourPlanning')):
-                    echo json_encode(array('type' => 'error', 'message' => 'Vous devez rester dans le planning', 'html' => $affectationOriginaleHTML));
-                else:
-
-                    $affectation->setAffectationDebutDate($nouvellesDonnees['debutDate']);
-                    $affectation->setAffectationDebutMoment($nouvellesDonnees['debutMoment']);
-                    $affectation->setAffectationFinDate($nouvellesDonnees['finDate']);
-                    $affectation->setAffectationFinMoment($nouvellesDonnees['finMoment']);
-                    $affectation->setAffectationCases($nouvellesDonnees['cases']);
-                    $this->managerAffectations->editer($affectation);
-
-                    $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
-                    echo json_encode(array('type' => 'success', 'html' => $affectation->getAffectationHtml()));
-
-                endif;
-
             endif;
         endif;
     }
@@ -661,6 +695,137 @@ class Planning extends My_Controller {
             $achat->setAchatLivraisonDate($newDate);
             $this->managerAchats->editer($achat);
             echo json_encode(array('type' => 'success'));
+        endif;
+    }
+
+    public function couperAffectation() {
+        if (!$this->form_validation->run('getAffectation')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+
+            $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
+            $affectation->hydrateChantier();
+            if ($affectation->getAffectationChantier()->getChantierEtat() == 2):
+                echo json_encode(array('type' => 'error', 'message' => 'Impossible de modifier une affectation d\'un chantier clôturé.'));
+            else:
+
+                $affectation->hydrateHeures();
+                $dateCoupure = $this->own->mktimeFromInputDate($this->input->post('couperDate'));
+                if ($dateCoupure < $affectation->getAffectationDebutDate() || $dateCoupure > $affectation->getAffectationFinDate() || ($dateCoupure == $affectation->getAffectationDebutDate() && $this->input->post('couperMoment') < $affectation->getAffectationDebutMoment()) || ($dateCoupure == $affectation->getAffectationFinDate() && $this->input->post('couperMoment') >= $affectation->getAffectationFinMoment())):
+                    echo json_encode(array('type' => 'error', 'message' => 'Vous devez selectionner une date de coupure incluse dans la durée de l\'affectation !'));
+                else:
+
+                    $newAffectation = clone $affectation;
+
+                    $this->db->trans_start();
+
+                    /* Modification de l'affectation coupée */
+                    $affectation->setAffectationFinDate($dateCoupure);
+                    $affectation->setAffectationFinMoment($this->input->post('couperMoment'));
+                    $affectation->setAffectationNbDemi($this->cal->nbDemiEntreDates($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $dateCoupure, $this->input->post('couperMoment')));
+                    $affectation->setAffectationCases($this->cal->nbCasesEntreDates($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $dateCoupure, $this->input->post('couperMoment')));
+                    $this->managerAffectations->editer($affectation);
+
+                    /* création de la nouvelle affectation */
+                    $newAffectation->setAffectationId('');
+                    //log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($newAffectation, true));
+                    if ($this->input->post('couperMoment') == 1):
+                        $newDebutDate = $dateCoupure;
+                        $newDebutMoment = 2;
+                    else:
+                        $newDebutDate = $dateCoupure + 86400;
+                        $newDebutMoment = 1;
+                    endif;
+
+
+                    $newAffectation->setAffectationDebutDate($newDebutDate);
+                    $newAffectation->setAffectationDebutMoment($newDebutMoment);
+                    $newAffectation->setAffectationNbDemi($this->cal->nbDemiEntreDates($newDebutDate, $newDebutMoment, $newAffectation->getAffectationFinDate(), $newAffectation->getAffectationFinMoment()));
+                    $newAffectation->setAffectationCases($this->cal->nbCasesEntreDates($newDebutDate, $newDebutMoment, $newAffectation->getAffectationFinDate(), $newAffectation->getAffectationFinMoment()));
+
+                    $this->managerAffectations->ajouter($newAffectation);
+
+                    /* Migration des heures vers la nouvelle affectation */
+                    if (!empty($affectation->getAffectationHeures())):
+                        foreach ($affectation->getAffectationHeures() as $heure):
+                            if ($heure->getHeureDate() > $affectation->getAffectationFinDate()):
+                                /* On passe les heures sur la nouvelle affectation */
+                                $heure->setHeureAffectationId($newAffectation->getAffectationId());
+                                $this->managerHeures->editer($heure);
+                            endif;
+                        endforeach;
+                    endif;
+
+                    $this->db->trans_complete();
+
+                    /* Personnels du planning */
+                    $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($this->session->userdata('planningPersonnelsIds'));
+                    if (!empty($personnelsPlanning)):
+                        foreach ($personnelsPlanning as $personnel):
+                            $personnel->hydrateEquipe();
+                        endforeach;
+                    endif;
+
+                    $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
+                    $newAffectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
+
+                    echo json_encode(array('type' => 'success', 'HTML' => $affectation->getAffectationHTML() . $newAffectation->getAffectationHTML()));
+
+                endif;
+            endif;
+
+        endif;
+    }
+
+    public function deplaceAffectation() {
+        if (!$this->form_validation->run('getAffectation')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+
+            /* Personnels du planning */
+            $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($this->session->userdata('planningPersonnelsIds'));
+            if (!empty($personnelsPlanning)):
+                foreach ($personnelsPlanning as $personnel):
+                    $personnel->hydrateEquipe();
+                endforeach;
+            endif;
+
+            $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
+            if ($this->input->post('cible') == 1):
+                $affectations = $this->managerAffectations->getAffectations(array('affectationId' => $affectation->getAffectationId()));
+            else:
+                $affectations = $this->managerAffectations->getAffectations(array('affectationPersonnelId' => $affectation->getAffectationPersonnelId(), 'affectationDebutDate >=' => $affectation->getAffectationDebutDate()));
+            endif;
+
+            $eraseIds = array();
+            $HTML = '';
+            $repercutionDebutDate = null;
+            $nbDemiDecalage = $this->input->post('decalage') * 2;
+
+            $this->db->trans_start();
+
+            foreach ($affectations as $affect):
+                $affect->hydrateHeures();
+                $affect->hydrateChantier();
+                if (!empty($affect->getAffectationHeures()) || $affect->getAffectationChantier()->getChantierEtat() == 2):
+                    continue;
+                else:
+                    $eraseIds[] = $affect->getAffectationId();
+                    $infosDecalage = $this->cal->decalageNbDemi($affect, $nbDemiDecalage);
+                    $affect->setAffectationDebutDate($infosDecalage['debutDate']);
+                    $affect->setAffectationFinDate($infosDecalage['finDate']);
+                    $affect->setAffectationCases($infosDecalage['cases']);
+                    $this->managerAffectations->editer($affect);
+                    $affect->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
+                    $HTML .= $affect->getAffectationHTML();
+
+                    $repercutionDebutDate = $affect->getAffectationFinDate();
+
+                endif;
+            endforeach;
+
+            $this->db->trans_complete();
+            echo json_encode(array('type' => 'success', 'HTML' => $HTML, 'eraseIds' => $eraseIds));
         endif;
     }
 

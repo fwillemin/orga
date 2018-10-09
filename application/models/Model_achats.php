@@ -82,13 +82,18 @@ class Model_achats extends MY_model {
     }
 
     public function getAchatsPlanning($dateDebut, $dateFin, $tri = 'achatLivraisonDate ASC', $type = 'object') {
+
+        $selection = array('a.achatLivraisonDate >=' => $dateDebut);
+        if ($dateFin):
+            $selection['a.achatLivraisonDate <='] = $dateFin;
+        endif;
         $query = $this->db->select('*')
                 ->from('achats a')
                 ->join('chantiers c', 'c.chantierId = a.achatChantierId')
                 ->join('affaires af', 'af.affaireId = c.chantierAffaireId')
                 ->where('af.affaireEtablissementId', $this->session->userdata('etablissementId'))
                 ->where('c.chantierEtat', 1)
-                ->where(array('a.achatLivraisonDate >=' => $dateDebut, 'a.achatLivraisonDate <=' => $dateFin))
+                ->where($selection)
                 ->order_by($tri)
                 ->get();
         return $this->retourne($query, $type, self::classe);

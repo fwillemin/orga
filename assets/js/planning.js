@@ -196,6 +196,10 @@ $(document).ready(function () {
         $('#addAffectationPersonnelsIds option').prop('selected', false);
         $('#addAffectationChantierId').selectpicker('refresh');
         $('#addAffectationPersonnelsIds').selectpicker('refresh');
+        $('#btnCutAffectation').prop('disabled', false);
+        $('#btnDecaleAffectation').prop('disabled', false);
+        $('#tableAffectationHeures tbody tr').remove();
+        $('#tableAffectationHeures tbody').append('<tr><td colspan="2">Aucune heure saisie</td></tr>');
         $('#btnSubmitFormAffectation').html('<i class="fas fa-plus-square"></i> Ajouter');
         $('#modalAddAffectation .modal-title').text('Ajouter une affectation');
         $('#btnAddIndispo').show();
@@ -366,17 +370,32 @@ $(document).ready(function () {
                         $('#btnAddIndispo').hide();
                     }
 
+                    /* Liste des heures */
+                    if (retour.heures.length > 0) {
+                        $('#tableAffectationHeures tbody tr').remove();
+                        for (i = 0; i < retour.heures.length; i++) {
+                            $('#tableAffectationHeures tbody').append('<tr><td>' + retour.heures[i].heureDate + '</td><td>' + retour.heures[i].heureDuree + '</td></tr>');
+                        }
+                    }
+
                     $('#headerModalAffectation').html('Consultation d\'une affectation');
                     $('#textAffectationClient').html('<a href="' + chemin + 'clients/ficheClient/' + retour.client.clientId + '">' + retour.client.clientNom + '</a>');
                     $('#textAffectationAffaire').html('<a href="' + chemin + 'affaires/ficheAffaire/' + retour.affaire.affaireId + '">' + retour.affaire.affaireObjet + '</a>');
                     $('#textAffectationPersonnel').html('<a href="' + chemin + 'personnels/fichePersonnel/' + retour.personnel.personnelId + '">' + retour.personnel.personnelNom + '</a>');
                     $('#textAffectationChantier').html('<a href="' + chemin + 'chantiers/ficheChantier/' + retour.chantier.chantierId + '">' + retour.chantier.chantierObjet + '</a>');
+                    
+                    if (retour.chantier.chantierEtat === '2') {
+                        $('#btnCutAffectation').prop('disabled', true);
+                        $('#btnDecaleAffectation').prop('disabled', true);
+                    }
                     $('#textAffectationAvancementHeures').css('width', retour.chantier.chantierRatio + '%');
                     $('#textAffectationAvancementHeures').addClass(retour.chantier.chantierProgressBar);
                     $('#textAffectationPeriode').html(retour.affectation.affectationPeriode);
                     $('#textAffectationType').html(retour.affectation.affectationTypeText);
                     $('#textAffectationAdresse').html(retour.chantier.chantierPlace);
                     $('#textAffectationCommentaire').html(retour.affectation.affectationCommentaire);
+                    $('#couperDate').val(timestampToDate(retour.affectation.affectationDebutDate));
+                    $('#couperMoment').val(retour.affectation.affectationDebutMoment);
                     $('#modalAffectation').modal('show');
                     break;
             }
@@ -656,7 +675,7 @@ $(document).ready(function () {
         }
     });
     $('#divPlanning').on('click', '.planningIndispoText', function () {
-        var indispoId = $(this).parent('div').attr('data-indispoid');            
+        var indispoId = $(this).parent('div').attr('data-indispoid');
         $.post(chemin + 'personnels/getIndisponibiliteDetails', {indispoId: indispoId}, function (retour) {
             switch (retour.type) {
                 case 'error':
@@ -664,7 +683,7 @@ $(document).ready(function () {
                     break;
                 case 'success':
                     indispoRAZ();
-                    
+
                     $('#addIndispoId').val(retour.indispo.indispoId);
                     $('#addIndispoPersonnelsIds option[value="' + retour.indispo.indispoPersonnelId + '"]').prop('selected', true);
                     $('#addIndispoPersonnelsIds').selectpicker('refresh');
@@ -730,7 +749,42 @@ $(document).ready(function () {
             }
         }
     });
-    
+
+    $('#btnCutAffectation').on('click', function () {
+        $.post(chemin + 'planning/couperAffectation', {affectationId: $('#addAffectationId').val(), couperDate: $('#couperDate').val(), couperMoment: $('#couperMoment').val()}, function (retour) {
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    if (parseInt($('#addAffectationId').val()) > 0) {
+                        $('.affectation[data-affectationid="' + $('#addAffectationId').val() + '"]').remove();
+                    }
+                    $('#modalAffectation').modal('hide');
+                    affectationRAZ();
+                    $('#divPlanning').append(retour.HTML);
+                    refreshPlanningUI();
+                    break;
+            }
+        }, 'json');
+    });
+    $('#btnDecaleAffectation').on('click', function () {
+        $.post(chemin + 'planning/deplaceAffectation', {affectationId: $('#addAffectationId').val(), cible: $('#decalageCible').val(), decalage: $('#decalageQte').val()}, function (retour) {
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    for (i = 0; i < retour.eraseIds.length; i++) {
+                        $('.affectation[data-affectationid="' + retour.eraseIds[i] + '"]').remove();
+                    }
+                    $('#divPlanning').append(retour.HTML);
+                    refreshPlanningUI();
+                    $('#modalAffectation').modal('hide');
+                    break;
+            }
+        }, 'json');
+    });
 
 });
 

@@ -67,7 +67,7 @@ class Model_indisponibilites extends MY_model {
      * @param array $tri Critères de tri des raisonSociales
      * @return array Liste d'objets de la classe Indisponibilite
      */
-    public function getIndisponibilites($where = array(), $tri = 'indisponibiliteDebutDate ASC', $type = 'object') {
+    public function getIndisponibilites($where = array(), $tri = 'indispoDebutDate ASC', $type = 'object') {
         $query = $this->db->select('i.*')
                 ->from('indisponibilites i')
                 ->join('personnels p', 'p.personnelId = i.indispoPersonnelId')

@@ -88,6 +88,16 @@ class Model_personnels extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function getPersonnelsFromListeIds($listePersonnelIds, $tri = 'p.personnelActif DESC, p.personnelEquipeId, p.personnelNom, p.personnelPrenom ASC', $type = 'object') {
+        $query = $this->db->select('*')
+                ->from('personnels p')
+                ->where('p.personnelEtablissementId', $this->session->userdata('etablissementId'))
+                ->where_in('p.personnelId', $listePersonnelIds)
+                ->order_by($tri)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
     /**
      * Retourne un objet de la classe Personnel correspondant à l'id
      * @param integer $personnelId ID de l'raisonSociale

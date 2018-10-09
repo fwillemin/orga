@@ -24,20 +24,16 @@
                 <br>Taux horaire actuel : <strong><?= ($personnel->getPersonnelTauxHoraire() ?: '<span class="badge badge-warning">NR</span>') . ' <small>€/h</small>'; ?></strong>
                 <br>
                 <br>
-
-
-
-
                 <h5>Taux horaires</h5>
                 <?= form_open('personnels/addTauxHoraire', array('id' => 'formAddTauxHoraire')); ?>
                 <input type="hidden" name="addTauxHoraireId" id="addTauxHoraireId" value="<?= !empty($tauxHoraire) ? $tauxHoraire->getTauxHoraireId() : ''; ?>">
                 <input type="hidden" name="addTauxHorairePersonnelId" id="addTauxHorairePersonnelId" value="<?= $personnel->getpersonnelId(); ?>">
-                <div class="input-group mb-3">
+                <div class="input-group mb-3 input-group-sm">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="">A compter du</span>
                     </div>
-                    <input type="date" class="form-control" name="addTauxHoraireDate" id="addTauxHoraireDate" value="<?= !empty($tauxHoraire) ? date('Y-m-d', $tauxHoraire->getTauxHoraireDate()) : ''; ?>">
-                    <input type="text" class="form-control" placeholder="Taux horaire" name="addTauxHoraire" id="addTauxHoraire" value="<?= !empty($tauxHoraire) ? $tauxHoraire->getTauxHoraire() : ''; ?>">
+                    <input type="date" class="form-control col-6" name="addTauxHoraireDate" id="addTauxHoraireDate" value="<?= !empty($tauxHoraire) ? date('Y-m-d', $tauxHoraire->getTauxHoraireDate()) : ''; ?>">
+                    <input type="text" class="form-control col-3" placeholder="Taux horaire" name="addTauxHoraire" id="addTauxHoraire" value="<?= !empty($tauxHoraire) ? $tauxHoraire->getTauxHoraire() : ''; ?>" style="text-align: right;">
 
                     <div class="input-group-append">
                         <button class="btn btn-outline-primary" type="submit" id="btnSubmitFormEquipe"><?= !empty($tauxHoraire) ? '<i class="fas fa-edit"></i>' : '<i class="fas fa-plus-square"></i>'; ?></button>

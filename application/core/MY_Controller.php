@@ -194,6 +194,15 @@ class My_Controller extends CI_Controller {
         endif;
     }
 
+    public function existPointage($pointageId) {
+        $this->form_validation->set_message('existPointage', 'Ce pointage est introuvable.');
+        if ($this->managerPointages->count(array('pointageId' => $pointageId)) == 1 || !$pointageId) :
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
     public function isPortable($numero) {
         $this->form_validation->set_message('isPortable', 'Le numéro de portable doit commencer par 06 ou 07 ou +336 ou +337');
         if (preg_match("/^((\+|00)33\s?|0)[67](\s?\d{2}){4}$/", $numero) || !$numero):

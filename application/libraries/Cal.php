@@ -17,6 +17,18 @@ class Cal {
         return $debut + (7 - mdate('%N', $debut)) * 86400;
     }
 
+    public function premierJourFromNumSemaine($semaine, $annee) {
+        $timestamp = (mktime(0, 0, 0, 1, 1, $annee) - (date('N', mktime(0, 0, 0, 1, 1, $annee)) - 1) * 86400) + ($semaine - 1) * 604800;
+        /* cas des années à 53 semaines (le 01/01 est un jeudi ou plus tard dans la semaine) */
+        if (date('w', mktime(0, 0, 0, 1, 1, $annee)) > 4 || date('w', mktime(0, 0, 0, 1, 1, $annee)) == 0):
+            $timestamp += 604800;
+        endif;
+        if (date('I', $timestamp) == 1):
+            $timestamp -= 3600;
+        endif;
+        return $timestamp;
+    }
+
     public function dateFrancais($date = null, $compo = 'JDMA') {
         $CI = & get_instance();
         $CI->lang->load('calendar_lang', 'french');
@@ -31,6 +43,9 @@ class Cal {
             switch ($c):
                 case 'J':
                     $dateFR .= $CI->lang->line('cal_' . strtolower(date('l', $date))) . ' ';
+                    break;
+                case 'j':
+                    $dateFR .= $CI->lang->line('cal_' . strtolower(date('D', $date))) . ' ';
                     break;
                 case 'D':
                     $dateFR .= date('d', $date) . ' ';

@@ -15,6 +15,7 @@ class Place {
     protected $placeEtablissementId;
     protected $placeClientId;
     protected $placeAdresse;
+    protected $placeVille; /* Donnees utilisée dans les feuilles de pointage */
     protected $placeLat;
     protected $placeLon;
     protected $placeDistance;
@@ -137,6 +138,14 @@ class Place {
 
     function setPlaceDuree($placeDuree) {
         $this->placeDuree = $placeDuree;
+    }
+
+    function getPlaceVille() {
+        return $this->placeVille;
+    }
+
+    function setPlaceVille($placeVille) {
+        $this->placeVille = $placeVille;
     }
 
 }

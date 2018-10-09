@@ -104,6 +104,7 @@ class Clients extends My_Controller {
                         'placeLat' => $result['latitude'],
                         'placeLon' => $result['longitude'],
                         'placeAdresse' => $result['adresse'],
+                        'placeVille' => $result['ville'],
                         'placeGoogleId' => $result['placeGoogleId'],
                         'placeDistance' => $result['distance'],
                         'placeDuree' => $result['duree'],
@@ -154,6 +155,7 @@ class Clients extends My_Controller {
                 $place->setPlaceLat($result['latitude']);
                 $place->setPlaceLon($result['longitude']);
                 $place->setPlaceAdresse($result['adresse']);
+                $place->setPlaceVille($result['ville']);
                 $place->setPlaceGoogleId($result['placeGoogleId']);
                 $place->setPlacDistance($result['distance']);
                 $place->setPlacDistance($result['duree']);
@@ -170,6 +172,7 @@ class Clients extends My_Controller {
                     'placeLat' => $result['latitude'],
                     'placeLon' => $result['longitude'],
                     'placeAdresse' => $result['adresse'],
+                    'placeVille' => $result['ville'],
                     'placeGoogleId' => $result['placeGoogleId'],
                     'placeDistance' => $result['distance'],
                     'placeDuree' => $result['duree'],

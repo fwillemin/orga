@@ -19,6 +19,7 @@ class Model_places extends MY_model {
                 ->set('placeEtablissementId', $place->getPlaceEtablissementId())
                 ->set('placeClientId', $place->getPlaceClientId())
                 ->set('placeAdresse', $place->getPlaceAdresse())
+                ->set('placeVille', $place->getPlaceVille())
                 ->set('placeLat', $place->getPlaceLat())
                 ->set('placeLon', $place->getPlaceLon())
                 ->set('placeDistance', $place->getPlaceDistance())
@@ -38,6 +39,7 @@ class Model_places extends MY_model {
     public function editer(Place $place) {
         $this->db
                 ->set('placeAdresse', $place->getPlaceAdresse())
+                ->set('placeVille', $place->getPlaceVille())
                 ->set('placeLat', $place->getPlaceLat())
                 ->set('placeLon', $place->getPlaceLon())
                 ->set('placeDistance', $place->getPlaceDistance())
