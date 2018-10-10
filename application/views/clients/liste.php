@@ -16,10 +16,8 @@
                     <td>Derniere</td>
                     <td style="text-align: center;">Fixe</td>
                     <td style="text-align: center;">Portable</td>
-                    <td style="text-align: center; width:25px;">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fas fa-link"></i>
-                        </button>
+                    <td style="text-align: center; width:55px;">
+                        Places
                     </td>
                 </tr>
             </thead>
@@ -33,7 +31,7 @@
                         . '<td style="text-align:center;">' . ($client->getClientLastAffaire() ? $this->cal->dateFrancais($client->getClientLastAffaire()->getAffaireCreation(), 'Am') : 'NC') . '</td>'
                         . '<td>' . $client->getClientFixe() . '</td>'
                         . '<td>' . $client->getClientPortable() . '</td>'
-                        . '<td style="text-align: center;"><input type="checkbox" class="js-fusion"></td>'
+                        . '<td style="text-align: center;">' . (sizeof($client->getClientPlaces()) - 1) . '</td>'
                         . '</tr>';
                     endforeach;
                     unset($client);

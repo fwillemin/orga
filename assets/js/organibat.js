@@ -44,8 +44,7 @@ $(document).ready(function () {
     
     $('#formModParametres').on('submit', function (e) {
         e.preventDefault();
-        var donnees = $(this).serialize();
-        console.log('pass');
+        var donnees = $(this).serialize();       
         $.post(chemin + 'organibat/modParametres', donnees, function (retour) {
             switch (retour.type) {
                 case 'error':

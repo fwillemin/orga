@@ -386,6 +386,7 @@ and open the template in the editor.
         margin: 2px;
         float:left;
         width: 47%;
+        min-width: 65px;
         @include border-radius(8px);
         @include box-shadow($noir 3px 3px 10px);
     }
@@ -397,7 +398,7 @@ and open the template in the editor.
         color: inherit;
         font-weight:bold;
         text-align: center;
-        padding: 0px 2px 0px 6px;
+        padding: 0px 3px;
         -webkit-appearance: none;
         -moz-appearance: none;
         & option {

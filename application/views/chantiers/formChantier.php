@@ -15,7 +15,7 @@
             $places = false;
             if (!empty($chantier) && $chantier->getChantierClient()->getClientPlaces()):
                 $places = $chantier->getChantierClient()->getClientPlaces();
-            elseif ($affaire->getAffaireClient()->getClientPlaces()):
+            elseif (empty($chantier) && !empty($affaire) && $affaire->getAffaireClient()->getClientPlaces()):
                 $places = $affaire->getAffaireClient()->getClientPlaces();
             endif;
             if ($places):

@@ -70,6 +70,12 @@
                                             <i class="fas fa-list"></i> Liste
                                         </a>
                                     </div>
+                                    <div class="dropdown-divider m-0"></div>
+                                    <div class="dropdown-item">
+                                        <a href="<?= site_url('affaires/ficheAffaire/' . $this->session->userdata('affaireDiversId')); ?>">
+                                            <i class="fas fa-cloud"></i> Gestion des divers
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="nav-item dropdown">

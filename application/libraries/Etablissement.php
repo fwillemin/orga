@@ -86,7 +86,7 @@ class Etablissement {
         return $this->etablissementStatut;
     }
 
-    function getEtablissementChantierDiversId() {
+    function getEtablissementAffaireDiversId() {
         return $this->etablissementChantierDiversId;
     }
 
@@ -146,7 +146,7 @@ class Etablissement {
         $this->etablissementStatut = $etablissementStatut;
     }
 
-    function setEtablissementChantierDiversId($etablissementChantierDiversId) {
+    function setEtablissementAffaireDiversId($etablissementChantierDiversId) {
         $this->etablissementChantierDiversId = $etablissementChantierDiversId;
     }
 

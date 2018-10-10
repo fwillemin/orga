@@ -157,7 +157,7 @@ class Affectation {
             $border = 'border : 1px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
             $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur(), 0.85);
         else:
-            $border = 'border : 1px dashed ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . '; border-left: 3px;';
+            $border = 'border : 1px dashed ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
             $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur(), 0.2);
         endif;
         if (!empty($this->affectationHeures)):

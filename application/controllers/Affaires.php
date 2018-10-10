@@ -17,7 +17,7 @@ class Affaires extends My_Controller {
 
     public function liste() {
 
-        $where = array();
+        $where = array('affaireId <>' => $this->session->userdata('affaireDiversId'));
         if ($this->session->userdata('rechAffaireEtat')):
             $where['affaireEtat'] = $this->session->userdata('rechAffaireEtat');
         endif;
@@ -137,13 +137,23 @@ class Affaires extends My_Controller {
     }
 
     public function delAffaire() {
-        if (!$this->ion_auth->in_group(57) || !$this->form_validation->run('getAffaire')):
+        if (!$this->ion_auth->in_group(57) || !$this->form_validation->run('getAffaire') || $this->input->post('affaireId') == $this->session->userdata('affaireDiversId')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
             $affaire = $this->managerAffaires->getAffaireById($this->input->post('affaireId'));
             $this->managerAffaires->delete($affaire);
             echo json_encode(array('type' => 'success'));
         endif;
+    }
+
+    public function modAffaireDivers() {
+
+        $affaire = $this->managerAffaires->getAffaireById($this->session->userdata('affaireDiversId'));
+        $affaire->setAffaireCouleur($this->input->post('couleur'));
+        $affaire->setAffaireCouleurSecondaire($this->couleurSecondaire($this->input->post('couleur')));
+        $this->managerAffaires->editer($affaire);
+
+        echo json_encode(array('type' => 'success'));
     }
 
 }

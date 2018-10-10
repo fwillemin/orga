@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-3 col-sm-2" style="text-align:center; padding-left : 25px;">
+    <div class="col-3 col-sm-3" style="text-align:center; padding-left : 30px;">
 
         <?php
         //recherche des semaines et années pour le Next et le Previous
@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <div class="col-9 col-sm-10" style="padding:24px;">
+    <div class="col-9 col-sm-9" style="padding:24px;">
 
         <table class="table table-bordered style1" id="tableHeures">
             <thead>

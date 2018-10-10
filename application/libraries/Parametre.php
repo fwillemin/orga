@@ -16,6 +16,7 @@ class Parametre {
     protected $nbSemainesApres;
     protected $tailleAffectations;
     protected $tranchePointage;
+    protected $genererPaniers;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -69,6 +70,14 @@ class Parametre {
 
     function setTranchePointage($tranchePointage) {
         $this->tranchePointage = $tranchePointage;
+    }
+
+    function getGenererPaniers() {
+        return $this->genererPaniers;
+    }
+
+    function setGenererPaniers($genererPaniers) {
+        $this->genererPaniers = $genererPaniers;
     }
 
 }

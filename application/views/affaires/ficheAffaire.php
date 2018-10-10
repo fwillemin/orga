@@ -32,21 +32,29 @@
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#modAffaire"><i class="fas fa-edit"></i> Modifier</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#deleteAffaire"><i class="fas fa-trash"></i></a>
-            </li>
+            <?php if ($affaire->getAffaireId() != $this->session->userdata('affaireDiversId')) : ?>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#deleteAffaire"><i class="fas fa-trash"></i></a>
+                </li>
+            <?php endif; ?>
         </ul>
 
         <div class="tab-content">
 
             <div class="inPageForm tab-pane" id="modAffaire" style="padding: 10px; margin-bottom:10px;">
-                <?php include('formAffaire.php'); ?>
+                <?php
+                if ($affaire->getAffaireId() == $this->session->userdata('affaireDiversId')):
+                    include('formAffaireDivers.php');
+                else:
+                    include('formAffaire.php');
+                endif;
+                ?>
                 <i class="formClose fas fa-times"></i>
             </div>
 
             <div class="tab-pane" id="deleteAffaire" style="border-left: 4px solid red; font-size:14px; padding:10px;">
 
-                <?php if ($this->ion_auth->in_group(57)): ?>
+<?php if ($this->ion_auth->in_group(57)): ?>
                     <i class="fas fa-sad-tear" style="font-size:40px; color: #900b22;"></i>
                     <br><br><span style="color: #900b22; font-size: 15px; font-weight: bold;">Supprimer une affaire est irréversible.</span>
                     <br>Voici les actions qui se produiront à la suppression de l'affaire :
@@ -79,7 +87,7 @@
                         <br>Etat : <?= $affaire->getAffaireEtatHtml(); ?>
                         <br>Clôturée le <?= $affaire->getAffaireDateCloture() ? $this->cal->dateFrancais($affaire->getAffaireDateCloture()) : '<small class="light">--</small>'; ?>
                         <hr>
-                        <?= nl2br($affaire->getAffaireRemarque()); ?>
+<?= nl2br($affaire->getAffaireRemarque()); ?>
                     </div>
                     <div class = "col-12 col-md-4" style = "padding-right:5px;">
                         <?php if ($affaire->getAffairePlace()):
@@ -92,18 +100,18 @@
                                 <br>Temps de trajet : <?= ceil($affaire->getAffairePlace()->getPlaceDuree() / 60) . 'min'; ?>
                                 <br>Zone de déplacement : <?= $affaire->getAffairePlace()->getPlaceZone(); ?>
                             </small>
-                        <?php endif; ?>
+<?php endif; ?>
                     </div>
                 </div>
             </div>
 
             <div class="tab-pane show active" id="listeChantiersAffaire" style="padding:10px;">
                 <div class="col">
-                    <?php if ($this->ion_auth->in_group(54)): ?>
+<?php if ($this->ion_auth->in_group(54)): ?>
                         <button class="btn btn-outline-primary btn-sm" id="btnAddChantier" style="position: absolute; right: 5px;">
                             <i class="fas fa-plus-square"></i> Ajouter un chantier
                         </button>
-                    <?php endif; ?>
+<?php endif; ?>
                     <h3>Chantiers</h3>
                     <div class="row">
                         <?php
@@ -228,7 +236,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <?php include('application/views/chantiers/formChantier.php'); ?>
+<?php include('application/views/chantiers/formChantier.php'); ?>
             </div>
         </div>
     </div>
@@ -245,7 +253,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <?php include('application/views/clients/formClient.php'); ?>
+<?php include('application/views/clients/formClient.php'); ?>
             </div>
         </div>
     </div>
@@ -264,7 +272,7 @@ Ajout de "Affaire" à la fin des id des champs pour les différencier-->
                 </button>
             </div>
             <div class="modal-body">
-                <?= form_open('clients/addPlace', array('id' => 'formAddPlaceAffaire')); ?>
+<?= form_open('clients/addPlace', array('id' => 'formAddPlaceAffaire')); ?>
                 <input type="hidden" name="addPlaceId" id="addPlaceIdAffaire" value="">
                 <input type="hidden" name="addPlaceClientId" id="addPlaceClientIdAffaire" value="">
                 <div class="input-group mb-3">
@@ -276,7 +284,7 @@ Ajout de "Affaire" à la fin des id des champs pour les différencier-->
                         <i class="fas fa-circle-notch fa-spin formloader" id="loaderAddPlaceAffaire"></i>
                     </div>
                 </div>
-                <?= form_close(); ?>
+<?= form_close(); ?>
             </div>
         </div>
     </div>
@@ -294,7 +302,7 @@ Ajout de "Chantier" à la fin des id des champs pour les différencier-->
                 </button>
             </div>
             <div class="modal-body">
-                <?= form_open('clients/addPlace', array('id' => 'formAddPlaceChantier')); ?>
+<?= form_open('clients/addPlace', array('id' => 'formAddPlaceChantier')); ?>
                 <input type="hidden" name="addPlaceId" id="addPlaceIdChantier" value="">
                 <input type="hidden" name="addPlaceClientId" id="addPlaceClientIdChantier" value="<?= $affaire->getAffaireClient()->getClientId(); ?>">
                 <div class="input-group mb-3">
@@ -306,7 +314,7 @@ Ajout de "Chantier" à la fin des id des champs pour les différencier-->
                         <i class="fas fa-circle-notch fa-spin formloader" id="loaderAddPlaceChantier"></i>
                     </div>
                 </div>
-                <?= form_close(); ?>
+<?= form_close(); ?>
             </div>
         </div>
     </div>

@@ -214,7 +214,7 @@ $(document).ready(function () {
         $('#btnDelIndispo').hide();
     }
 
-    $('.matin, .aprem').on('click', function () {
+    $('.cell.matin, .cell.aprem').on('click', function () {
         affectationRAZ();
         indispoRAZ();
 

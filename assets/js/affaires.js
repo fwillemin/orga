@@ -307,5 +307,19 @@ $(document).ready(function () {
         }
     });
 
+    $('#formModAffaireDivers').on('submit', function (e) {
+        e.preventDefault();
+        $.post(chemin + 'affaires/modAffaireDivers', {couleur: $('#addAffaireCouleur').val()}, function (retour) {
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    window.location.reload()
+                    break;
+            }
+        }, 'json');
+    });
+
 });
 

@@ -20,6 +20,7 @@ class Clients extends My_Controller {
         $clients = $this->managerClients->getClients();
         foreach ($clients as $client):
             $client->hydrateLastAffaire();
+            $client->hydratePlaces();
         endforeach;
 
 

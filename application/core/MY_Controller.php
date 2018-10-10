@@ -217,7 +217,7 @@ class My_Controller extends CI_Controller {
     }
 
     public function couleurSecondaire($couleur) {
-        return $this->own->getCouleurSecondaire($couleur, 100);
+        return $this->own->getCouleurSecondaire($couleur, 200);
     }
 
 }

@@ -100,6 +100,48 @@
                         </tr>
                         <tr>
                             <td>
+                                <strong>Taux de frais généraux</strong>
+                                <br>Ce taux de frais généraux sera appliqué par défaut lors de la création d'un chantier.
+                                <br>Il reste modifiable au moment de la création du chantier.
+                            </td>
+                            <td>
+                                <div class="input-group input-group-sm">
+                                    <input style="text-align: right;" type="text" class="form-control form-control-sm" name="TFG" value="<?= $this->session->userdata('etablissementTFG'); ?>">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Taux horaire moyen</strong>
+                                <br>Ce taux est utilisé pour calculé les marges et la rentabilité estimée d'une affaire et de ses chantiers avant leur réalisation
+                                <br>Il reste modifiable au moment de la création d'un chantier.
+                            </td>
+                            <td>
+                                <div class="input-group input-group-sm">
+                                    <input style="text-align: right;" type="text" class="form-control form-control-sm" name="THM" value="<?= $this->session->userdata('etablissementTHM'); ?>">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">€ /heure</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Générer les paniers dans les feuilles de pointages</strong>
+                                <br>Calcul du déclenchement des paniers. Si la valeur est à "NON", les cases "PANIER" resteront vides lors de la génération des feuilles de pointage.
+                            </td>
+                            <td>
+                                <select name="genererPaniers" id="genererPaniers" class="form-control form-control-sm" style="text-align: right;">
+                                    <option value="1" <?= $this->session->userdata('parametres')['genererPaniers'] == 1 ? 'selected' : ''; ?> >Oui</option>
+                                    <option value="0" <?= $this->session->userdata('parametres')['genererPaniers'] == 0 ? 'selected' : ''; ?> >Non</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                             </td>
                             <td>
                                 <button type="submit" class="btn btn-primary btn-sm" style="width:100%;">

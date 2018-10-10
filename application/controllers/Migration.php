@@ -28,7 +28,7 @@ class Migration extends My_Controller {
         if (!$rsId):
             echo 'Vous devez renseigner un ID RS valide;';
         else:
-            $this->db->query("DELETE FROM `raisonsSociales` WHERE rsId = " . $rsId);
+            $this->db->query("DELETE FROM `raisonsSociales`");
             $this->db->query("ALTER TABLE `raisonsSociales` auto_increment = 1;");
             $this->db->query("ALTER TABLE `etablissements` auto_increment = 1;");
             $this->db->query("ALTER TABLE `users` auto_increment = 1;");
@@ -50,19 +50,21 @@ class Migration extends My_Controller {
         endif;
     }
 
-    public function migrerRS($rsId = null, $migrationPlace = 0) {
+    public function migrerRS($rsId = null, $domaine = null, $migrationPlace = 0) {
 
         $this->resetDB($rsId);
 
         if (!$rsId):
-            echo 'Vous devez renseigner un ID RS valide;';
+            echo 'Vous devez renseigner un ID RS valide';
+        elseif (!$domaine):
+            echo 'Vous devez renseigner un domaine valide';
         else:
 
             $rs = $this->importRS($rsId);
             $etablissement = $this->importEtablissement($rs);
 
             /* Utilisateurs administratifs */
-            $this->importUsers($etablissement);
+            $identifiants = $this->importUsers($etablissement, $domaine);
             $this->importFournisseurs($etablissement);
             $this->importHoraires($etablissement);
             $this->importPersonnels($etablissement);
@@ -70,7 +72,12 @@ class Migration extends My_Controller {
             $this->importCategories($rs);
             $this->importDossiers($etablissement, $migrationPlace);
 
-            echo 'Import terminé avec succès !';
+            /* Mise à jour du dossier DIVERS */
+            $divers = $this->db->select('*')->from('affaires')->where('affaireOriginId', $etablissement->getEtablissementAffaireDiversId())->get()->result();
+            $etablissement->setEtablissementAffaireDiversId($divers[0]->affaireId);
+            $this->managerEtablissements->editer($etablissement);
+
+            echo 'Import terminé avec succès !<br>Connectez-vous avec les identifiants : ' . $identifiants;
 
         endif;
     }
@@ -83,7 +90,7 @@ class Migration extends My_Controller {
         else:
             $arrayRs = array(
                 'rsOriginId' => $rsOLD->id,
-                'rsNom' => $rsOLD->nom,
+                'rsNom' => strtoupper($rsOLD->nom),
                 'rsInscription' => $rsOLD->rs_inscription,
                 'rsMoisFiscal' => $rsOLD->rs_mois_fiscal,
                 'rsCategorieNC' => $rsOLD->rs_categorieNC
@@ -103,7 +110,7 @@ class Migration extends My_Controller {
             $arrayEta = array(
                 'etablissementOriginId' => $etaOLD->id,
                 'etablissementRsId' => $rs->getRsId(),
-                'etablissementNom' => $etaOLD->nom,
+                'etablissementNom' => strtoupper($etaOLD->nom),
                 'etablissementAdresse' => $etaOLD->adresse,
                 'etablissementCp' => $etaOLD->cp,
                 'etablissementVille' => $etaOLD->ville,
@@ -112,7 +119,7 @@ class Migration extends My_Controller {
                 'etablissementEmail' => $etaOLD->email,
                 'etablissementGps' => $etaOLD->gps,
                 'etablissementStatut' => $etaOLD->statut,
-                'etablissementChantierDiversId' => $etaOLD->id_chantier_divers,
+                'etablissementAffaireDiversId' => $etaOLD->id_chantier_divers,
                 'etablissementMessage' => $etaOLD->msg,
                 'etablissementTauxFraisGeneraux' => $etaOLD->fraisGeneraux,
                 'etablissementTauxHoraireMoyen' => $etaOLD->txHoraireMoyen
@@ -128,7 +135,8 @@ class Migration extends My_Controller {
                 'nbSemainesApres' => 2,
                 'tranchePointage' => 30,
                 'tailleAffectations' => 2,
-                'messageEtablissement' => ''
+                'messageEtablissement' => '',
+                'genererPaniers' => 1
                     )
             );
             $this->managerParametres->ajouter($param);
@@ -162,20 +170,19 @@ class Migration extends My_Controller {
 
      */
 
-    private function importUsers(Etablissement $etablissement) {
+    private function importUsers(Etablissement $etablissement, $domaine) {
 
-        $domaine = strtolower(explode('@', $etablissement->getEtablissementEmail())[1]);
+        //$domaine .= '.com';
         $i = 1;
         foreach ($this->db->select('*')->from('V1_user')->where('id_etablissement', $etablissement->getEtablissementOriginId())->get()->result() as $user):
 
             if ($user->niveau != 5):
                 $email = str_replace(array(' ', 'é', 'è'), array('', 'e', 'e'), strtolower($user->nom) . '.' . strtolower($user->prenom)) . '@' . $domaine;
-//                $identity = str_replace(array(' ', 'é', 'è'), array('', 'e', 'e'), strtolower($user->nom) . '.' . strtolower($user->prenom)) . '@' . $domaine;
                 $mdp = $this->getPassword();
 
                 $additional_data = array(
-                    'userNom' => $user->nom,
-                    'userPrenom' => $user->prenom,
+                    'userNom' => strtoupper($user->nom),
+                    'userPrenom' => ucfirst($user->prenom),
                     'userEtablissementId' => $etablissement->getEtablissementId(),
                     'userClairMdp' => $mdp,
                     'userCode' => 0000
@@ -191,9 +198,13 @@ class Migration extends My_Controller {
                 endif;
                 $this->ion_auth->register($email, $mdp, $email, $additional_data, $group);
                 $i++;
+                if ($user->niveau == 1):
+                    $identifiants = $email . '@' . $mdp;
+                endif;
             endif;
 
         endforeach;
+        return $identifiants;
     }
 
     private function importFournisseurs(Etablissement $etablissement) {
@@ -461,7 +472,7 @@ class Migration extends My_Controller {
             $arrayCategorie = array(
                 'categorieOriginId' => $cat->id_categorie,
                 'categorieRsId' => $rs->getRsId(),
-                'categorieNom' => $cat->nom
+                'categorieNom' => strtoupper($cat->nom)
             );
             $categorie = new Categorie($arrayCategorie);
             $this->managerCategories->ajouter($categorie);
@@ -541,14 +552,14 @@ class Migration extends My_Controller {
 
                         $dataClient = array(
                             'clientEtablissementId' => $etablissement->getEtablissementId(),
-                            'clientNom' => mb_strtoupper($dossier->client),
-                            'clientAdresse' => $dossier->adresse,
-                            'clientCp' => $dossier->cp,
-                            'clientVille' => $dossier->ville,
+                            'clientNom' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? 'DIVERS - ' . $etablissement->getEtablissementNom() : mb_strtoupper($dossier->client),
+                            'clientAdresse' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? $etablissement->getEtablissementAdresse() : $dossier->adresse,
+                            'clientCp' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? $etablissement->getEtablissementCp() : $dossier->cp,
+                            'clientVille' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? $etablissement->getEtablissementVille() : $dossier->ville,
                             'clientPays' => 'FRANCE',
-                            'clientFixe' => ( strlen($dossier->tel) > 9 ? $dossier->tel : ''),
+                            'clientFixe' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? $etablissement->getEtablissementTelephone() : ( strlen($dossier->tel) > 9 ? $dossier->tel : ''),
                             'clientPortable' => '',
-                            'clientEmail' => $dossier->email
+                            'clientEmail' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? $etablissement->getEtablissementEmail() : $dossier->email
                         );
                         $client = new Client($dataClient);
                         $this->managerClients->ajouter($client);
@@ -582,14 +593,14 @@ class Migration extends My_Controller {
             else:
                 $dataClient = array(
                     'clientEtablissementId' => $etablissement->getEtablissementId(),
-                    'clientNom' => mb_strtoupper($dossier->client),
-                    'clientAdresse' => $dossier->adresse,
-                    'clientCp' => $dossier->cp,
-                    'clientVille' => $dossier->ville,
+                    'clientNom' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? 'DIVERS - ' . $etablissement->getEtablissementNom() : mb_strtoupper($dossier->client),
+                    'clientAdresse' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? $etablissement->getEtablissementAdresse() : $dossier->adresse,
+                    'clientCp' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? $etablissement->getEtablissementCp() : $dossier->cp,
+                    'clientVille' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? $etablissement->getEtablissementVille() : $dossier->ville,
                     'clientPays' => 'FRANCE',
-                    'clientFixe' => ( strlen($dossier->tel) > 9 ? $dossier->tel : ''),
+                    'clientFixe' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? $etablissement->getEtablissementTelephone() : ( strlen($dossier->tel) > 9 ? $dossier->tel : ''),
                     'clientPortable' => '',
-                    'clientEmail' => $dossier->email
+                    'clientEmail' => ($dossier->dossierId == $etablissement->getEtablissementAffaireDiversId()) ? $etablissement->getEtablissementEmail() : $dossier->email
                 );
                 $client = new Client($dataClient);
                 $this->managerClients->ajouter($client);
@@ -832,45 +843,61 @@ class Migration extends My_Controller {
                 $etat = 1;
             endif;
 
-            if ($migrationPlace == 1):
-
-                similar_text(strtoupper($affect->affectationAdresse), strtoupper(explode(',', $affaire->getAffairePlace()->getPlaceAdresse())[0]), $percent);
-                if ($percent < 60 && $affect->affectationAdresse != ''):
-                    /* On créé une nouvelle place pour ce client */
-                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ------------ Affect ' . $affect->id . ' -- ' . $percent . '% ----');
-                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Nouvelle place pour le client : ' . $affaire->getAffaireClientId());
-                    $etablissement = $this->managerEtablissements->getEtablissementById($affaire->getAffaireEtablissementId());
-                    $result = $this->maps->geocode(urlencode($affect->affectationAdresse . ', ' . $affect->affectationCp . ' ' . $affect->affectationVille . ', FRANCE'), $etablissement);
-                    if ($result):
-
-                        $volOiseau = $this->maps->distanceVolOiseau(explode(',', $etablissement->getEtablissementGps())[0], explode(',', $etablissement->getEtablissementGps())[1], $result['latitude'], $result['longitude']);
-                        $zone = floor($volOiseau / 10000) + 1;
-                        if ($zone > 6):
-                            $zone = 6;
-                        endif;
-
-                        $arrayPlace = array(
-                            'placeClientId' => $affaire->getAffaireClientId(),
-                            'placeEtablissementId' => $etablissement->getEtablissementId(),
-                            'placeLat' => $result['latitude'],
-                            'placeLon' => $result['longitude'],
-                            'placeAdresse' => $result['adresse'],
-                            'placeVille' => $result['ville'],
-                            'placeGoogleId' => $result['placeGoogleId'],
-                            'placeDistance' => $result['distance'],
-                            'placeDuree' => $result['duree'],
-                            'placeZone' => $zone,
-                            'placeVolOiseau' => $volOiseau
-                        );
-
-                        $place = new Place($arrayPlace);
-                        $this->managerPlaces->ajouter($place);
-                    else:
-                        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
-                    endif;
-                endif;
-
-            endif;
+//            if ($migrationPlace == 1):
+//
+//                similar_text(strtoupper($affect->affectationAdresse), strtoupper(explode(',', $affaire->getAffairePlace()->getPlaceAdresse())[0]), $percent);
+//                if ($percent < 60 && $affect->affectationAdresse != ''):
+//                    /* On créé une nouvelle place pour ce client */
+//                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ------------ Affect ' . $affect->id . ' -- ' . $percent . '% ----');
+//                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Nouvelle place pour le client : ' . $affaire->getAffaireClientId());
+//                    $etablissement = $this->managerEtablissements->getEtablissementById($affaire->getAffaireEtablissementId());
+//                    $result = $this->maps->geocode(urlencode($affect->affectationAdresse . ', ' . $affect->affectationCp . ' ' . $affect->affectationVille . ', FRANCE'), $etablissement);
+//                    if ($result):
+//                        $selectedPlace = false;
+//                        /* On recherche la même place qui existerai pour ce client */
+//                        $affaire->hydrateClient();
+//                        $affaire->getAffaireClient()->hydratePlaces();
+//                        foreach ($affaire->getAffaireClient()->getClientPlaces() as $place):
+//                            if ($place->getPlaceGoogleId() == $result['placeGoogleId']):
+//                                $selectedPlace = $place;
+//                                continue;
+//                            endif;
+//                        endforeach;
+//
+//                        if (!$selectedPlace):
+//
+//                            $volOiseau = $this->maps->distanceVolOiseau(explode(',', $etablissement->getEtablissementGps())[0], explode(',', $etablissement->getEtablissementGps())[1], $result['latitude'], $result['longitude']);
+//                            $zone = floor($volOiseau / 10000) + 1;
+//                            if ($zone > 6):
+//                                $zone = 6;
+//                            endif;
+//
+//                            $arrayPlace = array(
+//                                'placeClientId' => $affaire->getAffaireClientId(),
+//                                'placeEtablissementId' => $etablissement->getEtablissementId(),
+//                                'placeLat' => $result['latitude'],
+//                                'placeLon' => $result['longitude'],
+//                                'placeAdresse' => $result['adresse'],
+//                                'placeVille' => $result['ville'],
+//                                'placeGoogleId' => $result['placeGoogleId'],
+//                                'placeDistance' => $result['distance'],
+//                                'placeDuree' => $result['duree'],
+//                                'placeZone' => $zone,
+//                                'placeVolOiseau' => $volOiseau
+//                            );
+//
+//                            $selectedPlace = new Place($arrayPlace);
+//                            $this->managerPlaces->ajouter($selectedPlace);
+//                        endif;
+//                    else:
+//                        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
+//                    endif;
+//                else:
+//                    $selectedPlace = $affaire->getAffairePlace();
+//                endif;
+//            else:
+//                $selectedPlace = $affaire->getAffairePlace();
+//            endif;
 
             $personnel = $this->managerPersonnels->getPersonnelByIdMigration($affect->id_personnel);
             if ($personnel):

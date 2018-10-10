@@ -65,7 +65,19 @@ class Organibat extends My_Controller {
             $parametre->setNbSemainesApres($this->input->post('nbSemainesApres'));
             $parametre->setTranchePointage($this->input->post('tranchePointage'));
             $parametre->setTailleAffectations($this->input->post('tailleAffectations'));
+            $parametre->setGenererPaniers($this->input->post('genererPaniers'));
             $this->managerParametres->editer($parametre);
+
+            $etablissement = $this->managerEtablissements->getEtablissementById($this->session->userdata('etablissementId'));
+            if (is_numeric($this->input->post('TFG'))):
+                $etablissement->setEtablissementTauxFraisGeneraux($this->input->post('TFG'));
+                $this->session->set_userdata('etablissementTFG', $etablissement->getEtablissementTauxFraisGeneraux());
+            endif;
+            if (is_numeric($this->input->post('THM'))):
+                $etablissement->setEtablissementTauxHoraireMoyen($this->input->post('THM'));
+                $this->session->set_userdata('etablissementTHM', $etablissement->getEtablissementTauxHoraireMoyen());
+            endif;
+            $this->managerEtablissements->editer($etablissement);
 
             /* Mise à jour de la session */
             $this->session->unset_userdata('parametres');

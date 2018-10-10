@@ -112,11 +112,27 @@ class Cal {
             if ($decalage % 2 != 0 && $affectation->getAffectationDebutMoment() == 2):
                 $debutDate += 86400;
             endif;
+            switch (date('N', $debutDate)):
+                case 6:
+                    $debutDate += 172800;
+                    break;
+                case 7:
+                    $debutDate += 86400;
+                    break;
+            endswitch;
         else:
             $debutDate = $affectation->getAffectationDebutDate() + ceil($decalage / 2) * 86400;
             if ($decalage % 2 != 0 && $affectation->getAffectationDebutMoment() == 1):
                 $debutDate -= 86400;
             endif;
+            switch (date('N', $debutDate)):
+                case 6:
+                    $debutDate -= 86400;
+                    break;
+                case 7:
+                    $debutDate -= 172800;
+                    break;
+            endswitch;
         endif;
 
 

@@ -11,7 +11,7 @@ log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegar
     <div class="col-12" style="margin-bottom: 20px;">
 
         <div class="form-row">
-            <div class="col-3 offset-1">
+            <div class="col-2 offset-1">
                 <label for="pointagePersonnelId">Sélectionnez du personnel</label><br>
                 <select name="pointagePersonnelId" id="pointagePersonnelId" class="selectpicker" data-width="100%" required title="Choisissez un personnel">
                     <?php
@@ -56,7 +56,7 @@ log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegar
                     <i class="fas fa-search"></i> Rechercher
                 </button>
             </div>
-            <div class="col-6 col-sm-3 offset-sm-1" style="margin-top:20px; text-align: right;"  data-personnelid="<?= $this->uri->segment(3); ?>" data-periode="<?= $this->uri->segment(4); ?>">
+            <div class="col-6 col-sm-5" style="margin-top:20px; text-align: right;"  data-personnelid="<?= $this->uri->segment(3); ?>" data-periode="<?= $this->uri->segment(4); ?>">
 
                 <button id="btnReleveSave" class="btn btn-primary btn-sm">
                     <i class="fas fa-save"></i> Enregistrer la feuille
@@ -284,7 +284,7 @@ log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegar
                                     ?>" >
                                 </td>
                             <?php endif; ?>
-                            <td width="50"><input type="text" class="inputReleve inputCenter" value="<?= (!$absAprem && !$absMatin && $nbMinutesJour > 0) ? '1' : ''; ?>" ></td>
+                            <td width="50"><input type="text" class="inputReleve inputCenter" value="<?= ($this->session->userdata('parametres')['genererPaniers'] == 1 && !$absAprem && !$absMatin && $nbMinutesJour > 0) ? '1' : ''; ?>" ></td>
                             <td width="50"><input class="inputReleve inputCenter" type="text" value="<?= $isFormation ? 'X' : ''; ?>" ></td>
                             <td width="300">
                                 <input class="inputReleve" type="text" value="<?= $chantiersJour; ?>" >

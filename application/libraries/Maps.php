@@ -18,7 +18,13 @@ class Maps {
             $latitude = isset($response->results[0]->geometry->location->lat) ? $response->results[0]->geometry->location->lat : "";
             $longitude = isset($response->results[0]->geometry->location->lng) ? $response->results[0]->geometry->location->lng : "";
             $adresseFormatee = isset($response->results[0]->formatted_address) ? $response->results[0]->formatted_address : "";
-            $ville = isset($response->results[0]->address_components[2]) ? $response->results[0]->address_components[2]->long_name : "";
+            $ville = '';
+            foreach ($response->results[0]->address_components as $details):
+                if ($details->types[0] == 'locality'):
+                    $ville = $details->long_name;
+                    continue;
+                endif;
+            endforeach;
             $placeGoogleId = isset($response->results[0]->place_id) ? $response->results[0]->place_id : "";
 
             if ($latitude && $longitude && $adresseFormatee):

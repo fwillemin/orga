@@ -20,6 +20,7 @@ class Model_parametres extends MY_model {
                 ->set('nbSemainesApres', $parametre->getNbSemainesApres())
                 ->set('tranchePointage', $parametre->getTranchePointage())
                 ->set('tailleAffectations', $parametre->getTailleAffectations())
+                ->set('genererPaniers', $parametre->getGenererPaniers())
                 ->insert($this->table);
     }
 
@@ -34,6 +35,7 @@ class Model_parametres extends MY_model {
                 ->set('nbSemainesApres', $parametre->getNbSemainesApres())
                 ->set('tranchePointage', $parametre->getTranchePointage())
                 ->set('tailleAffectations', $parametre->getTailleAffectations())
+                ->set('genererPaniers', $parametre->getGenererPaniers())
                 ->where('parametreEtablissementId', $parametre->getParametreEtablissementId())
                 ->update($this->table);
         return $this->db->affected_rows();
