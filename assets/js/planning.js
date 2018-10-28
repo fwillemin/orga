@@ -768,8 +768,25 @@ $(document).ready(function () {
             }
         }, 'json');
     });
-    $('#btnDecaleAffectation').on('click', function () {
+    $('#btnDecaleAffectationFutur').on('click', function () {
         $.post(chemin + 'planning/deplaceAffectation', {affectationId: $('#addAffectationId').val(), cible: $('#decalageCible').val(), decalage: $('#decalageQte').val()}, function (retour) {
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    for (i = 0; i < retour.eraseIds.length; i++) {
+                        $('.affectation[data-affectationid="' + retour.eraseIds[i] + '"]').remove();
+                    }
+                    $('#divPlanning').append(retour.HTML);
+                    refreshPlanningUI();
+                    $('#modalAffectation').modal('hide');
+                    break;
+            }
+        }, 'json');
+    });
+    $('#btnDecaleAffectationPasse').on('click', function () {
+        $.post(chemin + 'planning/deplaceAffectation', {affectationId: $('#addAffectationId').val(), cible: $('#decalageCible').val(), decalage: '-' + $('#decalageQte').val()}, function (retour) {
             switch (retour.type) {
                 case 'error':
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});

@@ -11,13 +11,12 @@
         <!-- Le styles -->
         <link rel="icon" type="image/png" href="<?= base_url('assets/img/favicon.png'); ?>" >
 
-        <!--<link rel="stylesheet" type="text/css" href="<?= base_url('assets/leaflet/leaflet.css'); ?>" >-->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-colorpicker.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-select.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-datepicker3.min.css'); ?>" >
-
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 
         <link rel="stylesheet" href="<?= base_url('assets/MegaNavbarBS4/assets/css/MegaNavbarBS4.css'); ?>">
         <link rel="stylesheet" href="<?= base_url('assets/MegaNavbarBS4/assets/css/skins/navbar-dark.css'); ?>">
@@ -55,6 +54,31 @@
                                 </a>
                             </div>
                             <div class="nav-divider"></div>
+                            <?php if ($this->ion_auth->in_group(array(90, 91))): ?>
+                                <div class="nav-item">
+                                    <a class="nav-link" href="<?= site_url('contacts/liste'); ?>">
+                                        <i class="fab fa-medapps"></i> Contacts
+                                    </a>
+                                </div>
+                                <div class="nav-divider"></div>
+                            <?php endif; ?>
+                            <div class="nav-item dropdown">
+                                <a class="dropdown-toggle collapsed" href="#menu_clients" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user-tie"></i> Clients</a>
+                                <div class="dropdown-menu col-xl-2 collapse animated" id="menu_clients" style="max-width: 280px;">
+                                    <div class="dropdown-header">Gestion des clients</div>
+                                    <div class="dropdown-divider m-0"></div>
+                                    <div class="dropdown-item">
+                                        <a href="<?= site_url('clients/liste/ajouter'); ?>">
+                                            <i class="fas fa-plus-square"></i> Ajouter un client
+                                        </a>
+                                    </div>
+                                    <div class="dropdown-item">
+                                        <a href="<?= site_url('clients/liste'); ?>">
+                                            <i class="fas fa-list"></i> Liste
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="nav-item dropdown">
                                 <a class="dropdown-toggle collapsed" href="#menu_personnels" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-file-signature"></i> Affaires</a>
                                 <div class="dropdown-menu col-xl-2 collapse animated" id="menu_personnels" style="max-width: 280px;">
@@ -78,23 +102,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="nav-item dropdown">
-                                <a class="dropdown-toggle collapsed" href="#menu_clients" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user-tie"></i> Clients</a>
-                                <div class="dropdown-menu col-xl-2 collapse animated" id="menu_clients" style="max-width: 280px;">
-                                    <div class="dropdown-header">Gestion des clients</div>
-                                    <div class="dropdown-divider m-0"></div>
-                                    <div class="dropdown-item">
-                                        <a href="<?= site_url('clients/liste/ajouter'); ?>">
-                                            <i class="fas fa-plus-square"></i> Ajouter un client
-                                        </a>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <a href="<?= site_url('clients/liste'); ?>">
-                                            <i class="fas fa-list"></i> Liste
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+
                             <div class="nav-divider"></div>
                             <div class="nav-item dropdown">
                                 <a class="dropdown-toggle collapsed" href="#menu_pointages" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-hourglass-end"></i> Pointages</a>
@@ -113,7 +121,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="nav-divider"></div>
+                        </div>
+                        <div class="nav navbar-nav navbar-right">
                             <?php if ($this->ion_auth->in_group(array(61))): ?>
                                 <div class="nav-item">
                                     <a class="nav-link" href="<?= site_url('fournisseurs/listeFst'); ?>">
@@ -122,19 +131,9 @@
                                 </div>
                                 <div class="nav-divider"></div>
                             <?php endif; ?>
-
-                        </div>
-                        <div class="nav navbar-nav navbar-right">
-
-                            <form class="form-inline mr-0" >
-                                <input class="form-control form-control-sm mr-sm-2 " type="search" placeholder="Placeholder" aria-label="Search">
-                                <button class="btn btn-default btn-sm my-2 my-sm-0" type="submit">Button</button>
-                            </form>
-                            <div class="nav-separator"></div>
-
-                            <!--SHOPPING CART-->
+                            <div class="nav-divider"></div>
                             <div class="nav-item dropdown mega-md">
-                                <a data-toggle="collapse" href="#parametrages" class="dropdown-toggle collapsed"><i class="fa fa-cog fa-spin" style="font-size:20px; color: lightslategray;"></i><span class="d-expanded-none"> Paramètres</span></a>
+                                <a data-toggle="collapse" href="#parametrages" class="dropdown-toggle collapsed"><i class="fa fa-cogs" style="font-size:20px; color: lightslategray;"></i><span class="d-expanded-none"> Paramètres</span></a>
                                 <div class="dropdown-menu col-sm-9 col-lg-8"  role="menu" id="parametrages">
                                     <div class="d-flex">
                                         <div class="col-12 col-md-8">

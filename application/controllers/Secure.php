@@ -42,6 +42,7 @@ class Secure extends CI_Controller {
                 $etablissement = $this->managerEtablissements->getEtablissementById($user->getUserEtablissementId());
                 $this->session->set_userdata(
                         array(
+                            'loaderIcon' => 'fa-broom',
                             'utilisateurPrenom' => $user->getUserPrenom(),
                             'utilisateurNom' => $user->getUserNom(),
                             'rsId' => $etablissement->getEtablissementRsId(),

@@ -1,6 +1,8 @@
 <?php
 
 $config = array(
+    'error_prefix' => '',
+    'error_suffix' => '<br>',
     /* Connexion */
     'identification' => array(
         array(
@@ -851,6 +853,87 @@ $config = array(
             'field' => 'pointageHTML',
             'label' => 'HTML du pointage',
             'rules' => 'trim'
+        )
+    ),
+    /* get Contact */
+    'getContact' => array(
+        array(
+            'field' => 'contactId',
+            'label' => 'ID Contact',
+            'rules' => 'required|callback_existContact'
+        )
+    ),
+    /* Add Contact */
+    'addContact' => array(
+        array(
+            'field' => 'addContactId',
+            'label' => 'ID Contact',
+            'rules' => 'callback_existContact'
+        ),
+        array(
+            'field' => 'addContactDate',
+            'label' => 'Date du contact',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'addContactMode',
+            'label' => 'Mode de contact',
+            'rules' => 'required|in_list[1,2,3]'
+        ),
+        array(
+            'field' => 'addContactNom',
+            'label' => 'Nom du contact',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addContactAdresse',
+            'label' => 'Adresse du contact',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addContactCp',
+            'label' => 'Code postal du contact',
+            'rules' => 'trim'
+        ),
+        array(
+            'field' => 'addContactVille',
+            'label' => 'Ville du contact',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addContactTelephone',
+            'label' => 'Téléphone du contact',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addContactEmail',
+            'label' => 'Email du contact',
+            'rules' => 'trim|valid_email'
+        ),
+        array(
+            'field' => 'addContactObjet',
+            'label' => 'Objet du contact',
+            'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addContactCategorieId',
+            'label' => 'Catégorie du contact',
+            'rules' => 'trim|callback_existCategorie'
+        ),
+        array(
+            'field' => 'addContactSource',
+            'label' => 'Source du contact',
+            'rules' => 'trim|required|in_list[1,2,3,4,5,6]'
+        ),
+        array(
+            'field' => 'addContactCommercialId',
+            'label' => 'Commercial affecté au contact',
+            'rules' => 'callback_existUtilisateur'
+        ),
+        array(
+            'field' => 'addContactEtat',
+            'label' => 'Mode de contact',
+            'rules' => 'in_list[1,2,3,4,5]'
         )
     )
 );

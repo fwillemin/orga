@@ -22,6 +22,7 @@ class My_Controller extends CI_Controller {
                 $this->largeur = 40;
                 break;
         endswitch;
+        $this->messageDroitsInsuffisants = 'Vous ne possédez pas les droits nécessaires à cette action.';
     }
 
     public function passwordCheck($str) {
@@ -203,6 +204,15 @@ class My_Controller extends CI_Controller {
         endif;
     }
 
+    public function existContact($contactId) {
+        $this->form_validation->set_message('existContact', 'Ce contact est introuvable.');
+        if ($this->managerContacts->count(array('contactId' => $contactId)) == 1 || !$contactId) :
+            return true;
+        else :
+            return false;
+        endif;
+    }
+
     public function isPortable($numero) {
         $this->form_validation->set_message('isPortable', 'Le numéro de portable doit commencer par 06 ou 07 ou +336 ou +337');
         if (preg_match("/^((\+|00)33\s?|0)[67](\s?\d{2}){4}$/", $numero) || !$numero):
@@ -217,7 +227,7 @@ class My_Controller extends CI_Controller {
     }
 
     public function couleurSecondaire($couleur) {
-        return $this->own->getCouleurSecondaire($couleur, 200);
+        return $this->own->getCouleurSecondaire($couleur, 120);
     }
 
 }

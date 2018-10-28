@@ -9,7 +9,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-12 col-sm-8">
+            <div class="col-12 col-xl-9">
                 Les modifications des paramètres ne sont pas rétroactives.
                 <table class="table table-bordered table-sm style1" id="tableHoraires">
                     <thead>
@@ -19,7 +19,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?= form_open('', array('id' => 'formModParametres')); ?>
+                        <?= form_open('organibat/modParametres', array('id' => 'formModParametres')); ?>
                         <tr>
                             <td>
                                 <strong>Tranche pointage</strong>

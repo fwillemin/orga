@@ -135,6 +135,22 @@ class Chantiers extends My_Controller {
         endif;
     }
 
+    public function reouvertureChantier() {
+        if (!$this->ion_auth->in_group(54)):
+            echo json_encode(array('type' => 'error', 'message' => 'Vous n\'avez pas les droits pour clôturer un chantier'));
+        elseif (!$this->form_validation->run('getChantier')) :
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+
+            /* Cloture du chantier */
+            $chantier = $this->managerChantiers->getChantierById($this->input->post('chantierId'));
+            $chantier->setChantierEtat(1);
+            $this->managerChantiers->editer($chantier);
+            /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
+            echo json_encode(array('type' => 'success'));
+        endif;
+    }
+
     public function delChantier() {
 
         if (!$this->ion_auth->in_group(54) || !$this->form_validation->run('getChantier')):

@@ -1,8 +1,16 @@
 $(document).ready(function () {
     
     /* Selection de l'onglet à activer */    
-    if( window.location.href.substr(window.location.href.lastIndexOf('/') + 1).charAt(0) === 'a' ){
-        $('#tabAchats').tab('show');
+    switch( window.location.href.substr(window.location.href.lastIndexOf('/') + 1).charAt(0) ){
+        case 'a':
+            $('#tabAchats').tab('show');
+            break;
+        case 'h':
+            $('#tabHeures').tab('show');
+            break;
+        case 'b':
+            $('#tabBoard').tab('show');
+            break;
     }    
 
     $('#selectCouleurChantier').colorpicker({
@@ -169,6 +177,65 @@ $(document).ready(function () {
                                 break;
                             case 'success':
                                 window.location.assign(chemin + 'affaires/ficheAffaire/' + $('#addChantierAffaireId').val());
+                                break;
+                        }
+                    }, 'json');
+                }
+
+            },
+            cancel: {
+                btnClass: 'btn-red',
+                text: 'Annuler'
+            }
+        }
+    });
+    
+    $('#btnClotureChantier').confirm({
+        title: 'Clôture du chantier ?',
+        content: 'Une fois clôturé, il ne sera plus possible de modifier les achats, d\'ajouter ou de modifier des affectations ou encore de saisir des heures.',
+        type: 'blue',
+        theme: 'material',
+        buttons: {
+            confirm: {
+                btnClass: 'btn-green',
+                text: 'Ok, je clôture !',
+                action: function () {
+                    $.post(chemin + 'chantiers/clotureChantier', {chantierId: $('#addChantierId').val()}, function (retour) {
+                        switch (retour.type) {
+                            case 'error':
+                                $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                                break;
+                            case 'success':
+                                window.location.assign(chemin + 'chantiers/ficheChantier/' + $('#addChantierAffaireId').val());
+                                break;
+                        }
+                    }, 'json');
+                }
+
+            },
+            cancel: {
+                btnClass: 'btn-red',
+                text: 'Annuler'
+            }
+        }
+    });
+    $('#btnReouvertureChantier').confirm({
+        title: 'Réouverture du chantier ?',
+        content: 'L\'affaire de ce chantier repassera dans l\'état "En cours"',
+        type: 'blue',
+        theme: 'material',
+        buttons: {
+            confirm: {
+                btnClass: 'btn-green',
+                text: 'Réouverture',
+                action: function () {
+                    $.post(chemin + 'chantiers/reouvertureChantier', {chantierId: $('#addChantierId').val()}, function (retour) {
+                        switch (retour.type) {
+                            case 'error':
+                                $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                                break;
+                            case 'success':
+                                window.location.assign(chemin + 'chantiers/ficheChantier/' + $('#addChantierAffaireId').val());
                                 break;
                         }
                     }, 'json');

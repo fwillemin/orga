@@ -40,7 +40,6 @@ and open the template in the editor.
     table {
         font-size: 13px;
     }
-
     .modal-header {
         background-color: $noir;
         color: #FFF;
@@ -48,6 +47,9 @@ and open the template in the editor.
         border: 1px solid #FFF;
         height: 40px;
         padding: 5px 10px;
+    }
+    .modal-body {
+        background-color: #fbfcfd;        
     }
     .close {
         color: lightgreen;
@@ -71,10 +73,12 @@ and open the template in the editor.
         background-color: lighten($background,10);
         position: relative;
     }
-
     .formloader {
         display: none;
-        color: $rose;
+        i {
+            color: $noir;
+            opacity : 0.6;
+        }
     }
     .formClose {
         position: absolute;
@@ -191,10 +195,11 @@ and open the template in the editor.
         }
     }
     .progress {
-        height: 3px;
+        height: 10px;
+        font-size : 9px;
     }
     .progress-bar {
-        height: 3px;
+        height: 10px;
         @include border-radius(0px);
     }
     #datepicker-container {

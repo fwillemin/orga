@@ -472,7 +472,7 @@ class Migration extends My_Controller {
             $arrayCategorie = array(
                 'categorieOriginId' => $cat->id_categorie,
                 'categorieRsId' => $rs->getRsId(),
-                'categorieNom' => strtoupper($cat->nom)
+                'categorieNom' => mb_strtoupper($cat->nom)
             );
             $categorie = new Categorie($arrayCategorie);
             $this->managerCategories->ajouter($categorie);

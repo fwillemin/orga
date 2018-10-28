@@ -49,7 +49,7 @@
                             <?php
                             // génération des semaines du planning
                             for ($i = 0; $i < $nbSemainesPlanning; $i++):
-                                $jourEncours = $premierJourPlanning + (8 + $i * 7) * 86400;
+                                $jourEncours = $premierJourPlanning + ($i * 7) * 86400;
                                 ?>
                                 <td class="cellSemaines" colspan="14" align="center" style="width: <?= 14 * ($this->largeur + 1.5); ?>px;">
                                     <?= $this->cal->dateFrancais($jourEncours, 'Ma') . ' | Semaine ' . date('W', $jourEncours); ?>
@@ -387,7 +387,10 @@ if ($this->ion_auth->in_group(array(55))):
                         </div>
                         <div class="col">
                             <br>
-                            <button class="btn btn-outline-dark btn-sm" type="button" id="btnDecaleAffectation">
+                            <button class="btn btn-outline-dark btn-sm" type="button" id="btnDecaleAffectationPasse">
+                                <i class="fas fa-arrow-alt-circle-left"></i>
+                            </button>
+                            <button class="btn btn-outline-dark btn-sm" type="button" id="btnDecaleAffectationFutur">
                                 <i class="fas fa-arrow-alt-circle-right"></i>
                             </button>
                         </div>
@@ -397,111 +400,113 @@ if ($this->ion_auth->in_group(array(55))):
             </div>
         </div>
     </div>
+</div>
 
-    <?php
-    if ($this->ion_auth->in_group(array(61))):
-        ?>
-        <!--Modal Livraisons-->
-        <div class="modal fade" id="modalAddLivraison">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content" style="font-size:14px;">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="headerModalLivraison">Ajouter une livraison</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body">
+<?php
+if ($this->ion_auth->in_group(array(61))):
+    ?>
+    <!--Modal Livraisons-->
+    <div class="modal fade" id="modalAddLivraison">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="font-size:14px;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="headerModalLivraison">Ajouter une livraison</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
 
-                        <?= form_open('planning/addDateLivraison/', array('id' => 'formAddLivraison')); ?>
-                        <div class="form-row" style="margin-top: 4px;">
-                            <div class="col">
-                                <label for="addLivraisonChantierId">Sélectionnez un chantier</label><br>
-                                <select name="addLivraisonChantierId" id="addLivraisonChantierId" class="selectpicker" data-width="100%" data-live-search="true" required title="Selectionnez un chantier d'intervention">
-                                    <?php
-                                    if (!empty($affairesPlanning)):
-                                        foreach ($affairesPlanning as $affaire):
-                                            if ($affaire && !empty($affaire->getAffaireChantiers())):
-                                                foreach ($affaire->getAffaireChantiers() as $chantier):
-                                                    echo '<option value="' . $chantier->getChantierId() . '"'
-                                                    . 'data-content="<span class=\'selectpickerClient\'>' . $affaire->getAffaireClient()->getClientNom() . '</span> <span class=\'selectpickerAnnotation\'>' . $affaire->getAffaireObjet() . ' > ' . $chantier->getChantierObjet() . '</span>">' . $affaire->getAffaireClient()->getClientNom() . ' ' . $chantier->getChantierObjet() . '</option>';
-                                                endforeach;
-                                            endif;
-                                        endforeach;
-                                    endif;
-                                    ?>
-                                </select>
-                            </div>
+                    <?= form_open('planning/addDateLivraison/', array('id' => 'formAddLivraison')); ?>
+                    <div class="form-row" style="margin-top: 4px;">
+                        <div class="col">
+                            <label for="addLivraisonChantierId">Sélectionnez un chantier</label><br>
+                            <select name="addLivraisonChantierId" id="addLivraisonChantierId" class="selectpicker" data-width="100%" data-live-search="true" required title="Selectionnez un chantier d'intervention">
+                                <?php
+                                if (!empty($affairesPlanning)):
+                                    foreach ($affairesPlanning as $affaire):
+                                        if ($affaire && !empty($affaire->getAffaireChantiers())):
+                                            foreach ($affaire->getAffaireChantiers() as $chantier):
+                                                echo '<option value="' . $chantier->getChantierId() . '"'
+                                                . 'data-content="<span class=\'selectpickerClient\'>' . $affaire->getAffaireClient()->getClientNom() . '</span> <span class=\'selectpickerAnnotation\'>' . $affaire->getAffaireObjet() . ' > ' . $chantier->getChantierObjet() . '</span>">' . $affaire->getAffaireClient()->getClientNom() . ' ' . $chantier->getChantierObjet() . '</option>';
+                                            endforeach;
+                                        endif;
+                                    endforeach;
+                                endif;
+                                ?>
+                            </select>
                         </div>
-                        <div class="form-row" style="margin-top: 4px;">
-                            <div class="col">
-                                <label for="addLivraisonAchatId">Sélectionnez un achat</label><br>
-                                <select name="addLivraisonAchatId" id="addLivraisonAchatId" class="selectpicker" data-width="100%" required title="Selectionnez un achat" disabled>
-                                    <option value="0" data-content="<span style='color:orange; font-size:13px;'><i class='fas fa-plus-square'></i> Ajouter un nouvel achat sur le chantier</span>">ADD</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row" style="margin-top: 4px;">
-                            <div class="col-3">
-                                <label for="addLivraisonDate">Date de livraison</label>
-                                <input type="date" class="form-control form-control-sm text-right" id="addLivraisonDate" name="addLivraisonDate" value="">
-                            </div>
-                            <div class="col-5">
-                                <label for="addLivraisonAvancement">Avancement</label>
-                                <select name="addLivraisonAvancement" id="addLivraisonAvancement" class="form-control form-control-sm">
-                                    <option value="1">Attente</option>
-                                    <option value="2">Confirmée</option>
-                                    <option value="3">Réceptionnée</option>
-                                </select>
-                            </div>
-                            <div class="col-4" style="text-align: right;">
-                                <br>
-                                <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-calendar-alt"></i> Ajouter cette livraison</button>
-                            </div>
-                        </div>
-                        <?= form_close(); ?>
                     </div>
+                    <div class="form-row" style="margin-top: 4px;">
+                        <div class="col">
+                            <label for="addLivraisonAchatId">Sélectionnez un achat</label><br>
+                            <select name="addLivraisonAchatId" id="addLivraisonAchatId" class="selectpicker" data-width="100%" required title="Selectionnez un achat" disabled>
+                                <option value="0" data-content="<span style='color:orange; font-size:13px;'><i class='fas fa-plus-square'></i> Ajouter un nouvel achat sur le chantier</span>">ADD</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top: 4px;">
+                        <div class="col-3">
+                            <label for="addLivraisonDate">Date de livraison</label>
+                            <input type="date" class="form-control form-control-sm text-right" id="addLivraisonDate" name="addLivraisonDate" value="">
+                        </div>
+                        <div class="col-5">
+                            <label for="addLivraisonAvancement">Avancement</label>
+                            <select name="addLivraisonAvancement" id="addLivraisonAvancement" class="form-control form-control-sm">
+                                <option value="1">Attente</option>
+                                <option value="2">Confirmée</option>
+                                <option value="3">Réceptionnée</option>
+                            </select>
+                        </div>
+                        <div class="col-4" style="text-align: right;">
+                            <br>
+                            <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-calendar-alt"></i> Ajouter cette livraison</button>
+                        </div>
+                    </div>
+                    <?= form_close(); ?>
                 </div>
             </div>
-            <!-- Modal pour l'affichage du listing des livraisons fournisseurs hebdomadaires -->
-            <div class="modal fade" id="modalLivraisonsHebdomadaires" cible="" tabindex="-1" role="dialog" aria-labelledby="Livraisons fournisseurs de la semaine" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header" style="background: #428bca; color:#FFF;">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="glyphicon glyphicon-remove" style="color:#f50a1c;"> </i></button>
-                            <h4 class="modal-title"></h4>
-                        </div>
-                        <div class="modal-body" align="center">
-                            <table class="table table-striped">
-                                <thead>
-                                <th style="width:20px;"></th>
-                                <th>Date</th>
-                                <th>Fournisseur</th>
-                                <th>Client</th>
-                                <th>Remarque</th>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    if (!empty($listeLivraison)):
-                                        foreach ($listeLivraison as $l):
-                                            ?>
-                                            <tr class="ligneLivraison" semaine="<?= date('W', $l->getLivraisonDate()); ?>" annee="<?= date('Y', $l->getLivraisonDate()); ?>">
-                                                <td style="background-color:<?= $l->getLivraisonCouleur(); ?>;"></td>
-                                                <td><?= date('d/m/Y', $l->getLivraisonDate()); ?></td>
-                                                <td><?= $l->getLivraisonFournisseur() . '<br>' . $l->getLivraisonFournisseurTelephone(); ?></td>
-                                                <td><?= $l->getLivraisonClient(); ?></td>
-                                                <td><?= $l->getLivraisonRemarque(); ?></td>
-                                            </tr>
-                                            <?php
-                                        endforeach;
-                                    endif;
+        </div>
+    </div>
+    <!-- Modal pour l'affichage du listing des livraisons fournisseurs hebdomadaires -->
+    <div class="modal fade" id="modalLivraisonsHebdomadaires" cible="" tabindex="-1" role="dialog" aria-labelledby="Livraisons fournisseurs de la semaine" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #428bca; color:#FFF;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="glyphicon glyphicon-remove" style="color:#f50a1c;"> </i></button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body" align="center">
+                    <table class="table table-striped">
+                        <thead>
+                        <th style="width:20px;"></th>
+                        <th>Date</th>
+                        <th>Fournisseur</th>
+                        <th>Client</th>
+                        <th>Remarque</th>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if (!empty($listeLivraison)):
+                                foreach ($listeLivraison as $l):
                                     ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                    <tr class="ligneLivraison" semaine="<?= date('W', $l->getLivraisonDate()); ?>" annee="<?= date('Y', $l->getLivraisonDate()); ?>">
+                                        <td style="background-color:<?= $l->getLivraisonCouleur(); ?>;"></td>
+                                        <td><?= date('d/m/Y', $l->getLivraisonDate()); ?></td>
+                                        <td><?= $l->getLivraisonFournisseur() . '<br>' . $l->getLivraisonFournisseurTelephone(); ?></td>
+                                        <td><?= $l->getLivraisonClient(); ?></td>
+                                        <td><?= $l->getLivraisonRemarque(); ?></td>
+                                    </tr>
+                                    <?php
+                                endforeach;
+                            endif;
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+        </div>
+    </div>
 
 
-        <?php endif; ?>
+<?php endif; ?>

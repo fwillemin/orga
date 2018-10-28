@@ -91,7 +91,7 @@
                                         'position': 'fixed',
                                         'top': '70px',
                                         'right': '10px',
-                                        'width': '300px',
+                                        'width': '450px',
                                         'zIndex': 50000
                                     }
                         },

@@ -6,10 +6,10 @@ $(document).ready(function () {
         $.post(chemin + 'secure/tryLogin', donnees, function (retour) {
             switch (retour.type) {
                 case 'success':
-                    window.location.assign( chemin + 'organibat/board');
+                    window.location.assign( chemin + 'planning/base');
                     break;
                 default:
-                    $.toaster({priority: 'danger', title: '<strong><i class="glyphicon glyphicon-alert"></i> Oups</strong>', message: '<br>' + retour.message});
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
                     break;
             }
         }, 'json');

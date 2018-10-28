@@ -20,10 +20,10 @@
 
         <ul class="nav nav-tabs" id="tabsChantier">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#resumeChantier"><i class="fas fa-file"></i> Board</a>
+                <a class="nav-link active" id="taBoard" data-toggle="tab" href="#resumeChantier"><i class="fas fa-file"></i> Board</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#heuresChantier"><i class="fas fa-clock"></i> Heures</a>
+                <a class="nav-link" id="tabHeures" data-toggle="tab" href="#heuresChantier"><i class="fas fa-clock"></i> Heures</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="tabAchats" data-toggle="tab" href="#achatsChantier"><i class="fas fa-piggy-bank"></i> Achats</a>
@@ -53,15 +53,61 @@
 
             <div class="tab-pane show active" id="resumeChantier">
                 <br>
+                <?php if ($chantier->getChantierEtat() == 1): ?>
+                    <button class="btn btn-info" id="btnClotureChantier" <?= $this->ion_auth->in_group(array(54)) ? '' : 'disabled'; ?> >
+                        <i class="fas fa-lock"></i> Clôturer ce chantier
+                    </button>
+                    <?php
+                else:
+                    echo '<h4>Chantier clôturé le ' . $this->cal->dateFrancais($chantier->getChantierDateCloture()) . '</h4>';
+                    echo '<button class="btn btn-warning" id="btnReouvertureChantier" ' . ($this->ion_auth->in_group(array(54)) ? '' : 'disabled') . '>'
+                    . '<i class="fas fa-key"></i> Réouvrir ce chantier'
+                    . '</button>';
+                endif;
+                ?>
+
+                <br>
+                <br>
+                <br>
                 <span style="font-size:13px;">
                     Catégorie : <?= $chantier->getChantierCategorie(); ?>
                     <br>Chiffrage : <?= number_format($chantier->getChantierPrix(), 2, ',', ' ') . '€ HT'; ?>
-                    <br>Frais généraux : <?= $chantier->getChantierFraisGeneraux() . '%'; ?>
-                    <br>Taux horaire moyen : <?= $chantier->getChantierTauxHoraireMoyen() . '€/h'; ?>
                 </span>
             </div>
 
             <div class="tab-pane" id="heuresChantier">
+
+                <div class="row">
+                    <div class="col-3">
+
+                        <table class="table table-sm">
+                            <tr>
+                                <td>Heures prévues</td>
+                                <td><?= $chantier->getChantierHeuresPrevues(); ?></td>
+                            </tr>
+                            <tr>
+                                <td>Heures planifiées</td>
+                                <td><?= $chantier->getChantierHeuresPlanifiees(); ?></td>
+                            </tr>
+                            <tr>
+                                <td>Heures pointées</td>
+                                <td><?= $chantier->getChantierHeuresPointees(); ?></td>
+                            </tr>
+                        </table>
+
+                    </div>
+                    <div class="col-7">
+                        <table class="table table-sm style1">
+                            <?php
+                            if (!empty($chantier->getChantierAffectations())):
+                                foreach ($chantier->getChantierAffectations() as $affectation):
+
+                                endforeach;
+                            endif;
+                            ?>
+                        </table>
+                    </div>
+                </div>
 
             </div>
 
@@ -89,7 +135,7 @@
                 ?>
             </div>
 
-            <div class = "tab-pane" id = "achatsChantier" style = "padding:10px;">
+            <div class="tab-pane" id="achatsChantier" style="padding:10px;">
 
                 Budget achats de ce chantier : <?= number_format($chantier->getChantierBudgetAchats(), 2, ',', ' ') . '€'; ?>
                 <br>Budget prévu : <?= number_format($chantier->getChantierBudgetPrevu(), 2, ',', ' ') . '€'; ?>

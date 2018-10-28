@@ -86,14 +86,17 @@
                                         if ($ratio > 100):
                                             $bgClass = "progress-bar bg-danger";
                                             $ratio = 100;
+                                            $barText = 'Dépassement ';
                                         elseif ($ratio > 75):
                                             $bgClass = "progress-bar bg-warning";
+                                            $barText = 'Reste ';
                                         else:
                                             $bgClass = "progress-bar bg-info";
+                                            $barText = 'Reste ';
                                         endif;
                                         ?>
                                         <div class="progress">
-                                            <div class="<?= $bgClass; ?>" role="progressbar" style="width: <?= $ratio; ?>%" aria-valuenow="<?= $ratio; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                            <div class="<?= $bgClass; ?>" role="progressbar" style="width: <?= $ratio; ?>%" aria-valuenow="<?= $ratio; ?>" aria-valuemin="0" aria-valuemax="100"><?= $barText . abs($chantier->getChantierHeuresPrevues() - $chantier->getChantierHeuresPlanifiees()) . ' heures'; ?></div>
                                         </div>
                                     </td>
                                 </tr>

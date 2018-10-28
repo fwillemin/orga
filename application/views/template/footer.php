@@ -32,7 +32,6 @@
 <script defer type="text/javascript" src="<?= base_url('assets/js/popper.min.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap.bundle.min.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/toaster.js'); ?>"></script>
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 
 <?php if ($this->ion_auth->logged_in()): ?>
     <script defer type="text/javascript" src="<?= base_url('assets/MegaNavbarBS4/assets/js/MegaNavbarBS4.js'); ?>"></script>
