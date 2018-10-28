@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    $('#modalAddContact').modal();    
+    $('#modalAddContact').modal();
 
     $('#tableContacts').DataTable({
         pageLength: 50,
@@ -62,6 +62,8 @@ $(document).ready(function () {
     });
 
     $('#btnAddContact').on('click', function () {
+        contactRAZ();
+        $('#btnSubmitFormContact').html('<i class="fas fa-plus-square"></i> Ajouter');
         $('#modalAddContact').modal('show');
     });
 
@@ -77,10 +79,10 @@ $(document).ready(function () {
             }
         }, 'json');
     });
-    
-    $('.changeContactEtat').on('change', function(e){
+
+    $('.changeContactEtat').on('change', function (e) {
         e.stopPropagation();
-        $.post(chemin + 'contacts/avancementContact', {contactId: $(this).closest('tr').attr('data-contactid'), contactEtat: $(this).val()}, function(retour){
+        $.post(chemin + 'contacts/avancementContact', {contactId: $(this).closest('tr').attr('data-contactid'), contactEtat: $(this).val()}, function (retour) {
             switch (retour.type) {
                 case 'error':
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
@@ -91,5 +93,81 @@ $(document).ready(function () {
             }
         }, 'json');
     });
+
+    $('.btnDelContact').on('click', function () {
+        ligne = $(this).closest('tr');
+    }).confirm({
+        title: 'Suppression du contact entrant ?',
+        content: 'Action irréversible...',
+        type: 'blue',
+        theme: 'material',
+        buttons: {
+            confirm: {
+                btnClass: 'btn-green',
+                text: 'Supprimer',
+                action: function () {
+                    $.post(chemin + 'contacts/delContact', {contactId: ligne.attr('data-contactid')}, function (retour) {
+                        switch (retour.type) {
+                            case 'error':
+                                $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                                break;
+                            case 'success':
+                                ligne.fadeOut();
+                                break;
+                        }
+                    }, 'json');
+                }
+
+            },
+            cancel: {
+                btnClass: 'btn-red',
+                text: 'Annuler'
+            }
+        }
+    });
+
+    function contactRAZ() {
+        $('#addContactId').val('');
+        $('#addContactDate').val('');
+        $('#addContactNom').val('');
+        $('#addContactAdresse').val('');
+        $('#addContactCp').val('');
+        $('#addContactVille').val('');
+        $('#addContactTelephone').val('');
+        $('#addContactEmail').val('');
+        $('#addContactObjet').val('');
+        $('#addContactMode option[value="1"]').prop('selected', true);
+        $('#addContactSource option[value="1"]').prop('selected', true);
+        $('#addContactCategorieId option[value="0"]').prop('selected', true);
+        $('#addContactCommercialId option[value="0"]').prop('selected', true);
+        $('#addContactCategorieId').selectpicker('refresh');
+        $('#addContactCommercialId').selectpicker('refresh');
+    }
+
+    $('.btnModContact').on('click', function () {
+        $.post(chemin + 'contacts/getContact', {contactId: $(this).closest('tr').attr('data-contactid')}, function (retour) {
+            contactRAZ();
+            /* Hydrate form */
+            $('#addContactId').val(retour.contact.contactId);
+            $('#addContactDate').val(refactorDate(retour.contact.contactDate));
+            $('#addContactNom').val(retour.contact.contactNom);
+            $('#addContactAdresse').val(retour.contact.contactAdresse);
+            $('#addContactCp').val(retour.contact.contactCp);
+            $('#addContactVille').val(retour.contact.contactVille);
+            $('#addContactTelephone').val(retour.contact.contactTelephone);
+            $('#addContactEmail').val(retour.contact.contactEmail);
+            $('#addContactObjet').val(retour.contact.contactObjet);
+            $('#addContactMode option[value="' + retour.contact.contactMode + '"]').prop('selected', true);
+            $('#addContactSource option[value="' + retour.contact.contactSource + '"]').prop('selected', true);
+            $('#addContactCategorieId option[value="' + retour.contact.contactCategorieId + '"]').prop('selected', true);
+            $('#addContactCategorieId').selectpicker('refresh');
+            $('#addContactCommercialId option[value="' + retour.contact.contactCommercialId + '"]').prop('selected', true);
+            $('#addContactCommercialId').selectpicker('refresh');
+        }, 'json').done(function () {
+            $('#btnSubmitFormContact').html('<i class="fas fa-edit"></i> Modifier');
+            $('#modalAddContact').modal('show');
+        });
+    });
+
 });
 

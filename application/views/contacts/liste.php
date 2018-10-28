@@ -43,8 +43,8 @@
                         . '<option value="5" ' . ($contact->getContactEtat() == 5 ? 'selected' : '') . ' data-content="<span class=\'badge badge-danger\'>Perdu</span>">Perdu</option>'
                         . '</select></td>'
                         . '<td>'
-                        . '<button type="button" class="btn btn-xs btn-link btnEditContact" style="float: left;"><i class="fas fa-edit"></i></button>'
-                        . '<button type="button" class="btn btn-xs btn-link btnDelContact" style="colorhdkfred"><i class="fas fa-trash"></i></button>'
+                        . '<button type="button" class="btn btn-xs btn-link btnModContact" style="float: left;"><i class="fas fa-edit"></i></button>'
+                        . '<button type="button" class="btn btn-xs btn-link btnDelContact" style="color: lightgrey;"><i class="fas fa-trash"></i></button>'
                         . '</td>'
                         . '</tr>';
                     endforeach;
@@ -68,7 +68,7 @@
             </div>
             <div class="modal-body">
                 <?= form_open('contacts/addContact', array('id' => 'formAddContact')); ?>
-                <input type="hidden" name="addContactId" id="addPlaceIdContact" value="">
+                <input type="hidden" name="addContactId" id="addContactId" value="">
                 <div class="form-row" style="margin-top: 4px;">
                     <div class="col">
                         <label for="addContactDate">Date*</label>
@@ -132,7 +132,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                             </div>
-                            <input type="email" class="form-control form-control-sm" id="v" name="addContactEmail" value="" placeholder="Email">
+                            <input type="email" class="form-control form-control-sm" id="addContactEmail" name="addContactEmail" value="" placeholder="Email">
                         </div>
                     </div>
                 </div>
@@ -182,7 +182,7 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-outline-primary btn-sm" id="btnSubmitFormContact">
-                    <i class="fas fa-plus-square"></i> Ajouter
+
                 </button>
                 <div id="loaderAddContact" class="formloader">
                     <i class="fas <?= $this->session->userdata('loaderIcon'); ?> fa-spin"></i>

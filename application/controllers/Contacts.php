@@ -76,7 +76,18 @@ class Contacts extends My_Controller {
 
                 if ($this->input->post('addContactId')):
                     $contact = $this->managerContacts->getContactById($this->input->post('addContactId'));
-                    $contact->setContact();
+                    $contact->setContactDate($this->own->mktimeFromInputDate($this->input->post('addContactDate')));
+                    $contact->setContactMode($this->input->post('addContactMode'));
+                    $contact->setContactSource($this->input->post('addContactSource'));
+                    $contact->setContactNom($this->input->post('addContactNom'));
+                    $contact->setContactAdresse($this->input->post('addContactAdresse'));
+                    $contact->setContactCp($this->input->post('addContactCp'));
+                    $contact->setContactVille($this->input->post('addContactVille'));
+                    $contact->setContactTelephone($this->input->post('addContactTelephone'));
+                    $contact->setContactEmail($this->input->post('addContactEmail'));
+                    $contact->setContactCategorieId($this->input->post('addContactCategorieId'));
+                    $contact->setContactCommercialId($this->input->post('addContactCommercialId'));
+                    $contact->setContactObjet($this->input->post('addContactObjet'));
                     $this->managerContacts->editer($contact);
 
                 else:
@@ -132,6 +143,14 @@ class Contacts extends My_Controller {
                 $this->managerContacts->delete($contact);
                 echo json_encode(array('type' => 'success'));
             endif;
+        endif;
+    }
+
+    public function getContact() {
+        if (!$this->form_validation->run('getContact')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            echo json_encode(array('type' => 'success', 'contact' => $this->managerContacts->getContactById($this->input->post('contactId'), 'array')));
         endif;
     }
 
