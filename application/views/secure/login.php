@@ -18,12 +18,13 @@
         <br>Insersion d'affectation sur plusieurs personnels
         <br>Glisser/Déposer des livraisons
         <br>Ajout d'achats et de livraisons depuis le planning
+        <br>Décallez toutes les affectations d'un personnel en une fois
     </div>
 
     <div class="col-12 col-sm-3 offset-sm-2">
         <div class="row" style="border:1px solid grey; border-radius:10px; border: 2px solid #293042; text-align: center; background-color: #FFF;">
             <div class="col-12" style="background-color: #293042; padding:10px;">
-                <img src="<?php echo base_url('assets/img/logo_white.png'); ?>" style="height:60px;" >
+                <img src="<?php echo base_url('assets/img/logoClairTexte.png'); ?>" style="height:60px;" >
             </div>
             <div class="col-12" style="padding:10px">
                 <?= form_open('secure/tryLogin', array('class' => 'form-horizontal', 'id' => 'formLogin')); ?>

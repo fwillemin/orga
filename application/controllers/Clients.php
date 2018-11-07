@@ -34,9 +34,6 @@ class Clients extends My_Controller {
     }
 
     public function ficheClient($clientId = null) {
-        if (!$this->ion_auth->in_group(21)):
-            redirect('clients/liste');
-        endif;
 
         if (!$clientId || !$this->existClient($clientId)):
             redirect('clients/liste');
@@ -57,6 +54,11 @@ class Clients extends My_Controller {
 
     public function addClient() {
 
+        if (!$this->ion_auth->in_group(31)):
+            redirect('clients/liste');
+            exit;
+        endif;
+
         if (!$this->form_validation->run('addClient')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
@@ -72,6 +74,7 @@ class Clients extends My_Controller {
                 $client->setClientPortable($this->input->post('addClientPortable'));
                 $client->setClientEmail($this->input->post('addClientEmail'));
                 $this->managerClients->editer($client);
+                $place = null;
 
             else:
 
@@ -131,6 +134,10 @@ class Clients extends My_Controller {
     }
 
     public function addPlace() {
+        if (!$this->ion_auth->in_group(31)):
+            redirect('clients/liste');
+            exit;
+        endif;
 
         if (!$this->form_validation->run('addPlace')):
             log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur AddPlace');
@@ -195,6 +202,10 @@ class Clients extends My_Controller {
     }
 
     public function delPlace() {
+        if (!$this->ion_auth->in_group(31)):
+            redirect('clients/liste');
+            exit;
+        endif;
 
         if (!$this->form_validation->run('getPlace')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
@@ -217,6 +228,22 @@ class Clients extends My_Controller {
         endif;
         $places = $this->managerPlaces->getPlaces(array('placeClientId' => $this->input->post('clientId')), 'placeId ASC', 'array');
         echo json_encode(array('type' => 'success', 'places' => $places));
+    }
+
+    public function delClient() {
+        if (!$this->ion_auth->in_group(31) || !$this->existClient($this->input->post('clientId'))):
+            redirect('clients/liste');
+            exit;
+        endif;
+
+        $client = $this->managerClients->getClientById($this->input->post('clientId'));
+        $client->hydrateAffaires();
+        if (!empty($client->getClientAffaires())):
+            echo json_encode(array('type' => 'error', 'message' => 'Impossible de supprimer un client avec des affaires.'));
+        else:
+            $this->managerClients->delete($client);
+            echo json_encode(array('type' => 'success'));
+        endif;
     }
 
 }

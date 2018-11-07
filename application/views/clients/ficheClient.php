@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-lg-8 offset-lg-2 fond">
+    <div class="col-12 col-lg-10 offset-lg-1 fond">
         <div class="row">
             <div class="col-12">
                 <br>
@@ -11,7 +11,18 @@
                     <button class="btn btn-link" id="btnModClient">
                         <i class="fas fa-edit"></i> Modifier
                     </button>
+                    <?php if (empty($client->getClientAffaires())): ?>
+                        <button class="btn btn-link" id="btnDelClient" style="color: lightgray;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    <?php endif;
+                    ?>
                 </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div id="map" style="width:100%; height:200px; margin-bottom:10px; border:1px solid steelblue;"></div>
             </div>
         </div>
         <div class="row">
@@ -21,28 +32,12 @@
                     <i class="formClose fas fa-times"></i>
                 </div>
                 <?php
-                echo'<br>' . $client->getClientAdresse() . '<br>' . $client->getClientCp() . ' ' . $client->getClientVille();
-                echo '<br><br>Fixe :' . $client->getClientFixe() . '<br>Portable : ' . $client->getClientPortable() . '<br>' . $client->getClientEmail();
+                echo $client->getClientAdresse() . '<br>' . $client->getClientCp() . ' ' . $client->getClientVille();
+                echo '<div class="row" style="margin-top:8px;"><div class="col-6 col-sm-3"><i class="fas fa-phone"></i> ' . ($client->getClientFixe() ?: '-') . '</div><div class="col-6 col-sm-3"><i class="fas fa-mobile-alt"></i> ' . ($client->getClientPortable() ?: '-') . '</div><div class="col-12 col-sm-6"><i class="fas fa-envelope"></i> <a href="mailto: ' . $client->getClientEmail() . '">' . $client->getClientEmail() . '</a></div></div>';
                 ?>
                 <br>
                 <br>
                 <h5>Places</h5>
-                <?= form_open('clients/addPlace', array('id' => 'formAddPlace')); ?>
-                <input type="hidden" name="addPlaceId" id="addPlaceId" value="<?= !empty($place) ? $place->getPlaceId() : ''; ?>">
-                <input type="hidden" name="addPlaceClientId" id="addPlaceClientId" value="<?= $client->getclientId(); ?>">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Adresse" name="addPlaceAdresse" id="addPlaceAdresse" value="<?= !empty($place) ? $place->getPlaceAdresse() : ''; ?>">
-
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-primary" type="submit" id="btnSubmitFormEquipe"><?= !empty($place) ? '<i class="fas fa-edit"></i>' : '<i class="fas fa-plus-square"></i>'; ?></button>
-                        <?php if (!empty($place)): ?>
-                            <a title="Quitter la fiche de ce taux" href="<?= site_url('clients/ficheClient/' . $client->getClientId()); ?>" class="btn btn-outline-dark" type="button"><i class="fas fa-times"></i></a>
-                            <button class="btn btn-outline-danger" type="button" id="btnDelPlace"><i class="fas fa-trash"></i></button>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <?= form_close(); ?>
-
                 <table class="table table-sm style1" id="tablePlaces">
                     <thead>
                         <tr>
@@ -81,7 +76,21 @@
                         ?>
                     </tbody>
                 </table>
-                <div id="map" style="width:100%; height:400px; margin-bottom:10px; border:1px solid steelblue;"></div>
+                <?= form_open('clients/addPlace', array('id' => 'formAddPlace')); ?>
+                <input type="hidden" name="addPlaceId" id="addPlaceId" value="<?= !empty($place) ? $place->getPlaceId() : ''; ?>">
+                <input type="hidden" name="addPlaceClientId" id="addPlaceClientId" value="<?= $client->getclientId(); ?>">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Adresse" name="addPlaceAdresse" id="addPlaceAdresse" value="<?= !empty($place) ? $place->getPlaceAdresse() : ''; ?>">
+
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="submit" id="btnSubmitFormEquipe"><?= !empty($place) ? '<i class="fas fa-edit"></i>' : '<i class="fas fa-plus-square"></i>'; ?></button>
+                        <?php if (!empty($place)): ?>
+                            <a title="Quitter la fiche de ce taux" href="<?= site_url('clients/ficheClient/' . $client->getClientId()); ?>" class="btn btn-outline-dark" type="button"><i class="fas fa-times"></i></a>
+                            <button class="btn btn-outline-danger" type="button" id="btnDelPlace"><i class="fas fa-trash"></i></button>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?= form_close(); ?>
             </div>
             <div class="col-12 col-sm-6">
                 <h4>Affaires</h4>

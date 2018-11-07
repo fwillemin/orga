@@ -44,28 +44,6 @@ class Contacts extends My_Controller {
         $this->load->view('template/content', $data);
     }
 
-//    public function ficheContact($contactId = null) {
-//        if (!$this->ion_auth->in_group(21)):
-//            redirect('contacts/liste');
-//        endif;
-//
-//        if (!$contactId || !$this->existContact($contactId)):
-//            redirect('contacts/liste');
-//        endif;
-//
-//        $contact = $this->managerContacts->getContactById($contactId);
-//        $contact->hydratePlaces();
-//        $contact->hydrateAffaires();
-//
-//        $data = array(
-//            'contact' => $contact,
-//            'title' => $contact->getContactNom(),
-//            'description' => 'Fiche contact',
-//            'content' => $this->viewFolder . '/' . __FUNCTION__
-//        );
-//        $this->load->view('template/content', $data);
-//    }
-
     public function addContact() {
         if (!$this->ion_auth->in_group(array(91))):
             echo json_encode(array('type' => 'error', 'message' => $this->messageDroitsInsuffisants));

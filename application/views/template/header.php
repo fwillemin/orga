@@ -39,7 +39,7 @@
                 <div class="container pl-0">
                     <!-- MegaNavbar BS4 brand -->
                     <a class="navbar-brand" href="#">
-                        <img src="<?= base_url('assets/img/logo_white.png'); ?>" height="40" style="padding-right: 30px;">
+                        <img src="<?= base_url('assets/img/logoClair.png'); ?>" height="40" style="padding-right: 30px; padding-bottom: 5px;">
                     </a>
                     <!-- MegaNavbar BS4 toggler -->
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
