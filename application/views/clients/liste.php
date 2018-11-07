@@ -17,7 +17,7 @@
                     <td style="text-align: center;">Fixe</td>
                     <td style="text-align: center;">Portable</td>
                     <td style="text-align: center; width:55px;">
-                        Places
+                        Affaires
                     </td>
                 </tr>
             </thead>
@@ -28,10 +28,10 @@
                         echo '<tr class="ligneClikable" data-clientid="' . $client->getClientId() . '">'
                         . '<td>' . $client->getClientNom() . '</td>'
                         . '<td>' . $client->getClientVille() . '</td>'
-                        . '<td style="text-align:center;">' . ($client->getClientLastAffaire() ? $this->cal->dateFrancais($client->getClientLastAffaire()->getAffaireCreation(), 'Am') : 'NC') . '</td>'
+                        . '<td style="text-align:center;">' . ($client->getClientAffaires() ? $this->cal->dateFrancais($client->getClientAffaires()[0]->getAffaireCreation(), 'Am') : 'NC') . '</td>'
                         . '<td>' . $client->getClientFixe() . '</td>'
                         . '<td>' . $client->getClientPortable() . '</td>'
-                        . '<td style="text-align: center;">' . (sizeof($client->getClientPlaces()) - 1) . '</td>'
+                        . '<td style="text-align: center;">' . (!empty($client->getClientAffaires()) ? sizeof($client->getClientAffaires()) . ' | ' . $client->getClientAffaires()[0]->getAffaireEtatHtml() : '0') . '</td>'
                         . '</tr>';
                     endforeach;
                     unset($client);
