@@ -16,7 +16,7 @@
                 <i class="fas fa-plus-square"></i> Ajouter
             </button>
         </h2>
-        <small><?= count($contacts) - 1; ?> contacts</small>
+        <small><?= sizeof($contacts); ?> contacts</small>
         <table class="table table-bordered table-responsive-sm table-sm style1" id="tableContacts" style="font-size:13px; width:100%;">
             <thead>
                 <tr>
