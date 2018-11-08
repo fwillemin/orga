@@ -30,10 +30,12 @@
             ?>
         </select>
     </div>
+</div>
+<div class="form-row">
     <div class="col">
         <label for="addPersonnelHoraireId">Horaire</label>
         <select name="addPersonnelHoraireId" id="addPersonnelHoraireId" class="form-control form-control-sm">
-            <option value="0" <?= (!empty($personnel) && !$personnel->getPersonnelHoraireId()) ? 'selected' : ''; ?>>Au réél</option>
+            <option value="0" <?= (!empty($personnel) && !$personnel->getPersonnelHoraireId()) ? 'selected' : ''; ?>>Aucun horaire spécifié</option>
             <?php
             if (!empty($horaires)):
                 foreach ($horaires as $horaire):
@@ -41,6 +43,13 @@
                 endforeach;
             endif;
             ?>
+        </select>
+    </div>
+    <div class="col">
+        <label for="addPersonnelPointages">Générer les fiches de pointages</label>
+        <select name="addPersonnelPointages" id="addPersonnelPointages" class="form-control form-control-sm">
+            <option value="1" <?= (!empty($personnel) && $personnel->getPersonnelPointages() == 1) ? 'selected' : ''; ?>>Au réél des heures</option>
+            <option value="2" <?= (!empty($personnel) && $personnel->getPersonnelPointages() == 2) ? 'selected' : ''; ?>>Suivant l'horaire attribué</option>
         </select>
     </div>
 </div>

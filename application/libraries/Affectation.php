@@ -28,6 +28,7 @@ class Affectation {
     protected $affectationFinMoment; /* 1 Matin, 2 Aprem */
     protected $affectationFinMomentText;
     protected $affectationCases; /* Nombre de case du planning incluant les week-end */
+    protected $affectationNbHeures; /* Durée précise en heure de l'affectation */
     /* --  */
     protected $affectationChantierEtat; /* Etat du chantier pere */
     protected $affectationCommentaire;
@@ -80,6 +81,39 @@ class Affectation {
                 $this->affectationFinMomentText = 'après-midi';
                 break;
         endswitch;
+    }
+
+    /* Retourne la durée précise en heure d'une affectation en fonction de l'horaire du personnel associé */
+
+    public function calculNbHeures() {
+        if (!$this->affectationPersonnel):
+            $this->hydratePersonnel();
+        endif;
+        $this->affectationPersonnel->hydrateHoraire();
+        if (!empty($this->affectationPersonnel->getPersonnelHoraire())):
+            $horaire = $this->affectationPersonnel->getPersonnelHoraire();
+            $nbHeures = 0;
+
+            for ($i = $this->affectationDebutDate; $i <= $this->affectationFinDate; $i += 86400):
+
+                $jour = $this->cal->dateFrancais($jour, 'j');
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . $jour);
+                if ($i == $this->affectationDebutDate):
+                    if ($this->affectationDebutMoment() == 1):
+                    /* On ajoute les heures complètes du jour dans l'horaire */
+                    else:
+
+                    /* On ajoute les heures de l'aprem dans l'horaire */
+                    endif;
+                endif;
+
+            endfor;
+
+        else:
+            /* On fait un calcul de base avec 4 heures par demi-journée */
+            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Mode bourrin');
+            $this->affectationNbHeures = 4 * $this->affectationNbDemi;
+        endif;
     }
 
     public function hydrateChantier() {
@@ -414,6 +448,14 @@ class Affectation {
 
     function setAffectationLivraisons($affectationLivraisons) {
         $this->affectationLivraisons = $affectationLivraisons;
+    }
+
+    function getAffectationNbHeures() {
+        return $this->affectationNbHeures;
+    }
+
+    function setAffectationNbHeures($affectationNbHeures) {
+        $this->affectationNbHeures = $affectationNbHeures;
     }
 
 }

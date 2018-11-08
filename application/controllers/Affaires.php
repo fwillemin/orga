@@ -51,9 +51,6 @@ class Affaires extends My_Controller {
     }
 
     public function ficheAffaire($affaireId = null) {
-        if (!$this->ion_auth->in_group(50)):
-            redirect('affaires/liste');
-        endif;
 
         if (!$affaireId || !$this->existAffaire($affaireId)):
             redirect('affaires/liste');
@@ -138,7 +135,7 @@ class Affaires extends My_Controller {
 
     public function delAffaire() {
         if (!$this->ion_auth->in_group(57) || !$this->form_validation->run('getAffaire') || $this->input->post('affaireId') == $this->session->userdata('affaireDiversId')):
-            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+            echo json_encode(array('type' => 'error', 'message' => $this->messageDroitsInsuffisants));
         else:
             $affaire = $this->managerAffaires->getAffaireById($this->input->post('affaireId'));
             $this->managerAffaires->delete($affaire);
@@ -147,13 +144,16 @@ class Affaires extends My_Controller {
     }
 
     public function modAffaireDivers() {
+        if (!$this->ion_auth->in_group(57)):
+            $affaire = $this->managerAffaires->getAffaireById($this->session->userdata('affaireDiversId'));
+            $affaire->setAffaireCouleur($this->input->post('couleur'));
+            $affaire->setAffaireCouleurSecondaire($this->couleurSecondaire($this->input->post('couleur')));
+            $this->managerAffaires->editer($affaire);
 
-        $affaire = $this->managerAffaires->getAffaireById($this->session->userdata('affaireDiversId'));
-        $affaire->setAffaireCouleur($this->input->post('couleur'));
-        $affaire->setAffaireCouleurSecondaire($this->couleurSecondaire($this->input->post('couleur')));
-        $this->managerAffaires->editer($affaire);
-
-        echo json_encode(array('type' => 'success'));
+            echo json_encode(array('type' => 'success'));
+        else:
+            echo json_encode(array('type' => 'error', 'message' => $this->messageDroitsInsuffisants));
+        endif;
     }
 
 }

@@ -390,7 +390,7 @@ $(document).ready(function () {
                     }
                     $('#textAffectationAvancementHeures').css('width', retour.chantier.chantierRatio + '%');
                     $('#textAffectationAvancementHeures').addClass(retour.chantier.chantierProgressBar);
-                    $('#textAffectationPeriode').html(retour.affectation.affectationPeriode);
+                    $('#textAffectationPeriode').html(retour.affectation.affectationPeriode + '[' + retour.affectation.affectationId + ']');
                     $('#textAffectationType').html(retour.affectation.affectationTypeText);
                     $('#textAffectationAdresse').html(retour.chantier.chantierPlace);
                     $('#textAffectationCommentaire').html(retour.affectation.affectationCommentaire);

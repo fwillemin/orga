@@ -270,6 +270,11 @@ $config = array(
             'rules' => 'trim|callback_existEquipe'
         ),
         array(
+            'field' => 'addPersonnelPointages',
+            'label' => 'Pointages du personnel',
+            'rules' => 'trim|in_list[1,2]'
+        ),
+        array(
             'field' => 'addPersonnelHoraireId',
             'label' => 'Horaire du personnel',
             'rules' => 'trim|callback_existHoraire'

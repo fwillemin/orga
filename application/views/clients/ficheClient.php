@@ -31,10 +31,12 @@
                     <?php include('formClient.php'); ?>
                     <i class="formClose fas fa-times"></i>
                 </div>
-                <?php
-                echo $client->getClientAdresse() . '<br>' . $client->getClientCp() . ' ' . $client->getClientVille();
-                echo '<div class="row" style="margin-top:8px;"><div class="col-6 col-sm-3"><i class="fas fa-phone"></i> ' . ($client->getClientFixe() ?: '-') . '</div><div class="col-6 col-sm-3"><i class="fas fa-mobile-alt"></i> ' . ($client->getClientPortable() ?: '-') . '</div><div class="col-12 col-sm-6"><i class="fas fa-envelope"></i> <a href="mailto: ' . $client->getClientEmail() . '">' . $client->getClientEmail() . '</a></div></div>';
-                ?>
+                <div style="border:1px solid steelblue; border-top: none; position: relative; top: -10px; padding: 5px; background-color: #f2f4f7; font-size:14px;">
+                    <?php
+                    echo $client->getClientAdresse() . '<br>' . $client->getClientCp() . ' ' . $client->getClientVille();
+                    echo '<div class="row" style="margin-top:8px;"><div class="col-6 col-sm-3"><i class="fas fa-phone"></i> ' . ($client->getClientFixe() ?: '-') . '</div><div class="col-6 col-sm-3"><i class="fas fa-mobile-alt"></i> ' . ($client->getClientPortable() ?: '-') . '</div><div class="col-12 col-sm-6"><i class="fas fa-envelope"></i> <a href="mailto: ' . $client->getClientEmail() . '">' . $client->getClientEmail() . '</a></div></div>';
+                    ?>
+                </div>
                 <br>
                 <br>
                 <h5>Places</h5>

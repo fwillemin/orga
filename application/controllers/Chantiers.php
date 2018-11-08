@@ -26,6 +26,12 @@ class Chantiers extends My_Controller {
         endif;
 
         $chantier = $this->managerChantiers->getChantierById($chantierId);
+        $chantier->hydrateAffectations();
+        if (!empty($chantier->getChantierAffectations())):
+            foreach ($chantier->getChantierAffectations()as $affect):
+                $affect->hydratePersonnel();
+            endforeach;
+        endif;
         $chantier->hydratePlace();
         $chantier->hydrateAchats();
         if (!empty($chantier->getChantierAchats())):

@@ -24,6 +24,7 @@ class Personnel {
     protected $personnelHoraire;
     protected $personnelEquipeId;
     protected $personnelEquipe;
+    protected $personnelPointages; /* On génère les feuilles de pointages : 1= Au réél des heures saisies, 2 = en suivant l'horaire attribué */
     protected $personnelTauxHoraire;
     protected $personnelTauxHoraireHistorique;
 
@@ -40,18 +41,40 @@ class Personnel {
                 $this->$method($value);
         endforeach;
         $CI = & get_instance();
-        $listeTaux = $CI->managerTauxHoraires->getTauxHoraires(array('tauxHorairePersonnelId' => $this->personnelId));
+        $listeTaux = $CI->managerTauxHoraires->getTauxHoraires(array('tauxHorairePersonnelId' => $this->personnelId), 'tauxHoraireDate ASC');
         if (!empty($listeTaux)):
             $this->personnelTauxHoraire = $listeTaux[0]->getTauxHoraire();
+            $this->personnelTauxHoraireHistorique = $listeTaux;
         else:
             $this->personnelTauxHoraire = 0;
+            $this->personnelTauxHoraire = array();
         endif;
     }
 
-    public function hydrateTauxHoraires() {
-        $CI = & get_instance();
-        $this->personnelTauxHoraireHistorique = $CI->managerTauxHoraires->getTauxHoraires(array('tauxHorairePersonnelId' => $this->personnelId));
+    public function getTauxHoraireADate($date) {
+
+        if (!$this->personnelTauxHoraireHistorique):
+            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Pas de taux horaires pour ce personnel');
+            return 0;
+        else:
+
+            $tauxADate = 0;
+            foreach ($this->personnelTauxHoraireHistorique as $taux):
+                if ($taux->getTauxHoraireDate() <= $date):
+                    $tauxADate = $taux->getTauxHoraire();
+                    continue;
+                endif;
+            endforeach;
+
+            return $tauxADate;
+
+        endif;
     }
+
+//    public function hydrateTauxHoraires() {
+//        $CI = & get_instance();
+//        $this->personnelTauxHoraireHistorique = $CI->managerTauxHoraires->getTauxHoraires(array('tauxHorairePersonnelId' => $this->personnelId));
+//    }
 
     public function hydrateHoraire() {
         $CI = & get_instance();
@@ -181,6 +204,14 @@ class Personnel {
 
     function setPersonnelOriginId($personnelOriginId) {
         $this->personnelOriginId = $personnelOriginId;
+    }
+
+    function getPersonnelPointages() {
+        return $this->personnelPointages;
+    }
+
+    function setPersonnelPointages($personnelPointages) {
+        $this->personnelPointages = $personnelPointages;
     }
 
 }

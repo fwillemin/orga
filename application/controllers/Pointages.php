@@ -153,7 +153,6 @@ class Pointages extends My_Controller {
 
             /* Recherche d'un pointage enregistré */
             $pointage = $this->managerPointages->getPointage($personnel->getPersonnelId(), $mois, $annee);
-            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($pointage, true));
             if (!empty($pointage)):
                 $pointage->setPointageHTML(gzuncompress($pointage->getPointageHTML()));
                 $indisponibilites = $heures = array();
@@ -180,7 +179,6 @@ class Pointages extends My_Controller {
             'personnels' => $this->managerPersonnels->getPersonnels(),
             'personnel' => $personnel,
             'etablissement' => $this->managerEtablissements->getEtablissementById($this->session->userdata('etablissementId')),
-            //'horaire' => $horaire,
             'sauvegarde' => !empty($pointage) ? $pointage : null,
             'title' => 'Feuilles de pointages',
             'description' => 'Liste des heures effectuées dans la période',

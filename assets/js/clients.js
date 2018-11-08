@@ -51,11 +51,15 @@ $(document).ready(function () {
     })
 
     $('#formAddClient').on('submit', function (e) {
+        $('#btnSubmitFormClient').hide();
+        $('#loaderAddClient').show();
         e.preventDefault();
         var donnees = $(this).serialize();
         $.post(chemin + 'clients/addClient', donnees, function (retour) {
             switch (retour.type) {
                 case 'error':
+                    $('#btnSubmitFormClient').show();
+                    $('#loaderAddClient').hide();
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
                     break;
                 case 'success':
@@ -68,7 +72,7 @@ $(document).ready(function () {
     $('#formAddPlace').on('submit', function (e) {
         e.preventDefault();
         var donnees = $(this).serialize();
-        $.post(chemin + 'clients/addPlace', donnees, function (retour) {            
+        $.post(chemin + 'clients/addPlace', donnees, function (retour) {
             switch (retour.type) {
                 case 'error':
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
@@ -84,6 +88,39 @@ $(document).ready(function () {
         $('#modalAddClient').modal('show');
     });
 
+    $('#btnDelClient').on('click', function () {
+        button = $(this);
+        $.confirm({
+            title: 'Suppression du client ?',
+            content: 'Toutes ses informations et ses localisations seront définitivement effacées.',
+            type: 'blue',
+            theme: 'material',
+            buttons: {
+                confirm: {
+                    btnClass: 'btn-green',
+                    text: 'Supprimer',
+                    action: function () {
+                        $.post(chemin + 'clients/delClient', {clientId: $('#addClientId').val()}, function (retour) {
+                            switch (retour.type) {
+                                case 'error':
+                                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                                    break;
+                                case 'success':
+                                    window.location.assign(chemin + 'clients/liste');
+                                    break;
+                            }
+                        }, 'json');
+                    }
+
+                },
+                cancel: {
+                    btnClass: 'btn-red',
+                    text: 'Annuler'
+                }
+            }
+        })
+    });
+    
     $('.btnDelPlace').on('click', function () {
         button = $(this);
         $.confirm({
@@ -116,15 +153,7 @@ $(document).ready(function () {
             }
         })
     });
-    
-    $('.js-fusion').on('click', function(e){
-        e.stopPropagation();
-        if( $(this).prop('checked') === true ){
-            $(this).closest('tr').addClass('ligneSelectionnee');
-        } else {
-            $(this).closest('tr').removeClass('ligneSelectionnee');
-        }
-    });
+
 
 });
 

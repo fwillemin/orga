@@ -39,6 +39,8 @@
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-select.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-colorpicker.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-datepicker.min.js'); ?>"></script>
+    <script defer type="text/javascript" src="<?= base_url('assets/js/chartjs.bundle.min.js'); ?>"></script>
+    <script defer type="text/javascript" src="<?= base_url('assets/js/chartjs-plugin-annotation.min.js'); ?>"></script>
     <?php
 endif;
 if ($this->uri->segment(1) === 'planning' || $this->uri->segment(1) === 'heures'):

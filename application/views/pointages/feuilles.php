@@ -144,7 +144,7 @@ log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegar
                         $distanceVolOiseauMax = 0;
                         /* Analyse des donnees */
                         /* Si l'on fonctionne à la grille horaire */
-                        if (!empty($personnel->getPersonnelHoraire())):
+                        if ($personnel->getPersonnelPointages() == 2):
                             $totalHebdo += $personnel->getPersonnelHoraire()->getHoraireMinutes(date('w', $timeJour));
                             $totalMois += $personnel->getPersonnelHoraire()->getHoraireMinutes(date('w', $timeJour));
                         endif;
@@ -199,7 +199,7 @@ log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegar
                                     endif;
                                     if ($timeJour == $indispo->getIndispoDebutDate() && $indispo->getIndispoDebutMoment() == 2):
                                         $absAprem = true;
-                                        if (!empty($personnel->getPersonnelHoraire())): /* on retire les heures d'absence des compteurs hebdo et mensuels si on travaille avec une grille horaire */
+                                        if ($personnel->getPersonnelPointages() == 2): /* on retire les heures d'absence des compteurs hebdo et mensuels si on travaille avec une grille horaire */
                                             $totalHebdo -= $personnel->getPersonnelHoraire()->getHoraireMinutes(date('w', $timeJour), 2);
                                             $totalMois -= $personnel->getPersonnelHoraire()->getHoraireMinutes(date('w', $timeJour), 2);
                                         endif;
@@ -208,7 +208,7 @@ log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegar
                                     endif;
                                     if ($timeJour == $indispo->getIndispoFinDate() && $indispo->getIndispoFinMoment() == 1):
                                         $absMatin = true;
-                                        if (!empty($personnel->getPersonnelHoraire())): /* on retire les heures d'absence des compteurs hebdo et mensuels */
+                                        if ($personnel->getPersonnelPointages() == 2): /* on retire les heures d'absence des compteurs hebdo et mensuels */
                                             $totalHebdo -= $personnel->getPersonnelHoraire()->getHoraireMinutes(date('w', $timeJour), 1);
                                             $totalMois -= $personnel->getPersonnelHoraire()->getHoraireMinutes(date('w', $timeJour), 1);
                                         endif;
@@ -217,7 +217,7 @@ log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegar
                                     endif;
                                     $absMatin = $absAprem = true;
                                     $motifMatin = $motifAprem = $indispo->getIndispoMotif()->getMotifNom();
-                                    if (!empty($personnel->getPersonnelHoraire())): /* on retire les heures d'absence des compteurs hebdo et mensuels */
+                                    if ($personnel->getPersonnelPointages() == 2): /* on retire les heures d'absence des compteurs hebdo et mensuels */
                                         $totalHebdo -= $personnel->getPersonnelHoraire()->getHoraireMinutes(date('w', $timeJour), 3);
                                         $totalMois -= $personnel->getPersonnelHoraire()->getHoraireMinutes(date('w', $timeJour), 3);
                                     endif;
@@ -233,7 +233,7 @@ log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegar
                                 <?= $i; ?>
                             </td>
                             <?php
-                            if (!empty($personnel->getPersonnelHoraire())):
+                            if ($personnel->getPersonnelPointages() == 2):
                                 $baseJour = trim('getHoraire' . $this->cal->dateFrancais($timeJour, 'j'));
                                 ?>
                                 <td width="100">

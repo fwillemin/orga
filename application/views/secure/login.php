@@ -5,8 +5,9 @@
         Vous pouvez maintenant définir pour chaque utilisateur des accès spécifiques à chaque module d'Organibat (Heures, affaires, planning, ...)
         <br>
         <br>
-        <h4><i class="fas fa-chevron-circle-right"></i> Association des ouvriers en équipes</h4>
+        <h4><i class="fas fa-chevron-circle-right"></i> Ouvriers et pointages</h4>
         Créez des équipes et accelérer vos plannifications et vos saisies d'heures.
+        <br>
         <br>
         <br>
         <h4><i class="fas fa-chevron-circle-right"></i> Gestion des clients</h4>

@@ -1,7 +1,7 @@
 $(document).ready(function () {
-    
-    /* Selection de l'onglet à activer */    
-    switch( window.location.href.substr(window.location.href.lastIndexOf('/') + 1).charAt(0) ){
+
+    /* Selection de l'onglet à activer */
+    switch (window.location.href.substr(window.location.href.lastIndexOf('/') + 1).charAt(0)) {
         case 'a':
             $('#tabAchats').tab('show');
             break;
@@ -11,7 +11,7 @@ $(document).ready(function () {
         case 'b':
             $('#tabBoard').tab('show');
             break;
-    }    
+    }
 
     $('#selectCouleurChantier').colorpicker({
         color: $('#addChantierCouleur').val(),
@@ -107,7 +107,7 @@ $(document).ready(function () {
         $(this).closest('.inPageForm').slideUp(300).done(achatRAZ());
     });
 
-    $('#tableAchats tr.ligneClikable').on('click', function () {       
+    $('#tableAchats tr.ligneClikable').on('click', function () {
         window.location.assign(chemin + 'chantiers/ficheChantier/' + $('#addAchatChantierId').val() + '/a' + $(this).attr('data-achatid'));
     });
 
@@ -159,7 +159,7 @@ $(document).ready(function () {
             }
         }
     });
-    
+
     $('#btnDelChantier').confirm({
         title: 'Suppression du chantier ?',
         content: 'Êtes-vous sûr de vouloir supprimer ce chantier ?',
@@ -189,7 +189,7 @@ $(document).ready(function () {
             }
         }
     });
-    
+
     $('#btnClotureChantier').confirm({
         title: 'Clôture du chantier ?',
         content: 'Une fois clôturé, il ne sera plus possible de modifier les achats, d\'ajouter ou de modifier des affectations ou encore de saisir des heures.',
@@ -219,7 +219,10 @@ $(document).ready(function () {
             }
         }
     });
-    $('#btnReouvertureChantier').confirm({
+
+    $('#btnReouvertureChantier').on('click', function () {
+        btnReouverture = $(this);
+    }).confirm({
         title: 'Réouverture du chantier ?',
         content: 'L\'affaire de ce chantier repassera dans l\'état "En cours"',
         type: 'blue',
@@ -229,13 +232,13 @@ $(document).ready(function () {
                 btnClass: 'btn-green',
                 text: 'Réouverture',
                 action: function () {
-                    $.post(chemin + 'chantiers/reouvertureChantier', {chantierId: $('#addChantierId').val()}, function (retour) {
+                    $.post(chemin + 'chantiers/reouvertureChantier', {chantierId: btnReouverture.attr('data-chantierid')}, function (retour) {
                         switch (retour.type) {
                             case 'error':
                                 $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
                                 break;
                             case 'success':
-                                window.location.assign(chemin + 'chantiers/ficheChantier/' + $('#addChantierAffaireId').val());
+                                window.location.assign(chemin + 'chantiers/ficheChantier/' + btnReouverture.attr('data-affaireid'));
                                 break;
                         }
                     }, 'json');
@@ -249,6 +252,120 @@ $(document).ready(function () {
         }
     });
 
-
+    var graphChantierEtatHeures = document.getElementById("graphChantierEtatHeures").getContext('2d');
+    new Chart(graphChantierEtatHeures, {
+        type: 'bar',
+        data: {
+            labels: ["Heures du chantier"],
+            datasets: [{
+                    label: "Pointées",
+                    data: [$('#graphChantierEtatHeures').attr('js-pointees')],
+                    backgroundColor: [
+                        'rgba(163, 234, 128, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(81, 184, 30, 1)'
+                    ],
+                    borderWidth: 1
+                }, {
+                    label: "Planifiées",
+                    data: [$('#graphChantierEtatHeures').attr('js-planifiees')],
+                    backgroundColor: [
+                        'rgba(236, 228, 141, 0.7)'                        
+                    ],
+                    borderColor: [
+                        'rgba(197, 184, 32, 1)'                        
+                    ],
+                    borderWidth: 1
+                }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                xAxes: [{
+                        stacked: true,
+                    }],
+                yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        stacked: true
+                    }]
+            },
+            annotation: {
+                annotations: [{
+                        type: 'line',
+                        mode: 'horizontal',
+                        scaleID: 'y-axis-0',
+                        value: $('#graphChantierEtatHeures').attr('js-prevues'),
+                        borderColor: 'rgb(75, 192, 192)',
+                        borderWidth: 2,
+                        label: {
+                            enabled: true,
+                            content: 'Heures prévues',
+                            backgroundColor: ['rgba(89, 89, 89, 0.53)']     
+                        }
+                    }]
+            }
+        }
+    });
+    
+    var graphChantierEtatAchats = document.getElementById("graphChantierEtatAchats").getContext('2d');
+    new Chart(graphChantierEtatAchats, {
+        type: 'horizontalBar',
+        data: {
+            labels: ["Budgets du chantier"],
+            datasets: [{
+                    label: "Consommé",
+                    data: [$('#graphChantierEtatAchats').attr('js-consomme')],
+                    backgroundColor: [
+                        'rgba(163, 234, 128, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(81, 184, 30, 1)'
+                    ],
+                    borderWidth: 1
+                }, {
+                    label: "Provisionné",
+                    data: [$('#graphChantierEtatAchats').attr('js-prevu')],
+                    backgroundColor: [
+                        'rgba(236, 228, 141, 0.7)'                        
+                    ],
+                    borderColor: [
+                        'rgba(197, 184, 32, 1)'                        
+                    ],
+                    borderWidth: 1
+                }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                xAxes: [{
+                        //stacked: true,
+                    }],
+                yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        //stacked: true
+                    }]
+            },
+            annotation: {
+                annotations: [{
+                        type: 'line',
+                        mode: 'vertical',
+                        scaleID: 'x-axis-0',
+                        value: $('#graphChantierEtatAchats').attr('js-budget'),
+                        borderColor: 'rgb(75, 192, 192)',
+                        borderWidth: 2,
+                        label: {
+                            enabled: true,
+                            content: 'Budget inital',
+                            backgroundColor: ['rgba(89, 89, 89, 0.53)']                    
+                        }
+                    }]
+            }
+        }
+    });
 });
 

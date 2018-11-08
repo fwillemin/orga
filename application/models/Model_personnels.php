@@ -24,6 +24,7 @@ class Model_personnels extends MY_model {
                 ->set('personnelCode', $personnel->getPersonnelCode())
                 ->set('personnelMessage', $personnel->getPersonnelMessage())
                 ->set('personnelHoraireId', $personnel->getPersonnelHoraireId())
+                ->set('personnelPointages', $personnel->getPersonnelPointages())
                 ->set('personnelEquipeId', $personnel->getPersonnelEquipeId())
                 ->set('personnelActif', $personnel->getPersonnelActif())
                 ->insert($this->table);
@@ -43,6 +44,7 @@ class Model_personnels extends MY_model {
                 ->set('personnelCode', $personnel->getPersonnelCode())
                 ->set('personnelMessage', $personnel->getPersonnelMessage())
                 ->set('personnelHoraireId', $personnel->getPersonnelHoraireId())
+                ->set('personnelPointages', $personnel->getPersonnelPointages())
                 ->set('personnelEquipeId', $personnel->getPersonnelEquipeId())
                 ->set('personnelActif', $personnel->getPersonnelActif())
                 ->where('personnelId', $personnel->getPersonnelId())

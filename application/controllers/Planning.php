@@ -19,6 +19,11 @@ class Planning extends My_Controller {
         $this->nbSemainesApres = $this->session->userdata('parametres')['nbSemainesApres'];
     }
 
+    public function devAffect($affectId) {
+        $affect = $this->managerAffectations->getAffectationById($affectId);
+        $affect->calculNbHeures();
+    }
+
     /* Permet la selection ou non des chantiers terminés dans le slide gauche */
 
     public function modAffichageTermines() {

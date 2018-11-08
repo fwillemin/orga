@@ -25,6 +25,7 @@ class Chantier {
     protected $chantierCouleur;
     protected $chantierCouleurSecondaire;
     protected $chantierEtat;
+    protected $chantierEtatHtml;
     protected $chantierDateCloture;
     protected $chantierHeuresPrevues;
     protected $chantierBudgetAchats;
@@ -101,7 +102,7 @@ class Chantier {
 
     public function hydrateAffectations() {
         $CI = & get_instance();
-        $this->chantierAffectations = $CI->managerAffectations->getAffectations(array('affectationChantierId' => $this->chantierId));
+        $this->chantierAffectations = $CI->managerAffectations->getAffectations(array('affectationChantierId' => $this->chantierId), 'affectationDebutDate DESC');
     }
 
     public function cloturer($dateCloture) {
@@ -327,6 +328,14 @@ class Chantier {
 
     function setChantierAffectations($chantierAffectations) {
         $this->chantierAffectations = $chantierAffectations;
+    }
+
+    function getChantierEtatHtml() {
+        return $this->chantierEtatHtml;
+    }
+
+    function setChantierEtatHtml($chantierEtatHtml) {
+        $this->chantierEtatHtml = $chantierEtatHtml;
     }
 
 }

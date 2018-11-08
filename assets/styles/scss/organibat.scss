@@ -453,6 +453,11 @@ and open the template in the editor.
     }
     .inputCenter { text-align: center; }
     #enteteReleve, #piedReleve {display:none;}
+    
+    #enteteAffaire {
+        background-color: $noir;
+        color: #EEE;
+    }
 
 }
 

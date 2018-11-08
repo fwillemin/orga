@@ -47,7 +47,8 @@ class Personnels extends My_Controller {
         endif;
 
         $personnel = $this->managerPersonnels->getPersonnelById($personnelId);
-        $personnel->hydrateTauxHoraires();
+        //$personnel->hydrateTauxHoraires();
+        $personnel->hydrateHoraire();
 
         if ($tauxHoraireId && $this->existTauxHoraire($tauxHoraireId)):
             $tauxHoraire = $this->managerTauxHoraires->getTauxHoraireById($tauxHoraireId);
@@ -86,6 +87,7 @@ class Personnels extends My_Controller {
                 $personnel->setPersonnelMessage($this->input->post('addPersonnelMessage'));
                 $personnel->setPersonnelEquipeId($this->input->post('addPersonnelEquipeId') ?: null);
                 $personnel->setPersonnelHoraireId($this->input->post('addPersonnelHoraireId') ?: null);
+                $personnel->setPersonnelPointages($this->input->post('addPersonnelHoraireId') ? $this->input->post('addPersonnelPointages') : 1);
                 $personnel->setPersonnelActif($this->input->post('addPersonnelActif') ? 1 : 0);
                 $this->managerPersonnels->editer($personnel);
 
@@ -100,6 +102,7 @@ class Personnels extends My_Controller {
                     'personnelMessage' => $this->input->post('addPersonnelMessage'),
                     'personnelEquipeId' => $this->input->post('addPersonnelEquipeId') ?: null,
                     'personnelHoraireId' => $this->input->post('addPersonnelHoraireId') ?: null,
+                    'personnelPointages' => $this->input->post('addPersonnelHoraireId') ? $this->input->post('addPersonnelPointages') : 1,
                     'personnelActif' => $this->input->post('addPersonnelActif') ? 1 : 0
                 );
                 $personnel = new Personnel($dataPersonnel);
