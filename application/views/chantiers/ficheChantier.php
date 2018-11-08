@@ -78,7 +78,7 @@
                 ?>
             </div>
 
-            <div class="tab-pane" id="resumeChantier">
+            <div class="tab-pane active show" id="resumeChantier">
                 <br>
                 <?php if ($chantier->getChantierEtat() == 1): ?>
                     <button class="btn btn-sm btn-info" id="btnClotureChantier" <?= $this->ion_auth->in_group(array(54)) ? '' : 'disabled'; ?> >
@@ -102,7 +102,7 @@
                 </span>
             </div>
 
-            <div class="tab-pane active show" id="heuresChantier">
+            <div class="tab-pane" id="heuresChantier">
                 <?php include('tabHeures.php'); ?>
             </div>
 

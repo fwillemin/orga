@@ -364,6 +364,7 @@ class Migration extends My_Controller {
                 'personnelMessage' => $perso->message,
                 'personnelCode' => $perso->code,
                 'personnelHoraireId' => $horaire ? $horaire->getHoraireId() : null,
+                'personnelPointages' => $horaire ? 2 : 1,
                 'personnelEquipeId' => null
             );
             $personnel = new Personnel($arrayPersonnel);
