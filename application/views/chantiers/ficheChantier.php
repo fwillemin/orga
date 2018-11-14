@@ -32,10 +32,17 @@
                     </div>
                 </div>
                 <h2>
-                    <a href="<?= site_url('affaires/ficheAffaire/' . $affaire->getAffaireId()); ?>" style="text-decoration: none;">
+                    <a href="<?= site_url('affaires/ficheAffaire/' . $affaire->getAffaireId()); ?>" style="text-decoration: none; float:left; margin-right:10px;">
                         <i class="fas fa-chevron-circle-left" style="color: grey;"></i>
                     </a>
-                    <?= $chantier->getChantierObjet(); ?>
+                    <select id="selectChantierFiche" class="form-control" data-width="60%">
+                        <?php
+                        foreach ($affaire->getAffaireChantiers() as $chantierListe):
+                            echo '<option value="' . $chantierListe->getChantierId() . '" ' . ($chantierListe->getChantierId() == $chantier->getChantierId() ? 'selected' : '') . '>' . $chantierListe->getChantierObjet() . '</option>';
+                        endforeach;
+                        ?>
+                    </select>
+
                 </h2>
                 <div style="position : absolute; bottom: 0px; right: 10px; text-align: right; font-size:14px;">
                     <?= $chantier->getChantierPlace() ? $chantier->getChantierPlace()->getPlaceAdresse() : '<small class="danger">Aucune place renseignée</small>'; ?>

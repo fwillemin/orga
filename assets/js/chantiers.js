@@ -263,6 +263,10 @@ $(document).ready(function () {
     $('#tableResumeAchats tr.ligneClikable').on('click', function(){
         window.location.assign(chemin + 'chantiers/ficheChantier/' + $('#tableResumeAchats').attr('data-chantierid') + '/a' + $(this).attr('data-achatid'));
     });
+    
+    $('#selectChantierFiche').on('change', function(){
+        window.location.assign(chemin + 'chantiers/ficheChantier/' + $(this).val());
+    });
 
     /* GRAPHS */
     var graphChantierEtatHeures = document.getElementById("graphChantierEtatHeures").getContext('2d');
@@ -382,6 +386,11 @@ $(document).ready(function () {
 
     var graphChantierResume = document.getElementById("graphChantierResume").getContext('2d');    
     var marges = $('#graphChantierResume').attr('js-datamarge').split(',');
+    if( parseFloat(marges[0]) > 0 ){
+        colorCommercial = 'lightgreen';
+    }else{
+        colorCommercial = '#E92768';
+    }
     if( parseFloat(marges[1]) > 0 ){
         colorTempsReel = 'lightgreen';
     }else{
@@ -413,7 +422,7 @@ $(document).ready(function () {
                 }, {
                     label: "Marge",
                     data: marges,
-                   backgroundColor: ['lightgreen',colorTempsReel, colorFinChantier],
+                   backgroundColor: [colorCommercial,colorTempsReel, colorFinChantier],
                 }]
         },
         options: {

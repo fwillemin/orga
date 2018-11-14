@@ -212,18 +212,6 @@ and open the template in the editor.
         text-align: center;
     }
 
-    /* Mise en forme planning */
-    /*.div_week_end {
-            
-            position:absolute;
-            top: 36px;
-            background-image:url("../../assets/img/we_background.png");
-            border:1px solid #000;
-            border-radius:5px;
-            width: 124px;
-            opacity: 0.5;
-            z-index: 1;
-    }*/
     #tablePlanningPersonnel {
         position:relative;
         left:15px;
@@ -469,6 +457,14 @@ and open the template in the editor.
     
     .badgeAnalyseChantier {
         font-size: 12px;
+    }
+    
+    #selectChantierFiche{
+        font-size : 20px;
+        width:60%;
+        color: #FFF;
+        border-color: steelblue;
+        background-color: $noir;
     }
 
 }
