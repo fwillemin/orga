@@ -48,15 +48,29 @@
                         <tr>
                             <?php
                             // génération des semaines du planning
+                            $currentDate = $premierJourPlanning - 86400 * 7;
+                            $heureEte = date('I', $premierJourPlanning); /* indique si le premier jour du planning est été ou hiver */
                             for ($i = 0; $i < $nbSemainesPlanning; $i++):
-                                $jourEncours = $premierJourPlanning + ($i * 7) * 86400;
+                                $currentDate += 86400 * 7;
+                                //$listeDate[$i] = $currentDate;
+                                /* Gestion des passages en heure été et heure hiver */
+                                if (date('I', $currentDate) != $heureEte):
+                                    if ($heureEte == 1):
+                                        /* on ajoute une heure */
+                                        $currentDate += 3600;
+                                    else:
+                                        /* on retire une heure */
+                                        $currentDate -= 3600;
+                                    endif;
+                                    $heureEte = date('I', $currentDate);
+                                endif;
                                 ?>
                                 <td class="cellSemaines" colspan="14" align="center" style="width: <?= 14 * ($this->largeur + 1.5); ?>px;">
-                                    <?= $this->cal->dateFrancais($jourEncours, 'Ma') . ' | Semaine ' . date('W', $jourEncours); ?>
+                                    <?= $this->cal->dateFrancais($currentDate, 'Ma') . ' | Semaine ' . date('W', $currentDate); ?>
                                 </td>
                                 <?php
                             endfor;
-                            unset($jourEncours);
+                            unset($currentDate);
                             ?>
                         </tr>
 

@@ -30,6 +30,7 @@ class Chantiers extends My_Controller {
         if (!empty($chantier->getChantierAffectations())):
             foreach ($chantier->getChantierAffectations()as $affect):
                 $affect->hydratePersonnel();
+                $affect->hydrateHeures();
             endforeach;
         endif;
         $chantier->hydratePlace();
@@ -42,11 +43,15 @@ class Chantiers extends My_Controller {
         $chantier->hydrateClient(); /* hydrate aussi l'affaire */
         $chantier->getChantierClient()->hydratePlaces();
 
+        $affaire = $chantier->getChantierAffaire();
+        $affaire->hydrateChantiers();
+
         $data = array(
             'fournisseurs' => $this->managerFournisseurs->getFournisseurs(),
             'categories' => $this->managerCategories->getCategories(),
             'chantier' => $chantier,
-            'affaire' => $chantier->getChantierAffaire(),
+            'affaire' => $affaire,
+            'analyse' => $this->analyseChantier($chantier),
             'title' => 'Fiche Chantier',
             'description' => 'Fiche chantier',
             'content' => $this->viewFolder . '/' . __FUNCTION__

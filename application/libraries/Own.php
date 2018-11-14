@@ -91,4 +91,11 @@ class Own {
         return $nbCases;
     }
 
+    public function normalizeData($valeur, $liste = array()) {
+        $valMax = max($liste);
+        $valMin = min($liste);
+        $newValeur = $valeur == 0 ? 0 : round((($valeur - $valMin) / ($valMax - $valMin)), 2) * 100;
+        return $newValeur;
+    }
+
 }

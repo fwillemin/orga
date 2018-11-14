@@ -43,6 +43,7 @@ class Horaires extends My_Controller {
 
         $data = array(
             'horaire' => $horaire,
+            'personnels' => $this->managerPersonnels->getPersonnels(array('personnelActif' => 1, 'personnelHoraireId' => $horaire->getHoraireId())),
             'title' => 'Horaire ' . $horaire->getHoraireNom(),
             'description' => 'Fiche horaire',
             'content' => $this->viewFolder . '/' . __FUNCTION__

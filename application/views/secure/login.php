@@ -1,17 +1,18 @@
 <div class="row" style="margin-top:40px;">
     <div class="col-12 col-sm-5 offset-sm-1" style="padding-top:70px;">
         <h1 style="font-weight: bold;">Nouveautés</h1>
-        <h4><i class="fas fa-chevron-circle-right"></i> Nouvelle gestion des utilisateurs</h4>
+        <h4><i class="fas fa-chevron-circle-right"></i> Planifications et de vos calculs d'avancement <strong style='color:orangered;'>à l'heure !</strong></h4>
+        <h4><i class="fas fa-chevron-circle-right"></i> Nouvelle gestion des utilisateurs administratifs</h4>
         Vous pouvez maintenant définir pour chaque utilisateur des accès spécifiques à chaque module d'Organibat (Heures, affaires, planning, ...)
         <br>
         <br>
         <h4><i class="fas fa-chevron-circle-right"></i> Ouvriers et pointages</h4>
         Créez des équipes et accelérer vos plannifications et vos saisies d'heures.
-        <br>
+        <br>Vous pouvez pointez avec une tranche personnalisable (5, 10, 15, 20, 30, 60 minutes)
         <br>
         <br>
         <h4><i class="fas fa-chevron-circle-right"></i> Gestion des clients</h4>
-        Historiques des chantiers par client, ...
+        Historiques des affaires et chantiers par client, ...
         <br>
         <br>
         <h4><i class="fas fa-chevron-circle-right"></i> Nouvelles fonctionnalités de planning</h4>
@@ -19,7 +20,11 @@
         <br>Insersion d'affectation sur plusieurs personnels
         <br>Glisser/Déposer des livraisons
         <br>Ajout d'achats et de livraisons depuis le planning
-        <br>Décallez toutes les affectations d'un personnel en une fois
+        <br>Décallez toutes les affectations d'un ouvrier en une fois
+        <br>
+        <br>
+        <h4><i class="fas fa-chevron-circle-right"></i> Contacts entrants</h4>
+        Nouvelle interface de gestion des contacts entrants
     </div>
 
     <div class="col-12 col-sm-3 offset-sm-2">

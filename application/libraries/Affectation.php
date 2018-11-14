@@ -23,12 +23,14 @@ class Affectation {
     protected $affectationNbDemi;
     protected $affectationDebutDate;
     protected $affectationDebutMoment; /* 1 Matin, 2 Aprem */
-    protected $affectationDebutMomentText;
+    protected $affectationDebutMomentTextSmall;
     protected $affectationFinDate;
     protected $affectationFinMoment; /* 1 Matin, 2 Aprem */
     protected $affectationFinMomentText;
+    protected $affectationFinMomentTextSmall;
     protected $affectationCases; /* Nombre de case du planning incluant les week-end */
-    protected $affectationNbHeures; /* Durée précise en heure de l'affectation */
+    protected $affectationHeuresPlanifiees; /* Durée précise en heure de l'affectation planifiée */
+    protected $affectationHeuresPointees; /* Calcul par Trigger sur la table heures // Total des heures pointees pour cette affectation */
     /* --  */
     protected $affectationChantierEtat; /* Etat du chantier pere */
     protected $affectationCommentaire;
@@ -68,24 +70,28 @@ class Affectation {
         switch ($this->affectationDebutMoment):
             case 1:
                 $this->affectationDebutMomentText = 'matin';
+                $this->affectationDebutMomentTextSmall = 'AM';
                 break;
             case 2:
                 $this->affectationDebutMomentText = 'après-midi';
+                $this->affectationDebutMomentTextSmall = 'PM';
                 break;
         endswitch;
         switch ($this->affectationFinMoment):
             case 1:
                 $this->affectationFinMomentText = 'matin';
+                $this->affectationFinMomentTextSmall = 'AM';
                 break;
             case 2:
                 $this->affectationFinMomentText = 'après-midi';
+                $this->affectationFinMomentTextSmall = 'PM';
                 break;
         endswitch;
     }
 
     /* Retourne la durée précise en heure d'une affectation en fonction de l'horaire du personnel associé */
 
-    public function calculNbHeures() {
+    public function calculHeuresPlanifiees() {
         $CI = & get_instance();
         if (!$this->affectationPersonnel):
             $this->hydratePersonnel();
@@ -107,6 +113,7 @@ class Affectation {
                         /* On ajoute les heures de l'aprem dans l'horaire */
                         $nbHeures += $horaire->{'getHoraire' . $jour . 'PM'}();
                     endif;
+
                 endif;
 
                 // Dernier jour
@@ -118,6 +125,8 @@ class Affectation {
                         /* On ajoute les heures de l'aprem dans l'horaire */
                         $nbHeures += $horaire->{'getHoraire' . $jour . 'AM'}();
                     endif;
+                elseif ($i == $this->affectationFinDate && $this->affectationFinDate == $this->affectationDebutDate && $this->affectationFinMoment == 1):
+                    $nbHeures -= $horaire->{'getHoraire' . $jour . 'PM'}();
                 endif;
 
                 // Autres jours
@@ -127,11 +136,11 @@ class Affectation {
                 endif;
 
             endfor;
-            $this->affectationNbHeures = $nbHeures;
+            $this->affectationHeuresPlanifiees = $nbHeures;
 
         else:
             /* On fait un calcul de base avec 4 heures par demi-journée */
-            $this->affectationNbHeures = 4 * $this->affectationNbDemi;
+            $this->affectationHeuresPlanifiees = 4 * $this->affectationNbDemi;
         endif;
     }
 
@@ -469,12 +478,36 @@ class Affectation {
         $this->affectationLivraisons = $affectationLivraisons;
     }
 
-    function getAffectationNbHeures() {
-        return $this->affectationNbHeures;
+    function getAffectationHeuresPlanifiees() {
+        return $this->affectationHeuresPlanifiees;
     }
 
-    function setAffectationNbHeures($affectationNbHeures) {
-        $this->affectationNbHeures = $affectationNbHeures;
+    function getAffectationHeuresPointees() {
+        return $this->affectationHeuresPointees;
+    }
+
+    function setAffectationHeuresPlanifiees($affectationHeuresPlanifiees) {
+        $this->affectationHeuresPlanifiees = $affectationHeuresPlanifiees;
+    }
+
+    function setAffectationHeuresPointees($affectationHeuresPointees) {
+        $this->affectationHeuresPointees = $affectationHeuresPointees;
+    }
+
+    function getAffectationFinMomentTextSmall() {
+        return $this->affectationFinMomentTextSmall;
+    }
+
+    function setAffectationFinMomentTextSmall($affectationFinMomentTextSmall) {
+        $this->affectationFinMomentTextSmall = $affectationFinMomentTextSmall;
+    }
+
+    function getAffectationDebutMomentTextSmall() {
+        return $this->affectationDebutMomentTextSmall;
+    }
+
+    function setAffectationDebutMomentTextSmall($affectationDebutMomentTextSmall) {
+        $this->affectationDebutMomentTextSmall = $affectationDebutMomentTextSmall;
     }
 
 }

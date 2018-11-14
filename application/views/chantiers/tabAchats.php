@@ -6,7 +6,7 @@
         <br>Budget consommé : <?= number_format($chantier->getChantierBudgetConsomme(), 2, ',', ' ') . '€'; ?>
     </div>
     <div class="col-6 col-lg-9">
-        <canvas id="graphChantierEtatAchats" width="400" height="40" js-budget="<?= $chantier->getChantierBudgetAchats(); ?>" js-prevu="<?= $chantier->getChantierBudgetPrevu(); ?>" js-consomme="<?= $chantier->getChantierBudgetConsomme(); ?>"></canvas>
+        <canvas id="graphChantierEtatAchats" width="700" height="130" js-budget="<?= $chantier->getChantierBudgetAchats(); ?>" js-prevu="<?= $chantier->getChantierBudgetPrevu(); ?>" js-consomme="<?= $chantier->getChantierBudgetConsomme(); ?>"></canvas>
     </div>
 </div>
 <hr>
@@ -18,7 +18,11 @@
 <?php endif; ?>
 
 <div id="containerAddAchat" class ="inPageForm col-md-12 col-lg-7" style = "padding:3px; <?= !empty($achat) ? '' : 'display: none;' ?>">
-    <?php include('formAchat.php'); ?>
+    <?php
+    if ($this->ion_auth->in_group(array(55))):
+        include('formAchat.php');
+    endif;
+    ?>
     <i class="formClose fas fa-times"></i>
 </div>
 <br>

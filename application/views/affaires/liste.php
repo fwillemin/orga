@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-lg-8 offset-lg-2 fond" style="padding-top: 20px;">
+    <div class="col-12 col-lg-10 offset-lg-1 fond" style="padding-top: 20px;">
 
         <select class="form-control form-control-sm w-25" id="selectAffairesEtat" style="position: absolute; right:5px;">
             <option value="0" <?= $this->session->userdata('rechAffaireEtat') == '0' ? 'selected' : ''; ?> >Toutes</option>

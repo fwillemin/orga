@@ -15,6 +15,147 @@ class Affaires extends My_Controller {
         endif;
     }
 
+    private function analyseAffaire(Affaire $affaire) {
+
+        /* Initialisation */
+        $analyse['heures']['prevues'] = $analyse['heures']['planifiees'] = $analyse['heures']['pointees'] = $analyse['heures']['finAffaire'] = $analyse['mainO']['commercial'] = $analyse['mainO']['tempsReel'] = $analyse['mainO']['finAffaire'] = $analyse['mainO']['restant'] = $analyse['achats']['commercial'] = $analyse['achats']['tempsReel'] = $analyse['achats']['finAffaire'] = $analyse['debourseSec']['commercial'] = $analyse['debourseSec']['tempsReel'] = $analyse['debourseSec']['finAffaire'] = $analyse['marge']['commerciale'] = $analyse['marge']['tempsReel'] = $analyse['marge']['finAffaire'] = $analyse['fraisGeneraux'] = 0;
+
+        if (!empty($affaire->getAffaireChantiers())):
+            foreach ($affaire->getAffaireChantiers() as $chantier):
+                $chantier->hydrateAchats();
+                $chantier->hydrateAffectations();
+                if (!empty($chantier->getChantierAffectations())):
+                    foreach ($chantier->getChantierAffectations()as $affect):
+                        $affect->hydratePersonnel();
+                        $affect->hydrateHeures();
+                    endforeach;
+                endif;
+
+                $analyseChantier = $this->analyseChantier($chantier);
+                $analyse['heures']['prevues'] += $analyseChantier['heures']['prevues'];
+                $analyse['heures']['planifiees'] += $analyseChantier['heures']['planifiees'];
+                $analyse['heures']['pointees'] += $analyseChantier['heures']['pointees'];
+                $analyse['heures']['finAffaire'] += $analyseChantier['heures']['finChantier'];
+                $analyse['mainO']['commercial'] += $analyseChantier['mainO']['commercial'];
+                $analyse['mainO']['tempsReel'] += $analyseChantier['mainO']['tempsReel'];
+                $analyse['mainO']['finAffaire'] += $analyseChantier['mainO']['finChantier'];
+                $analyse['mainO']['restant'] += $analyseChantier['mainO']['restant'];
+                $analyse['achats']['commercial'] += $analyseChantier['achats']['commercial'];
+                $analyse['achats']['tempsReel'] += $analyseChantier['achats']['tempsReel'];
+                $analyse['achats']['finAffaire'] += $analyseChantier['achats']['finChantier'];
+                $analyse['debourseSec']['commercial'] += $analyseChantier['debourseSec']['commercial'];
+                $analyse['debourseSec']['tempsReel'] += $analyseChantier['debourseSec']['tempsReel'];
+                $analyse['debourseSec']['finAffaire'] += $analyseChantier['debourseSec']['finChantier'];
+                $analyse['marge']['commerciale'] += $analyseChantier['marge']['commerciale'];
+                $analyse['marge']['tempsReel'] += $analyseChantier['marge']['tempsReel'];
+                $analyse['marge']['finAffaire'] += $analyseChantier['marge']['finChantier'];
+                $analyse['fraisGeneraux'] += $analyseChantier['fraisGeneraux'];
+
+                /* Marges horaires */
+                $analyse['margeHoraire']['commerciale'] = $analyse['heures']['prevues'] > 0 ? round($analyse['marge']['commerciale'] / $analyse['heures']['prevues'], 2) : null;
+                $analyse['margeHoraire']['tempsReel'] = $analyse['heures']['pointees'] > 0 ? round($analyse['marge']['tempsReel'] / $analyse['heures']['pointees'], 2) : null;
+                $analyse['margeHoraire']['finAffaire'] = $analyse['heures']['finAffaire'] > 0 ? round($analyse['marge']['finAffaire'] / $analyse['heures']['finAffaire'], 2) : null;
+                /* Ecarts Achats */
+                if ($analyse['achats']['tempsReel'] > 0 && $analyse['achats']['commercial'] > 0):
+                    $ecart = round(($analyse['achats']['tempsReel'] / $analyse['achats']['commercial']) * 100);
+                    $analyse['achats']['ecartTempsReel'] = ($ecart - 100);
+                    if ($ecart <= 100):
+                        $analyse['achats']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+                    else:
+                        $analyse['achats']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+                    endif;
+                else:
+                    $analyse['achats']['ecartTempsReel'] = null;
+                    $analyse['achats']['ecartTempsReelHtml'] = '<span class="badge-secondary">-</span>';
+                endif;
+                if ($analyse['achats']['finAffaire'] > 0 && $analyse['achats']['commercial'] > 0):
+                    $ecart = round(($analyse['achats']['finAffaire'] / $analyse['achats']['commercial']) * 100);
+                    $analyse['achats']['ecartFinAffaire'] = ($ecart - 100);
+                    if ($ecart <= 100):
+                        $analyse['achats']['ecartFinAffaireHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+                    else:
+                        $analyse['achats']['ecartFinAffaireHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+                    endif;
+                else:
+                    $analyse['achats']['ecartFinAffaire'] = null;
+                    $analyse['achats']['ecartFinAffaireHtml'] = '<span class="badge-secondary">-</span>';
+                endif;
+                /* Ecarts Main oeuvre */
+                if ($analyse['mainO']['tempsReel'] > 0 && $analyse['mainO']['commercial'] > 0):
+                    $ecart = round(($analyse['mainO']['tempsReel'] / $analyse['mainO']['commercial']) * 100);
+                    $analyse['mainO']['ecartTempsReel'] = ($ecart - 100);
+                    if ($ecart <= 100):
+                        $analyse['mainO']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+                    else:
+                        $analyse['mainO']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+                    endif;
+                else:
+                    $analyse['mainO']['ecartTempsReel'] = null;
+                    $analyse['mainO']['ecartTempsReelHtml'] = '<span class="badge-secondary">-</span>';
+                endif;
+                if ($analyse['mainO']['finAffaire'] > 0 && $analyse['mainO']['commercial'] > 0):
+                    $ecart = round(($analyse['mainO']['finAffaire'] / $analyse['mainO']['commercial']) * 100);
+                    $analyse['mainO']['ecartFinAffaire'] = ($ecart - 100);
+                    if ($ecart <= 100):
+                        $analyse['mainO']['ecartFinAffaireHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+                    else:
+                        $analyse['mainO']['ecartFinAffaireHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+                    endif;
+                else:
+                    $analyse['mainO']['ecartFinAffaire'] = null;
+                    $analyse['mainO']['ecartFinAffaireHtml'] = '<span class="badge-secondary">-</span>';
+                endif;
+                /* Ecarts deboursé Sec */
+                if ($analyse['debourseSec']['tempsReel'] > 0 && $analyse['debourseSec']['commercial'] > 0):
+                    $ecart = round(($analyse['debourseSec']['tempsReel'] / $analyse['debourseSec']['commercial']) * 100);
+                    $analyse['debourseSec']['ecartTempsReel'] = ($ecart - 100);
+                    if ($ecart <= 100):
+                        $analyse['debourseSec']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+                    else:
+                        $analyse['debourseSec']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+                    endif;
+                else:
+                    $analyse['debourseSec']['ecartTempsReel'] = null;
+                    $analyse['debourseSec']['ecartTempsReelHtml'] = '<span class="badge-secondary">-</span>';
+                endif;
+                if ($analyse['debourseSec']['finAffaire'] > 0 && $analyse['debourseSec']['commercial'] > 0):
+                    $ecart = round(($analyse['debourseSec']['finAffaire'] / $analyse['debourseSec']['commercial']) * 100);
+                    $analyse['debourseSec']['ecartFinAffaire'] = ($ecart - 100);
+                    if ($ecart <= 100):
+                        $analyse['debourseSec']['ecartFinAffaireHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+                    else:
+                        $analyse['debourseSec']['ecartFinAffaireHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+                    endif;
+                else:
+                    $analyse['debourseSec']['ecartFinAffaire'] = null;
+                    $analyse['debourseSec']['ecartFinAffaireHtml'] = '<span class="badge-secondary">-</span>';
+                endif;
+
+                $analyse['marge']['ecartTempsReel'] = $analyse['marge']['tempsReel'] - $analyse['marge']['commerciale'];
+                if ($analyse['marge']['ecartTempsReel'] > 0):
+                    $analyse['marge']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-success">+' . $analyse['marge']['ecartTempsReel'] . '</span>';
+                elseif ($analyse['marge']['ecartTempsReel'] < 0):
+                    $analyse['marge']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">' . $analyse['marge']['ecartTempsReel'] . '</span>';
+                else:
+                    $analyse['marge']['ecartTempsReelHtml'] = '<span class="badge-secondary"><0/span>';
+                endif;
+
+                $analyse['marge']['ecartFinAffaire'] = $analyse['marge']['finAffaire'] - $analyse['marge']['commerciale'];
+                if ($analyse['marge']['ecartFinAffaire'] > 0):
+                    $analyse['marge']['ecartFinAffaireHtml'] = '<span class="badgeAnalyseChantier badge badge-success">+' . $analyse['marge']['ecartFinAffaire'] . '</span>';
+                elseif ($analyse['marge']['ecartFinAffaire'] < 0):
+                    $analyse['marge']['ecartFinAffaireHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">' . $analyse['marge']['ecartFinAffaire'] . '</span>';
+                else:
+                    $analyse['marge']['ecartFinAffaireHtml'] = '<span class="badge-secondary"><0/span>';
+                endif;
+
+            endforeach;
+        endif;
+
+        //log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($analyse, true));
+        return $analyse;
+    }
+
     public function liste() {
 
         $where = array('affaireId <>' => $this->session->userdata('affaireDiversId'));
@@ -67,6 +208,7 @@ class Affaires extends My_Controller {
         $affaire->hydratePlace();
 
         $data = array(
+            'analyse' => $this->analyseAffaire($affaire),
             'commerciaux' => $this->managerUtilisateurs->getCommerciaux(),
             'clients' => $clients,
             'categories' => $this->managerCategories->getCategories(),

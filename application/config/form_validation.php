@@ -533,7 +533,7 @@ $config = array(
         array(
             'field' => 'addChantierHeuresPrevues',
             'label' => 'Nombres d\'heures prévues',
-            'rules' => 'trim|numeric|required'
+            'rules' => 'trim|numeric|required|greater_than[0]'
         ),
         array(
             'field' => 'addChantierBudgetAchats',

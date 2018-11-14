@@ -230,4 +230,180 @@ class My_Controller extends CI_Controller {
         return $this->own->getCouleurSecondaire($couleur, 120);
     }
 
+    /* Analyse d'un chantier */
+
+    protected function analyseChantier(Chantier $chantier) {
+        /* Analyse */
+
+        $analyse['heures']['prevues'] = $chantier->getChantierHeuresPrevues();
+        $analyse['heures']['planifiees'] = $chantier->getChantierheuresPlanifiees();
+        $analyse['heures']['pointees'] = $chantier->getChantierheuresPointees();
+        $analyse['heures']['finChantier'] = $chantier->getChantierheuresPointees(); /* Somme des heures déja pointees et des heures restantes pour les affectations du chantier */
+
+        // Couts de main d'oeuvre
+        $analyse['mainO']['tempsReel'] = 0; /* Total des coûts des heures pointees */
+        $analyse['mainO']['restant'] = 0; /* Total des coûts des heures restantes planifiées */
+        $analyse['mainO']['finChantier'] = 0; /* Total des coûts des heures planifiées + pointees */
+        $analyse['mainO']['commercial'] = $chantier->getChantierHeuresPrevues() * $chantier->getChantierTauxHoraireMoyen(); /* Total des coûts des heures prévues */
+
+        if (!empty($chantier->getChantierAffectations())):
+            foreach ($chantier->getChantierAffectations() as $affectation):
+
+                $tauxHoraireAffectation = $affectation->getAffectationPersonnel()->getTauxHoraireADate($affectation->getAffectationDebutDate());
+                if ($tauxHoraireAffectation == 0):
+                    $tauxHoraireAffectation = $chantier->getChantierTauxHoraireMoyen();
+                endif;
+
+                if ($chantier->getChantierEtat() == 1):
+                    $heuresPlanifieesRestantes = $affectation->getAffectationHeuresPlanifiees() - $affectation->getAffectationHeuresPointees();
+                    $analyse['heures']['finChantier'] += $heuresPlanifieesRestantes;
+                else:
+                    $heuresPlanifieesRestantes = 0;
+                endif;
+
+                if (!empty($affectation->getAffectationHeures())):
+                    foreach ($affectation->getAffectationHeures() as $heure):
+                        $coutHeuresPointees = ($heure->getHeureDuree() / 60) * $tauxHoraireAffectation;
+                        $analyse['mainO']['tempsReel'] += $coutHeuresPointees;
+                    endforeach;
+                endif;
+                $analyse['mainO']['restant'] += $heuresPlanifieesRestantes * $tauxHoraireAffectation;
+            endforeach;
+            $analyse['mainO']['finChantier'] += $analyse['mainO']['tempsReel'] + $analyse['mainO']['restant'];
+        endif;
+
+        if ($analyse['mainO']['tempsReel'] > 0):
+            $ecart = round(($analyse['mainO']['tempsReel'] / $analyse['mainO']['commercial']) * 100);
+            $analyse['mainO']['ecartTempsReel'] = ($ecart - 100);
+            if ($ecart <= 100):
+                $analyse['mainO']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+            else:
+                $analyse['mainO']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+            endif;
+        else:
+            $analyse['mainO']['ecartTempsReel'] = null;
+            $analyse['mainO']['ecartTempsReelHtml'] = '<span class="badge-secondary">-</span>';
+        endif;
+        if ($analyse['mainO']['finChantier'] > 0 && $analyse['mainO']['commercial'] > 0):
+            $ecart = round(($analyse['mainO']['finChantier'] / $analyse['mainO']['commercial']) * 100);
+            $analyse['mainO']['ecartFinChantier'] = ($ecart - 100);
+            if ($ecart <= 100):
+                $analyse['mainO']['ecartFinChantierHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+            else:
+                $analyse['mainO']['ecartFinChantierHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+            endif;
+        else:
+            $analyse['mainO']['ecartFinChantier'] = null;
+            $analyse['mainO']['ecartFinChantierHtml'] = '<span class="badge-secondary">-</span>';
+        endif;
+
+        // Achats
+        $analyse['achats']['restants'] = 0;
+        $analyse['achats']['tempsReel'] = $chantier->getChantierBudgetConsomme();
+        $analyse['achats']['commercial'] = $chantier->getChantierBudgetAchats();
+        if (!empty($chantier->getChantierAchats() && $chantier->getChantierEtat() == 1)):
+            foreach ($chantier->getChantierAchats() as $achat):
+                if ($achat->getAchatTotal() == 0):
+                    $analyse['achats']['restants'] += $achat->getAchatTotalPrevisionnel();
+                endif;
+            endforeach;
+        endif;
+        $analyse['achats']['finChantier'] = $chantier->getChantierBudgetConsomme() + $analyse['achats']['restants'];
+
+        if ($chantier->getChantierBudgetConsomme() > 0 && $chantier->getChantierBudgetAchats() > 0):
+            $ecart = round(($chantier->getChantierBudgetConsomme() / $chantier->getChantierBudgetAchats()) * 100);
+            $analyse['achats']['ecartTempsReel'] = ($ecart - 100);
+            if ($ecart <= 100):
+                $analyse['achats']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+            else:
+                $analyse['achats']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+            endif;
+        else:
+            $analyse['achats']['ecartTempsReel'] = null;
+            $analyse['achats']['ecartTempsReelHtml'] = '<span class="badge-secondary">-</span>';
+        endif;
+
+        if ($analyse['achats']['finChantier'] > 0 && $chantier->getChantierBudgetAchats() > 0):
+            $ecart = round(($analyse['achats']['finChantier'] / $chantier->getChantierBudgetAchats()) * 100);
+            $analyse['achats']['ecartFinChantier'] = ($ecart - 100);
+            if ($ecart <= 100):
+                $analyse['achats']['ecartFinChantierHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+            else:
+                $analyse['achats']['ecartFinChantierHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+            endif;
+        else:
+            $analyse['achats']['ecartFinChantier'] = null;
+            $analyse['achats']['ecartFinChantierHtml'] = '<span class="badge-secondary">-</span>';
+        endif;
+
+        // Deboursé Sec
+        $analyse['debourseSec']['commercial'] = $analyse['mainO']['commercial'] + $chantier->getChantierBudgetAchats();
+        $analyse['debourseSec']['tempsReel'] = $analyse['mainO']['tempsReel'] + $chantier->getChantierBudgetConsomme();
+        $analyse['debourseSec']['finChantier'] = $analyse['mainO']['finChantier'] + $analyse['achats']['finChantier'];
+        if ($analyse['debourseSec']['tempsReel'] > 0 && $analyse['debourseSec']['commercial'] > 0):
+            $ecart = round(($analyse['debourseSec']['tempsReel'] / $analyse['debourseSec']['commercial']) * 100);
+            $analyse['debourseSec']['ecartTempsReel'] = ($ecart - 100);
+            if ($ecart <= 100):
+                $analyse['debourseSec']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+            else:
+                $analyse['debourseSec']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+            endif;
+        else:
+            $analyse['debourseSec']['ecartTempsReel'] = null;
+            $analyse['debourseSec']['ecartTempsReelHtml'] = '<span class="badge-secondary">-</span>';
+        endif;
+
+        if ($analyse['debourseSec']['finChantier'] > 0 && $analyse['debourseSec']['commercial'] > 0):
+            $ecart = round(($analyse['debourseSec']['finChantier'] / $analyse['debourseSec']['commercial']) * 100);
+            $analyse['debourseSec']['ecartFinChantier'] = ($ecart - 100);
+            if ($ecart <= 100):
+                $analyse['debourseSec']['ecartFinChantierHtml'] = '<span class="badgeAnalyseChantier badge badge-success">' . ($ecart - 100) . '%</span>';
+            else:
+                $analyse['debourseSec']['ecartFinChantierHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">+' . ($ecart - 100) . '%</span>';
+            endif;
+        else:
+            $analyse['debourseSec']['ecartFinChantier'] = null;
+            $analyse['debourseSec']['ecartFinChantierHtml'] = '<span class="badge-secondary">-</span>';
+        endif;
+
+        $analyse['fraisGeneraux'] = round($chantier->getChantierPrix() * $chantier->getChantierFraisGeneraux() / 100, 2);
+
+        // Marges
+        $analyse['marge']['commerciale'] = $chantier->getChantierPrix() - $analyse['fraisGeneraux'] - $chantier->getChantierBudgetAchats() - $analyse['mainO']['commercial'];
+        $analyse['margeHoraire']['commerciale'] = round($analyse['marge']['commerciale'] / $chantier->getChantierHeuresPrevues(), 2);
+        $analyse['marge']['tempsReel'] = $chantier->getChantierPrix() - $analyse['fraisGeneraux'] - $chantier->getChantierBudgetConsomme() - $analyse['mainO']['tempsReel'];
+        if ($chantier->getChantierHeuresPointees()):
+            $analyse['margeHoraire']['tempsReel'] = round($analyse['marge']['tempsReel'] / $chantier->getChantierHeuresPointees(), 2);
+        else:
+            $analyse['margeHoraire']['tempsReel'] = 0;
+        endif;
+        $analyse['marge']['finChantier'] = $chantier->getChantierPrix() - $analyse['fraisGeneraux'] - $analyse['achats']['finChantier'] - $analyse['mainO']['finChantier'];
+        if ($chantier->getChantierheuresPlanifiees()):
+            $analyse['margeHoraire']['finChantier'] = round($analyse['marge']['finChantier'] / $chantier->getChantierheuresPlanifiees(), 2);
+        else:
+            $analyse['margeHoraire']['finChantier'] = 0;
+        endif;
+
+        $analyse['marge']['ecartTempsReel'] = $analyse['marge']['tempsReel'] - $analyse['marge']['commerciale'];
+        if ($analyse['marge']['ecartTempsReel'] > 0):
+            $analyse['marge']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-success">+' . $analyse['marge']['ecartTempsReel'] . '</span>';
+        elseif ($analyse['marge']['ecartTempsReel'] < 0):
+            $analyse['marge']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">' . $analyse['marge']['ecartTempsReel'] . '</span>';
+        else:
+            $analyse['marge']['ecartTempsReelHtml'] = '<span class="badge-secondary"><0/span>';
+        endif;
+
+        $analyse['marge']['ecartFinChantier'] = $analyse['marge']['finChantier'] - $analyse['marge']['commerciale'];
+        if ($analyse['marge']['ecartFinChantier'] > 0):
+            $analyse['marge']['ecartFinChantierHtml'] = '<span class="badgeAnalyseChantier badge badge-success">+' . $analyse['marge']['ecartFinChantier'] . '</span>';
+        elseif ($analyse['marge']['ecartFinChantier'] < 0):
+            $analyse['marge']['ecartFinChantierHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">' . $analyse['marge']['ecartFinChantier'] . '</span>';
+        else:
+            $analyse['marge']['ecartFinChantierHtml'] = '<span class="badge-secondary"><0/span>';
+        endif;
+        //log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($analyse, true));
+
+        return $analyse;
+    }
+
 }

@@ -54,7 +54,7 @@
                 <a class="nav-link" id="tabAchats" data-toggle="tab" href="#achatsChantier"><i class="fas fa-piggy-bank"></i> Achats</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#analyseChantier"><i class="fas fa-chart-pie"></i> Analyse</a>
+                <a class="nav-link" id="tabAnalyse" data-toggle="tab" href="#analyseChantier"><i class="fas fa-chart-pie"></i> Analyse</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#modChantier"><i class="fas fa-edit"></i> Modifier</a>
@@ -79,27 +79,7 @@
             </div>
 
             <div class="tab-pane active show" id="resumeChantier">
-                <br>
-                <?php if ($chantier->getChantierEtat() == 1): ?>
-                    <button class="btn btn-sm btn-info" id="btnClotureChantier" <?= $this->ion_auth->in_group(array(54)) ? '' : 'disabled'; ?> >
-                        <i class="fas fa-lock"></i> Clôturer ce chantier
-                    </button>
-                    <?php
-                else:
-                    echo '<h5>Chantier clôturé le ' . $this->cal->dateFrancais($chantier->getChantierDateCloture()) . '</h5>';
-                    echo '<button data-chantierid="' . $chantier->getChantierId() . '" data-affaireid="' . $chantier->getChantierAffaireId() . '" class="btn btn-sm btn-warning" id="btnReouvertureChantier" ' . ($this->ion_auth->in_group(array(54)) ? '' : 'disabled') . '>'
-                    . '<i class="fas fa-key"></i> Réouvrir ce chantier'
-                    . '</button>';
-                endif;
-                ?>
-
-                <br>
-                <br>
-                <br>
-                <span style="font-size:13px;">
-                    Catégorie : <?= $chantier->getChantierCategorie(); ?>
-                    <br>Chiffrage : <?= number_format($chantier->getChantierPrix(), 2, ',', ' ') . '€ HT'; ?>
-                </span>
+                <?php include('tabResume.php'); ?>
             </div>
 
             <div class="tab-pane" id="heuresChantier">
@@ -135,17 +115,11 @@
             </div>
 
             <div class="tab-pane" id="achatsChantier" style="padding:10px;">
-
                 <?php include('tabAchats.php'); ?>
             </div>
 
             <div class="tab-pane" id="analyseChantier" style="padding: 10px; margin-bottom:10px;">
-                <h3>Analyse</h3>
-                <?php
-                if (!$this->ion_auth->in_group(array(56))) :
-                    echo '<div class="alert alert-danger"><i class="fas fa-ban"></i> Vous n\'avez pas les droits nécéssaires pour consulter cette analyse.</div>';
-                endif;
-                ?>
+                <?php include('tabAnalyse.php'); ?>
             </div>
 
         </div>

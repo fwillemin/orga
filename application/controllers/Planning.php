@@ -19,6 +19,19 @@ class Planning extends My_Controller {
         $this->nbSemainesApres = $this->session->userdata('parametres')['nbSemainesApres'];
     }
 
+    /* Mise à jour des heures d'ue affect */
+
+    public function majAffects() {
+        foreach ($this->managerAffectations->getAffectations(array('affectationHeuresPlanifiees' => 0)) as $affectation):
+            $affectation->calculHeuresPlanifiees();
+            $this->managerAffectations->editer($affectation);
+        endforeach;
+        foreach ($this->managerHeures->getHeures() as $heure):
+            $this->managerHeures->editer($heure);
+        endforeach;
+        echo 'Done';
+    }
+
     /* Permet la selection ou non des chantiers terminés dans le slide gauche */
 
     public function modAffichageTermines() {
@@ -307,7 +320,7 @@ class Planning extends My_Controller {
                 $affectation->setAffectationFinMoment($this->input->post('addAffectationFinMoment'));
                 $affectation->setAffectationNbDemi($this->input->post('addAffectationNbDemi'));
                 $affectation->setAffectationCases($this->own->nbCasesAffectation($affectation));
-
+                $affectation->calculHeuresPlanifiees();
                 $this->managerAffectations->editer($affectation);
                 $affectation->hydrateOrigines();
                 $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
@@ -335,6 +348,7 @@ class Planning extends My_Controller {
 
                     $affectation = new Affectation($dataAffectation);
                     $affectation->setAffectationCases($this->own->nbCasesAffectation($affectation));
+                    $affectation->calculHeuresPlanifiees();
                     $this->managerAffectations->ajouter($affectation);
 
                     $affectation->hydrateOrigines();
@@ -493,6 +507,7 @@ class Planning extends My_Controller {
                     $affectation->setAffectationFinDate($newDateFin);
                     $affectation->setAffectationFinMoment($newMomentFin);
                     $affectation->setAffectationCases($this->cal->nbCasesEntreDates($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $affectation->getAffectationFinDate(), $affectation->getAffectationFinMoment()));
+                    $affectation->calculHeuresPlanifiees();
                     $this->managerAffectations->editer($affectation);
 
                     $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
@@ -559,6 +574,7 @@ class Planning extends My_Controller {
                         $affectation->setAffectationFinDate($nouvellesDonnees['finDate']);
                         $affectation->setAffectationFinMoment($nouvellesDonnees['finMoment']);
                         $affectation->setAffectationCases($nouvellesDonnees['cases']);
+                        $affectation->calculHeuresPlanifiees();
                         $this->managerAffectations->editer($affectation);
 
                         $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
@@ -724,6 +740,7 @@ class Planning extends My_Controller {
                     $affectation->setAffectationFinMoment($this->input->post('couperMoment'));
                     $affectation->setAffectationNbDemi($this->cal->nbDemiEntreDates($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $dateCoupure, $this->input->post('couperMoment')));
                     $affectation->setAffectationCases($this->cal->nbCasesEntreDates($affectation->getAffectationDebutDate(), $affectation->getAffectationDebutMoment(), $dateCoupure, $this->input->post('couperMoment')));
+                    $affectation->calculHeuresPlanifiees();
                     $this->managerAffectations->editer($affectation);
 
                     /* création de la nouvelle affectation */
@@ -742,7 +759,7 @@ class Planning extends My_Controller {
                     $newAffectation->setAffectationDebutMoment($newDebutMoment);
                     $newAffectation->setAffectationNbDemi($this->cal->nbDemiEntreDates($newDebutDate, $newDebutMoment, $newAffectation->getAffectationFinDate(), $newAffectation->getAffectationFinMoment()));
                     $newAffectation->setAffectationCases($this->cal->nbCasesEntreDates($newDebutDate, $newDebutMoment, $newAffectation->getAffectationFinDate(), $newAffectation->getAffectationFinMoment()));
-
+                    $affectation->calculHeuresPlanifiees();
                     $this->managerAffectations->ajouter($newAffectation);
 
                     /* Migration des heures vers la nouvelle affectation */
@@ -815,6 +832,7 @@ class Planning extends My_Controller {
                     $affect->setAffectationDebutDate($infosDecalage['debutDate']);
                     $affect->setAffectationFinDate($infosDecalage['finDate']);
                     $affect->setAffectationCases($infosDecalage['cases']);
+                    $affectation->calculHeuresPlanifiees();
                     $this->managerAffectations->editer($affect);
                     $affect->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
                     $HTML .= $affect->getAffectationHTML();

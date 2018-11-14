@@ -458,6 +458,18 @@ and open the template in the editor.
         background-color: $noir;
         color: #EEE;
     }
+    
+    #tableAnalyseFicheChantier tbody tr {
+        text-align: right;
+    }
+    #tableAnalyseFicheChantier tbody td {
+        position: relative;
+        text-align: right;
+    }
+    
+    .badgeAnalyseChantier {
+        font-size: 12px;
+    }
 
 }
 

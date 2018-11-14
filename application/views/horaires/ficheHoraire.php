@@ -87,8 +87,14 @@
             </div>
             <div class = "col-12 col-sm-4">
                 <h5>Ils sont sur cet horaire :</h5>
-                <table class = "table table-sm style1">
-
+                <table class = "table table-sm ">
+                    <?php
+                    if (!empty($personnels)):
+                        foreach ($personnels as $personnel):
+                            echo '<tr><td>' . $personnel->getPersonnelNom() . ' ' . $personnel->getPersonnelPrenom() . '</td><td>' . $personnel->getPersonnelQualif() . '</td></tr>';
+                        endforeach;
+                    endif;
+                    ?>
                 </table>
             </div>
         </div>

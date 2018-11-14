@@ -11,6 +11,9 @@ $(document).ready(function () {
         case 'b':
             $('#tabBoard').tab('show');
             break;
+        case 'x':
+            $('#tabAnalyse').tab('show');
+            break;
     }
 
     $('#selectCouleurChantier').colorpicker({
@@ -94,6 +97,10 @@ $(document).ready(function () {
         $('#addAchatQtePrevisionnel').val('');
         $('#addAchatPrixPrevisionnel').val('');
         $('#addAchatTotalPrevisionnel').val('');
+        $('#addAchatFournisseurId option[value="0"]').prop('selected', true);
+        $('#addAchatLivraisonAvancement option[value="0"]').prop('selected', true);
+        $('#addAchatLivraisonDate').val('');
+        
         $('#tableAchats tr').removeClass('ligneSelectionnee');
         $('.js-onAchatMod').hide();
         $('#btnSubmitFormAchat').html('<i class="fas fa-plus-square"></i> Ajouter');
@@ -104,7 +111,8 @@ $(document).ready(function () {
         $('#containerAddAchat').slideDown(700);
     });
     $('.formClose').on('click', function () {
-        $(this).closest('.inPageForm').slideUp(300).done(achatRAZ());
+        $(this).closest('.inPageForm').slideUp(300);
+        achatRAZ();
     });
 
     $('#tableAchats tr.ligneClikable').on('click', function () {
@@ -206,7 +214,7 @@ $(document).ready(function () {
                                 $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
                                 break;
                             case 'success':
-                                window.location.assign(chemin + 'chantiers/ficheChantier/' + $('#addChantierAffaireId').val());
+                                window.location.assign(chemin + 'chantiers/ficheChantier/' + $('#addChantierId').val());
                                 break;
                         }
                     }, 'json');
@@ -238,7 +246,7 @@ $(document).ready(function () {
                                 $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
                                 break;
                             case 'success':
-                                window.location.assign(chemin + 'chantiers/ficheChantier/' + btnReouverture.attr('data-affaireid'));
+                                window.location.assign(chemin + 'chantiers/ficheChantier/' + btnReouverture.attr('data-chantierid'));
                                 break;
                         }
                     }, 'json');
@@ -252,6 +260,11 @@ $(document).ready(function () {
         }
     });
 
+    $('#tableResumeAchats tr.ligneClikable').on('click', function(){
+        window.location.assign(chemin + 'chantiers/ficheChantier/' + $('#tableResumeAchats').attr('data-chantierid') + '/a' + $(this).attr('data-achatid'));
+    });
+
+    /* GRAPHS */
     var graphChantierEtatHeures = document.getElementById("graphChantierEtatHeures").getContext('2d');
     new Chart(graphChantierEtatHeures, {
         type: 'bar',
@@ -271,10 +284,10 @@ $(document).ready(function () {
                     label: "Planifiées",
                     data: [$('#graphChantierEtatHeures').attr('js-planifiees')],
                     backgroundColor: [
-                        'rgba(236, 228, 141, 0.7)'                        
+                        'rgba(236, 228, 141, 0.7)'
                     ],
                     borderColor: [
-                        'rgba(197, 184, 32, 1)'                        
+                        'rgba(197, 184, 32, 1)'
                     ],
                     borderWidth: 1
                 }]
@@ -303,13 +316,13 @@ $(document).ready(function () {
                         label: {
                             enabled: true,
                             content: 'Heures prévues',
-                            backgroundColor: ['rgba(89, 89, 89, 0.53)']     
+                            backgroundColor: ['rgba(89, 89, 89, 0.53)']
                         }
                     }]
             }
         }
     });
-    
+
     var graphChantierEtatAchats = document.getElementById("graphChantierEtatAchats").getContext('2d');
     new Chart(graphChantierEtatAchats, {
         type: 'horizontalBar',
@@ -329,26 +342,25 @@ $(document).ready(function () {
                     label: "Provisionné",
                     data: [$('#graphChantierEtatAchats').attr('js-prevu')],
                     backgroundColor: [
-                        'rgba(236, 228, 141, 0.7)'                        
+                        'rgba(236, 228, 141, 0.7)'
                     ],
                     borderColor: [
-                        'rgba(197, 184, 32, 1)'                        
+                        'rgba(197, 184, 32, 1)'
                     ],
                     borderWidth: 1
                 }]
         },
-        options: {
-            responsive: true,
+        options: {            
+            responsive: false,
             scales: {
                 xAxes: [{
-                        //stacked: true,
-                    }],
-                yAxes: [{
                         ticks: {
                             beginAtZero: true
-                        },
-                        //stacked: true
+                        }
                     }]
+            },
+            legend: {
+              position: 'bottom'  
             },
             annotation: {
                 annotations: [{
@@ -361,7 +373,77 @@ $(document).ready(function () {
                         label: {
                             enabled: true,
                             content: 'Budget inital',
-                            backgroundColor: ['rgba(89, 89, 89, 0.53)']                    
+                            backgroundColor: ['rgba(89, 89, 89, 0.53)']
+                        }
+                    }]
+            }
+        }
+    });
+
+    var graphChantierResume = document.getElementById("graphChantierResume").getContext('2d');    
+    var marges = $('#graphChantierResume').attr('js-datamarge').split(',');
+    if( parseFloat(marges[1]) > 0 ){
+        colorTempsReel = 'lightgreen';
+    }else{
+        colorTempsReel = '#E92768';
+    }
+    if( parseFloat(marges[2]) > 0 ){
+        colorFinChantier = 'lightgreen';
+    }else{
+        colorFinChantier = '#E92768';
+    }
+    new Chart(graphChantierResume, {
+        type: 'bar',
+        data: {
+            labels: $('#graphChantierResume').attr('js-dataLabels').split(','),
+            datasets: [{
+                    label: "Achats",
+                    data: $('#graphChantierResume').attr('js-dataachats').split(','),
+                    backgroundColor: 'rgba(234, 197, 47, 0.7)',
+                },
+                {
+                    label: "Main d'oeuvre",
+                    data: $('#graphChantierResume').attr('js-dataheures').split(','),
+                    backgroundColor: 'rgba(28, 139, 211, 0.7)',
+                },
+                {
+                    label: "Frais généraux",
+                    data: $('#graphChantierResume').attr('js-dataFG').split(','),
+                    backgroundColor: 'rgba(34, 59, 75, 0.7)',
+                }, {
+                    label: "Marge",
+                    data: marges,
+                   backgroundColor: ['lightgreen',colorTempsReel, colorFinChantier],
+                }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        stacked: false
+                    }],
+                yAxes: [{stacked: true}]
+            },
+            legend: {
+              position: 'bottom',  
+            },
+            annotation: {
+                annotations: [{
+                        type: 'line',
+                        mode: 'horizontal',
+                        scaleID: 'y-axis-0',
+                        value: $('#graphChantierResume').attr('js-chiffrage'),
+                        borderColor: 'rgba(89, 89, 89, 0.9)',
+                        borderWidth: 2,
+                        label: {
+                            enabled: true,
+                            content: 'Chiffrage : ' + $('#graphChantierResume').attr('js-chiffrage') + '€',
+                            backgroundColor: 'rgba(89, 89, 89, 0)',
+                            fontColor:'rgba(89, 89, 89, 0.9)',
+                            yAdjust: 10,
+                            position: 'left'
                         }
                     }]
             }
