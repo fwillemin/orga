@@ -1,5 +1,5 @@
 <div class="row" style="margin-top: 15px;">
-    <div class="col-5">
+    <div class="col-12 col-lg-4">
         <?php if ($chantier->getChantierEtat() == 1): ?>
             <button class="btn btn-sm btn-info" id="btnClotureChantier" <?= $this->ion_auth->in_group(array(54)) ? '' : 'disabled'; ?> >
                 <i class="fas fa-lock"></i> Clôturer ce chantier
@@ -50,7 +50,7 @@
         </table>
 
     </div>
-    <div class="col-7">
+    <div class="col-12 col-lg-6 offset-lg-1">
         <?php
         $dataHeures = $analyse['mainO']['commercial'] . ',' . $analyse['mainO']['tempsReel'];
         $dataAchats = $chantier->getChantierBudgetAchats() . ',' . $chantier->getChantierBudgetConsomme();

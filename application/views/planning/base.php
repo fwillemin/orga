@@ -330,6 +330,7 @@ if ($this->ion_auth->in_group(array(55))):
                 </div>
                 <hr>
                 <small class="medium">Affectation planifiée</small> <span id="textAffectationPeriode"></span>
+                <br><small class="medium">Heures planifiées :</small> <span id="textAffectationHeuresPlanifiees"></span>
                 <br><small class="medium">Type :</small> <span id="textAffectationType"></span>
                 <br><small class="medium">Commentaire :</small> <span id="textAffectationCommentaire"></span>
                 <br><small class="medium">Adresse d'intervention :</small> <span id="textAffectationAdresse"></span>

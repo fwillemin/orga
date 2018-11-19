@@ -15,6 +15,10 @@ class Organibat extends My_Controller {
         endif;
     }
 
+    public function phpServer() {
+        phpinfo();
+    }
+
     public function board() {
 
         $data = array(

@@ -97,51 +97,8 @@ class Affectation {
             $this->hydratePersonnel();
         endif;
         $this->affectationPersonnel->hydrateHoraire();
-        if (!empty($this->affectationPersonnel->getPersonnelHoraire())):
-            $horaire = $this->affectationPersonnel->getPersonnelHoraire();
-            $nbHeures = 0;
-
-            for ($i = $this->affectationDebutDate; $i <= $this->affectationFinDate; $i += 86400):
-
-                $jour = trim($CI->cal->dateFrancais($i, 'j'));
-                // Premier jour
-                if ($i == $this->affectationDebutDate):
-                    if ($this->affectationDebutMoment == 1):
-                        /* On ajoute les heures complètes du jour dans l'horaire */
-                        $nbHeures += $horaire->{'getHoraire' . $jour}();
-                    else:
-                        /* On ajoute les heures de l'aprem dans l'horaire */
-                        $nbHeures += $horaire->{'getHoraire' . $jour . 'PM'}();
-                    endif;
-
-                endif;
-
-                // Dernier jour
-                if ($i == $this->affectationFinDate && $this->affectationFinDate != $this->affectationDebutDate):
-                    if ($this->affectationFinMoment == 2):
-                        /* On ajoute les heures complètes du jour dans l'horaire */
-                        $nbHeures += $horaire->{'getHoraire' . $jour}();
-                    else:
-                        /* On ajoute les heures de l'aprem dans l'horaire */
-                        $nbHeures += $horaire->{'getHoraire' . $jour . 'AM'}();
-                    endif;
-                elseif ($i == $this->affectationFinDate && $this->affectationFinDate == $this->affectationDebutDate && $this->affectationFinMoment == 1):
-                    $nbHeures -= $horaire->{'getHoraire' . $jour . 'PM'}();
-                endif;
-
-                // Autres jours
-                if ($i != $this->affectationDebutDate && $i != $this->affectationFinDate):
-                    /* On ajoute les heures complètes du jour dans l'horaire */
-                    $nbHeures += $horaire->{'getHoraire' . $jour}();
-                endif;
-
-            endfor;
-            $this->affectationHeuresPlanifiees = $nbHeures;
-
-        else:
-            /* On fait un calcul de base avec 4 heures par demi-journée */
-            $this->affectationHeuresPlanifiees = 4 * $this->affectationNbDemi;
-        endif;
+        $nbHeures = $CI->own->nbHeuresAffectation($this);
+        $this->affectationHeuresPlanifiees = $nbHeures;
     }
 
     public function hydrateChantier() {

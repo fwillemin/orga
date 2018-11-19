@@ -467,6 +467,31 @@ and open the template in the editor.
         background-color: $noir;
     }
 
+    #changeLandscape {
+        position:absolute;
+        top:0px;
+        left:0px;
+        height:100%;
+        width:100%;
+        z-index:100;           
+        background-color: $noir;
+        text-align: center;
+        padding-top: 30px;
+        color: #f7f5ff;
+        font-size: 30px;
+        display:none;
+    }
+    #clavier {
+        text-align: center;
+        font-size:15px;
+        font-weight: bold;
+        & td button {
+            width: 100%;
+            height:40px;
+            font-size:18px;
+            font-weight: bold;
+        }
+    }
 }
 
 @media print {

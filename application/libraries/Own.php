@@ -91,6 +91,80 @@ class Own {
         return $nbCases;
     }
 
+    public function nbHeuresAffectation(Affectation $affectation) {
+        $CI = & get_instance();
+        $horaire = $affectation->getAffectationPersonnel()->getPersonnelHoraire();
+        $nbHeures = 0;
+
+        for ($i = $affectation->getAffectationDebutDate(); $i <= $affectation->getAffectationFinDate(); $i += 86400):
+
+            $jour = trim($CI->cal->dateFrancais($i, 'j'));
+            // Premier jour
+            if ($i == $affectation->getAffectationDebutDate() && date('N', $i) < 6):
+                if ($affectation->getAffectationDebutMoment() == 1):
+                    /* On ajoute les heures complètes du jour dans l'horaire */
+                    $nbHeures += ($horaire ? $horaire->{'getHoraire' . $jour}() : 7);
+                else:
+                    /* On ajoute les heures de l'aprem dans l'horaire */
+                    $nbHeures += ($horaire ? $horaire->{'getHoraire' . $jour . 'PM'}() : 3.5);
+                endif;
+
+            endif;
+
+            // Dernier jour
+            if ($i == $affectation->getAffectationFinDate() && $affectation->getAffectationFinDate() != $affectation->getAffectationDebutDate() && date('N', $i) < 6):
+                if ($affectation->getAffectationFinMoment() == 2):
+                    /* On ajoute les heures complètes du jour dans l'horaire */
+                    $nbHeures += ($horaire ? $horaire->{'getHoraire' . $jour}() : 7);
+                else:
+                    /* On ajoute les heures de l'aprem dans l'horaire */
+                    $nbHeures += ($horaire ? $horaire->{'getHoraire' . $jour . 'AM'}() : 3.5);
+                endif;
+            elseif ($i == $affectation->getAffectationFinDate() && $affectation->getAffectationFinDate() == $affectation->getAffectationDebutDate() && $affectation->getAffectationFinMoment() == 1):
+                $nbHeures -= ($horaire ? $horaire->{'getHoraire' . $jour . 'PM'}() : 3.5);
+            endif;
+
+            // Autres jours
+            if ($i != $affectation->getAffectationDebutDate() && $i != $affectation->getAffectationFinDate() && date('N', $i) < 6):
+                /* On ajoute les heures complètes du jour dans l'horaire */
+                $nbHeures += ($horaire ? $horaire->{'getHoraire' . $jour}() : 7);
+            endif;
+
+        endfor;
+        return $nbHeures;
+    }
+
+    public function finAffectationWithNbHeures(Horaire $horaire = null, $debutDate, $debutMoment, $nbHeures) {
+
+        $CI = & get_instance();
+        $compteur = $nbHeures; /* Compteur decroissant des heures à planifier */
+        $jourEnCours = $debutDate - 86400;
+
+        while ($compteur > 0):
+            $jourEnCours += 86400;
+            $jour = trim($CI->cal->dateFrancais($jourEnCours, 'j'));
+            if (date('N', $jourEnCours) < 6):
+
+                if ($jourEnCours == $debutDate && $debutMoment == 2):
+                    $compteur -= ($horaire ? $horaire->{'getHoraire' . $jour . 'PM'}() : 3.5);
+                else:
+                    $dureeMatin = ($horaire ? $horaire->{'getHoraire' . $jour . 'AM'}() : 3.5);
+                    if ($dureeMatin >= $compteur):
+                        $compteur -= ($horaire ? $horaire->{'getHoraire' . $jour . 'AM'}() : 3.5);
+                        $finMoment = 1;
+                    else:
+                        /* On ajoute les heures complètes du jour dans l'horaire */
+                        $compteur -= ($horaire ? $horaire->{'getHoraire' . $jour}() : 7);
+                        $finMoment = 2;
+                    endif;
+                endif;
+
+            endif;
+        endwhile;
+        $finDate = $jourEnCours;
+        return ['finDate' => $finDate, 'finMoment' => $finMoment];
+    }
+
     public function normalizeData($valeur, $liste = array()) {
         $valMax = max($liste);
         $valMin = min($liste);

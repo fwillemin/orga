@@ -62,65 +62,70 @@
                                 </div>
                                 <div class="nav-divider"></div>
                             <?php endif; ?>
-                            <div class="nav-item dropdown">
-                                <a class="dropdown-toggle collapsed" href="#menu_clients" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user-tie"></i> Clients</a>
-                                <div class="dropdown-menu col-xl-2 collapse animated" id="menu_clients" style="max-width: 280px;">
-                                    <div class="dropdown-header">Gestion des clients</div>
-                                    <div class="dropdown-divider m-0"></div>
-                                    <div class="dropdown-item">
-                                        <a href="<?= site_url('clients/liste/ajouter'); ?>">
-                                            <i class="fas fa-plus-square"></i> Ajouter un client
-                                        </a>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <a href="<?= site_url('clients/liste'); ?>">
-                                            <i class="fas fa-list"></i> Liste
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="nav-item dropdown">
-                                <a class="dropdown-toggle collapsed" href="#menu_personnels" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-file-signature"></i> Affaires</a>
-                                <div class="dropdown-menu col-xl-2 collapse animated" id="menu_personnels" style="max-width: 280px;">
-                                    <div class="dropdown-header">Gestion de vos affaires</div>
-                                    <div class="dropdown-divider m-0"></div>
-                                    <div class="dropdown-item">
-                                        <a href="<?= site_url('affaires/liste/ajouter'); ?>">
-                                            <i class="fas fa-plus-square"></i> Ajouter une affaire
-                                        </a>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <a href="<?= site_url('affaires/liste'); ?>">
-                                            <i class="fas fa-list"></i> Liste
-                                        </a>
-                                    </div>
-                                    <div class="dropdown-divider m-0"></div>
-                                    <div class="dropdown-item">
-                                        <a href="<?= site_url('affaires/ficheAffaire/' . $this->session->userdata('affaireDiversId')); ?>">
-                                            <i class="fas fa-cloud"></i> Gestion des divers
-                                        </a>
+                            <?php if ($this->ion_auth->in_group(array(30, 31))): ?>
+                                <div class="nav-item dropdown">
+                                    <a class="dropdown-toggle collapsed" href="#menu_clients" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user-tie"></i> Clients</a>
+                                    <div class="dropdown-menu col-xl-2 collapse animated" id="menu_clients" style="max-width: 280px;">
+                                        <div class="dropdown-header">Gestion des clients</div>
+                                        <div class="dropdown-divider m-0"></div>
+                                        <div class="dropdown-item">
+                                            <a href="<?= site_url('clients/liste/ajouter'); ?>">
+                                                <i class="fas fa-plus-square"></i> Ajouter un client
+                                            </a>
+                                        </div>
+                                        <div class="dropdown-item">
+                                            <a href="<?= site_url('clients/liste'); ?>">
+                                                <i class="fas fa-list"></i> Liste
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
+                            <?php endif; ?>
+                            <?php if ($this->ion_auth->in_group(array(50))): ?>
+                                <div class="nav-item dropdown">
+                                    <a class="dropdown-toggle collapsed" href="#menu_personnels" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-file-signature"></i> Affaires</a>
+                                    <div class="dropdown-menu col-xl-2 collapse animated" id="menu_personnels" style="max-width: 280px;">
+                                        <div class="dropdown-header">Gestion de vos affaires</div>
+                                        <div class="dropdown-divider m-0"></div>
+                                        <div class="dropdown-item">
+                                            <a href="<?= site_url('affaires/liste/ajouter'); ?>">
+                                                <i class="fas fa-plus-square"></i> Ajouter une affaire
+                                            </a>
+                                        </div>
+                                        <div class="dropdown-item">
+                                            <a href="<?= site_url('affaires/liste'); ?>">
+                                                <i class="fas fa-list"></i> Liste
+                                            </a>
+                                        </div>
+                                        <div class="dropdown-divider m-0"></div>
+                                        <div class="dropdown-item">
+                                            <a href="<?= site_url('affaires/ficheAffaire/' . $this->session->userdata('affaireDiversId')); ?>">
+                                                <i class="fas fa-cloud"></i> Gestion des divers
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                             <div class="nav-divider"></div>
-                            <div class="nav-item dropdown">
-                                <a class="dropdown-toggle collapsed" href="#menu_pointages" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-hourglass-end"></i> Pointages</a>
-                                <div class="dropdown-menu col-xl-2 collapse animated" id="menu_pointages" style="max-width: 280px;">
-                                    <div class="dropdown-header">Gestion des pointages</div>
-                                    <div class="dropdown-divider m-0"></div>
-                                    <div class="dropdown-item">
-                                        <a href="<?= site_url('pointages/heures'); ?>">
-                                            <i class="fas fa-clock"></i> Heures
-                                        </a>
-                                    </div>
-                                    <div class="dropdown-item">
-                                        <a href="<?= site_url('pointages/feuilles'); ?>">
-                                            <i class="fas fa-file-invoice"></i> Feuilles
-                                        </a>
+                            <?php if ($this->ion_auth->in_group(array(80, 81, 82, 83))): ?>
+                                <div class="nav-item dropdown">
+                                    <a class="dropdown-toggle collapsed" href="#menu_pointages" data-toggle="collapse" aria-haspopup="true" aria-expanded="false"><i class="fas fa-hourglass-end"></i> Pointages</a>
+                                    <div class="dropdown-menu col-xl-2 collapse animated" id="menu_pointages" style="max-width: 280px;">
+                                        <div class="dropdown-header">Gestion des pointages</div>
+                                        <div class="dropdown-divider m-0"></div>
+                                        <div class="dropdown-item">
+                                            <a href="<?= site_url('pointages/heures'); ?>">
+                                                <i class="fas fa-clock"></i> Heures
+                                            </a>
+                                        </div>
+                                        <div class="dropdown-item">
+                                            <a href="<?= site_url('pointages/feuilles'); ?>">
+                                                <i class="fas fa-file-invoice"></i> Feuilles
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            <?php endif; ?>
                         </div>
                         <div class="nav navbar-nav navbar-right">
                             <?php if ($this->ion_auth->in_group(array(61))): ?>

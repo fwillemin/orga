@@ -52,7 +52,8 @@ class Migration extends My_Controller {
 
     public function migrerRS($rsId = null, $domaine = null, $migrationPlace = 0) {
 
-        $this->resetDB($rsId);
+        // ON NE RESEST PLUS LA BASE DE DONNEES A CHAQUE INTEGRATION !!
+        //$this->resetDB($rsId);
 
         if (!$rsId):
             echo 'Vous devez renseigner un ID RS valide';
@@ -920,6 +921,8 @@ class Migration extends My_Controller {
                     'affectationAffichage' => $affect->affichage + 1
                 );
                 $affectation = new Affectation($dataAffectation);
+                $affectation->setAffectationCases($this->own->nbCasesAffectation($affectation));
+                $affectation->calculHeuresPlanifiees();
                 $this->managerAffectations->ajouter($affectation);
 
                 $this->importHeures($affectation);

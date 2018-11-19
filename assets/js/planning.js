@@ -27,7 +27,12 @@ $(document).ready(function () {
         backdrop: false
     }).draggable({
         handle: ".modal-header"
-    });
+    });   
+    $('#modalAddAffectation, #modalAffectation').modal({
+        show: false
+    }).draggable({
+        handle: ".modal-header"
+    });   
     $("#divPlanning").animate({scrollLeft: getCookie('positionPlanning')}, 800);
     if ($('#divPlanning').scrollLeft() == 0) {
         $('#divPlanning').scrollLeft($('#divPlanning').attr('today'));
@@ -192,6 +197,7 @@ $(document).ready(function () {
         $('#addAffectationCommentaire').val('');
         $('#addAffectationType option[value="1"]').prop('selected', true);
         $('#addAffectationNbDemi option[value="1"]').prop('selected', true);
+        $('#addAffectationNbHeures').val('0');
         $('#addAffectationChantierId option').prop('selected', false);
         $('#addAffectationPersonnelsIds option').prop('selected', false);
         $('#addAffectationChantierId').selectpicker('refresh');
@@ -260,6 +266,19 @@ $(document).ready(function () {
         var datum = new Date(timestamp * 1000);
         return datum.getDay();
     }
+    
+    function majNbHeuresAffectation() {
+        $.post(chemin + 'planning/getNbHeuresFormAffectation', {personnelId:$('#addAffectationPersonnelsIds').val()[0], debutDate:$('#addAffectationDebutDate').val(), debutMoment:$('#addAffectationDebutMoment').val(), finDate: $('#addAffectationFinDate').val(), finMoment:$('#addAffectationFinMoment').val()}, function(retour){
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    $('#addAffectationNbHeures').val(retour.nbHeures);
+                    break;
+            }
+        }, 'json')
+    }
 
     $('#addAffectationDebutDate, #addAffectationDebutMoment, #addAffectationNbDemi').on('change', function () {
         var timeStart = dateToTimestamp($('#addAffectationDebutDate').val());
@@ -289,8 +308,15 @@ $(document).ready(function () {
                 nbDemiRestant -= 2;
             }
         }
-        $('#addAffectationFinDate').val(timestampToDate(timeEnd));
+        $('#addAffectationFinDate').val(timestampToDate(timeEnd));        
+        majNbHeuresAffectation();
     });
+    
+    $('#addAffectationPersonnelsIds').on('change', function(){
+        $(this).selectpicker('refresh');
+        majNbHeuresAffectation();
+    });
+    
     $('#addAffectationFinDate, #addAffectationFinMoment').on('change', function () {
         /* On recalcule le nombre de demi journées ouvrées entre la nouvelle date de fin et la date de début */
         var timeStart = dateToTimestamp($('#addAffectationDebutDate').val());
@@ -311,7 +337,24 @@ $(document).ready(function () {
             nbDemiAffect--;
         }
         $('#addAffectationNbDemi').val(nbDemiAffect);
+        majNbHeuresAffectation();
     });
+    
+    $('#addAffectationNbHeures').on('change', function(){
+        $.post(chemin + 'planning/getFinAffectationWithNbHeures', {personnelId:$('#addAffectationPersonnelsIds').val()[0], debutDate:dateToTimestamp($('#addAffectationDebutDate').val()), debutMoment:$('#addAffectationDebutMoment').val(), nbHeures:$(this).val()}, function(retour){
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    $('#addAffectationNbDemi').val(retour.nbDemi);
+                    $('#addAffectationFinDate').val(retour.finDate);
+                    $('#addAffectationFinMoment').val(retour.finMoment);
+                    break;
+            }
+        }, 'json')
+    });
+    
     $('#formAddAffectation').on('submit', function (e) {
         e.preventDefault();
         if ($("#addAffectationPersonnelsIds option:selected").length < 1) {
@@ -359,6 +402,7 @@ $(document).ready(function () {
                         $('#addAffectationChantierId').selectpicker('refresh');
                         $('#addAffectationPersonnelsIds').selectpicker('refresh');
                         $('#addAffectationNbDemi option[value="' + retour.affectation.affectationNbDemi + '"]').prop('selected', true);
+                        $('#addAffectationNbHeures').val(retour.affectation.affectationHeuresPlanifiees);
                         $('#addAffectationDebutDate').val(timestampToDate(retour.affectation.affectationDebutDate));
                         $('#addAffectationDebutMoment option[value="' + retour.affectation.affectationDebutMoment + '"]').prop('selected', true);
                         $('#addAffectationFinDate').val(timestampToDate(retour.affectation.affectationFinDate));
@@ -390,7 +434,8 @@ $(document).ready(function () {
                     }
                     $('#textAffectationAvancementHeures').css('width', retour.chantier.chantierRatio + '%');
                     $('#textAffectationAvancementHeures').addClass(retour.chantier.chantierProgressBar);
-                    $('#textAffectationPeriode').html(retour.affectation.affectationPeriode + '[' + retour.affectation.affectationId + ']');
+                    $('#textAffectationPeriode').html(retour.affectation.affectationPeriode);
+                    $('#textAffectationHeuresPlanifiees').html(retour.affectation.affectationHeuresPlanifiees);
                     $('#textAffectationType').html(retour.affectation.affectationTypeText);
                     $('#textAffectationAdresse').html(retour.chantier.chantierPlace);
                     $('#textAffectationCommentaire').html(retour.affectation.affectationCommentaire);
@@ -801,6 +846,45 @@ $(document).ready(function () {
                     break;
             }
         }, 'json');
+    });
+    
+    $('.connectPersonnel').on('click', function(){
+        $('#spanNomPersonnelConnect').html($(this).attr('data-personnelnom'));
+        $('#modalConnect').modal('show');
+    });
+    
+    $('#digit1').on('click', function(){
+        $('#connectCode').val( $('#connectCode').val() + '1');
+    });
+    $('#digit2').on('click', function(){
+        $('#connectCode').val( $('#connectCode').val() + '2');
+    });
+    $('#digit3').on('click', function(){
+        $('#connectCode').val( $('#connectCode').val() + '3');
+    });
+    $('#digit4').on('click', function(){
+        $('#connectCode').val( $('#connectCode').val() + '4');
+    });
+    $('#digit5').on('click', function(){
+        $('#connectCode').val( $('#connectCode').val() + '5');
+    });
+    $('#digit6').on('click', function(){
+        $('#connectCode').val( $('#connectCode').val() + '6');
+    });
+    $('#digit7').on('click', function(){
+        $('#connectCode').val( $('#connectCode').val() + '7');
+    });
+    $('#digit8').on('click', function(){
+        $('#connectCode').val( $('#connectCode').val() + '8');
+    });
+    $('#digit9').on('click', function(){
+        $('#connectCode').val( $('#connectCode').val() + '9');
+    });
+    $('#digit0').on('click', function(){
+        $('#connectCode').val( $('#connectCode').val() + '0');
+    });
+    $('#digitReset').on('click', function(){
+        $('#connectCode').val('');
     });
 
 });

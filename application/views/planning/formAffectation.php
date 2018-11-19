@@ -37,7 +37,7 @@
                         endif;
                     endif;
 
-                    echo '<option data-content="<span class=\'selectpickerPersonnel\'>' . $personnel->getPersonnelNom() . ' ' . $personnel->getPersonnelPrenom() . '</span>" value="' . $personnel->getPersonnelId() . '">' . $personnel->getPersonnelNom() . ' ' . $personnel->getPersonnelPrenom() . '</option>';
+                    echo '<option data-content="<span class=\'selectpickerPersonnel\'>' . $personnel->getPersonnelNom() . ' ' . $personnel->getPersonnelPrenom() . '</span> <small style=\'font-size:9px;\' class=\'medium\'>' . ($personnel->getPersonnelHoraireId() != null ? $personnel->getPersonnelHoraire()->getHoraireNom() : '<i class=\'fas fa-times\'></i>') . '</small>" value="' . $personnel->getPersonnelId() . '">' . $personnel->getPersonnelNom() . ' ' . $personnel->getPersonnelPrenom() . '</option>';
                 endforeach;
             endif;
             ?>
@@ -45,19 +45,21 @@
     </div>
 </div>
 
-<div class="form-row" style="margin-top: 4px;">
-    <div class="col">
+<div class="form-row" style="background-color: #f7f5ff; margin-top: 4px; border-top: 1px solid lightsteelblue;">
+    <div class="col-6 col-lg-3 offset-lg-3">
         <label for="addAffectationDebutDate">Date de début</label>
         <input type="date" class="form-control form-control-sm text-right" id="addAffectationDebutDate" name="addAffectationDebutDate" value="">
     </div>
-    <div class="col">
+    <div class="col-6 col-lg-3">
         <label for="addAffectationDebutMoment">Moment</label>
         <select class="form-control form-control-sm" name="addAffectationDebutMoment" id="addAffectationDebutMoment">
             <option value="1">Matin</option>
             <option value="2">Après-midi</option>
         </select>
     </div>
-    <div class="col">
+</div>
+<div class="form-row" style="background-color: #f7f5ff; ">
+    <div class="col-6 col-lg-3 offset-lg-2">
         <label for="addAffectationNbDemi">Nb Demi</label>
         <select class="form-control form-control-sm" name="addAffectationNbDemi" id="addAffectationNbDemi" style="background-color:lightsteelblue; color:white; text-align: right;">
             <?php
@@ -67,11 +69,17 @@
             ?>
         </select>
     </div>
-    <div class="col">
+    <div class="col-6 col-lg-3 offset-lg-2">
+        <label for="addAffectationNbHeures">Nb heures</label>
+        <input type="number" step="0.25" class="form-control form-control-sm" name="addAffectationNbHeures" id="addAffectationNbHeures" value="4" style="background-color:lightsteelblue; color:white; text-align: right;">
+    </div>
+</div>
+<div class="form-row" style="background-color: #f7f5ff; padding-bottom: 5px; border-bottom: 1px solid lightsteelblue;">
+    <div class="col-6 col-lg-3 offset-lg-3">
         <label for="addAffectationFinDate">Date de fin</label>
         <input type="date" class="form-control form-control-sm text-right" id="addAffectationFinDate" name="addAffectationFinDate" value="">
     </div>
-    <div class="col">
+    <div class="col-6 col-lg-3">
         <label for="addAffectationFinMoment">Moment</label>
         <select class="form-control form-control-sm" name="addAffectationFinMoment" id="addAffectationFinMoment">
             <option value="1">Matin</option>
