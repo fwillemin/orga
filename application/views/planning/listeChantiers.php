@@ -33,8 +33,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-12" style="padding:0px; overflow-y: scroll; max-height: 680px; overflow-x: hidden;">
-            <table class="table table-sm" id="tableSlideChantiers" style="font-size:11px; overflow-y: scroll; max-height: 680px; overflow-x: hidden;">
+        <div class="col-12" style="padding:0px; overflow-y: scroll; max-height: 580px; overflow-x: hidden;">
+            <table class="table table-sm" id="tableSlideChantiers" style="font-size:11px; overflow-y: scroll; max-height: 580px; overflow-x: hidden;">
                 <?php
                 if (!empty($affairesPlanning)):
                     foreach ($affairesPlanning as $affaire):
@@ -107,6 +107,10 @@
                 endif;
                 ?>
             </table>
+        </div>
+        <div class="col-12" style="margin-top:5px;">
+            <small class="light">Message global pour les salariés</small>
+            <textarea id="messageGlobal" class="form-control" rows="3" style="font-size:10px;"><?= $this->session->userdata('parametres')['messageEtablissement']; ?></textarea>
         </div>
     </div>
 </div>

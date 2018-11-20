@@ -137,66 +137,73 @@
                                 <div class="nav-divider"></div>
                             <?php endif; ?>
                             <div class="nav-divider"></div>
-                            <div class="nav-item dropdown mega-md">
-                                <a data-toggle="collapse" href="#parametrages" class="dropdown-toggle collapsed"><i class="fa fa-cogs" style="font-size:20px; color: lightslategray;"></i><span class="d-expanded-none"> Paramètres</span></a>
-                                <div class="dropdown-menu col-sm-9 col-lg-8"  role="menu" id="parametrages">
-                                    <div class="d-flex">
-                                        <div class="col-12 col-md-8">
-                                            <div class="row" style="background: #000;">
-                                                <div class="col p-2">
-                                                    <h2>Bonjour <?= $this->session->userdata('utilisateurPrenom'); ?>,</h2>
-                                                    <small class="form-text text-muted">Dernière connexion le <?= $this->cal->dateFrancais($this->session->userdata('old_last_login')); ?></small>
+                            <?php if ($this->ion_auth->in_group(array(4))): ?>
+                                <div class="nav-item">
+                                    <a href="<?= site_url('organibat/deconnexion'); ?>" style="color: orangered;">
+                                        <div style="width:25px; float: left;"><i class="fas fa-sign-out-alt"></i></div> Quitter
+                                    </a>
+                                </div>
+                            <?php else: ?>
+                                <div class="nav-item dropdown mega-md">
+                                    <a data-toggle="collapse" href="#parametrages" class="dropdown-toggle collapsed"><i class="fa fa-cogs" style="font-size:20px; color: lightslategray;"></i><span class="d-expanded-none"> Paramètres</span></a>
+                                    <div class="dropdown-menu col-sm-9 col-lg-8"  role="menu" id="parametrages">
+                                        <div class="d-flex">
+                                            <div class="col-12 col-md-8">
+                                                <div class="row" style="background: #000;">
+                                                    <div class="col p-2">
+                                                        <h2>Bonjour <?= $this->session->userdata('utilisateurPrenom'); ?>,</h2>
+                                                        <small class="form-text text-muted">Dernière connexion le <?= $this->cal->dateFrancais($this->session->userdata('old_last_login')); ?></small>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-12 col-md-4 py-3" style="background: #333;">
-                                            <div class="row">
-                                                <?php if ($this->ion_auth->in_group(array(25, 26))): ?>
-                                                    <div class="col-12" style="min-height: 25px;">
-                                                        <a href="<?= site_url('personnels/liste'); ?>" style="color: lightsteelblue;">
-                                                            <div style="width:25px; float: left;"><i class="fas fa-user-ninja"></i></div> Personnels de chantier
+                                            <div class="col-12 col-md-4 py-3" style="background: #333;">
+                                                <div class="row">
+                                                    <?php if ($this->ion_auth->in_group(array(25, 26))): ?>
+                                                        <div class="col-12" style="min-height: 25px;">
+                                                            <a href="<?= site_url('personnels/liste'); ?>" style="color: lightsteelblue;">
+                                                                <div style="width:25px; float: left;"><i class="fas fa-user-ninja"></i></div> Personnels de chantier
+                                                            </a>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->ion_auth->in_group(array(10, 11))): ?>
+                                                        <div class="col-12" style="min-height: 25px;">
+                                                            <a href="<?= site_url('utilisateurs/liste'); ?>" style="color: lightsteelblue;">
+                                                                <div style="width:25px; float: left;"><i class="fas fa-user-edit"></i></div> Utilisateurs administratifs
+                                                            </a>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->ion_auth->in_group(array(40))): ?>
+                                                        <div class="col-12" style="min-height: 25px;">
+                                                            <a href="<?= site_url('categories/liste'); ?>" style="color: lightsteelblue;">
+                                                                <div style="width:25px; float: left;"><i class="fas fa-object-group"></i></div> Catégories Affaires/Chantiers
+                                                            </a>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->ion_auth->in_group(array(20, 21))): ?>
+                                                        <div class="col-12" style="min-height: 25px;">
+                                                            <a href="<?= site_url('horaires/liste'); ?>" style="color: lightsteelblue;">
+                                                                <div style="width:25px; float: left;"><i class="fas fa-clock"></i></div> Horaires
+                                                            </a>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->ion_auth->in_group(array(1))): ?>
+                                                        <div class="col-12" style="min-height: 25px;">
+                                                            <a href="<?= site_url('organibat/parametres'); ?>" style="color: lightsteelblue;">
+                                                                <div style="width:25px; float: left;"><i class="fas fa-cog"></i></div> Paramètres
+                                                            </a>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <div class="col-12">
+                                                        <a href="<?= site_url('organibat/deconnexion'); ?>" style="color: orangered;">
+                                                            <div style="width:25px; float: left;"><i class="fas fa-sign-out-alt"></i></div> Quitter
                                                         </a>
                                                     </div>
-                                                <?php endif; ?>
-                                                <?php if ($this->ion_auth->in_group(array(10, 11))): ?>
-                                                    <div class="col-12" style="min-height: 25px;">
-                                                        <a href="<?= site_url('utilisateurs/liste'); ?>" style="color: lightsteelblue;">
-                                                            <div style="width:25px; float: left;"><i class="fas fa-user-edit"></i></div> Utilisateurs administratifs
-                                                        </a>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <?php if ($this->ion_auth->in_group(array(40))): ?>
-                                                    <div class="col-12" style="min-height: 25px;">
-                                                        <a href="<?= site_url('categories/liste'); ?>" style="color: lightsteelblue;">
-                                                            <div style="width:25px; float: left;"><i class="fas fa-object-group"></i></div> Catégories Affaires/Chantiers
-                                                        </a>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <?php if ($this->ion_auth->in_group(array(20, 21))): ?>
-                                                    <div class="col-12" style="min-height: 25px;">
-                                                        <a href="<?= site_url('horaires/liste'); ?>" style="color: lightsteelblue;">
-                                                            <div style="width:25px; float: left;"><i class="fas fa-clock"></i></div> Horaires
-                                                        </a>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <?php if ($this->ion_auth->in_group(array(1))): ?>
-                                                    <div class="col-12" style="min-height: 25px;">
-                                                        <a href="<?= site_url('organibat/parametres'); ?>" style="color: lightsteelblue;">
-                                                            <div style="width:25px; float: left;"><i class="fas fa-cog"></i></div> Paramètres
-                                                        </a>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <div class="col-12">
-                                                    <a href="<?= site_url('organibat/deconnexion'); ?>" style="color: orangered;">
-                                                        <div style="width:25px; float: left;"><i class="fas fa-sign-out-alt"></i></div> Quitter
-                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

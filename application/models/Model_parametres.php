@@ -21,6 +21,7 @@ class Model_parametres extends MY_model {
                 ->set('tranchePointage', $parametre->getTranchePointage())
                 ->set('tailleAffectations', $parametre->getTailleAffectations())
                 ->set('genererPaniers', $parametre->getGenererPaniers())
+                ->set('messageEtablissement', '')
                 ->insert($this->table);
     }
 
@@ -36,6 +37,7 @@ class Model_parametres extends MY_model {
                 ->set('tranchePointage', $parametre->getTranchePointage())
                 ->set('tailleAffectations', $parametre->getTailleAffectations())
                 ->set('genererPaniers', $parametre->getGenererPaniers())
+                ->set('messageEtablissement', $parametre->getMessageEtablissement())
                 ->where('parametreEtablissementId', $parametre->getParametreEtablissementId())
                 ->update($this->table);
         return $this->db->affected_rows();

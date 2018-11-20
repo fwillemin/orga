@@ -107,7 +107,7 @@
     <button type="submit" class="btn btn-outline-primary btn-sm" style="margin:5px;" id="btnSubmitFormAffectation">
         <i class="fas fa-plus-square"></i> Ajouter
     </button
-    <i class="fas fa-circle-notch fa-spin formloader" id="loaderAddAffectation"></i>
+    <i class="fas <?= $this->session->userdata('loaderIcon'); ?> fa-spin formloader" id="loaderAddAffectation"></i>
     <br>
     <button type="button" class="btn btn-sm btn-link" id="btnAddIndispo" style="color: black;">
         <i class="fab fa-snapchat-ghost"></i> Indisponibilité

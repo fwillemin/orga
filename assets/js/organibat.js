@@ -3,14 +3,6 @@ var path = 'http://192.168.0.1/organibat2';
 var chemin = path + '/index.php/';
 var cheminJs = path + '/assets/js/';
 
-function checkOrientation() {
-    if (screen.height > screen.width) {
-        $('#changeLandscape').fadeIn();
-    } else {
-        $('#changeLandscape').hide();
-    }
-}
-
 function refactorDate(timeDate, type) {
     type = type || 'input';
     if (timeDate > 0) {
@@ -34,10 +26,6 @@ function refactorDate(timeDate, type) {
         return '';
     }
 }
-
-window.addEventListener("orientationchange", function () {
-    checkOrientation();
-}, false);
 
 $(document).ready(function () {
 

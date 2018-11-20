@@ -354,6 +354,7 @@ if ($this->ion_auth->in_group(array(55))):
                             <tr>
                                 <th width="70%">Date</th>
                                 <th>Heures</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>

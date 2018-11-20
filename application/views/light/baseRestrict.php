@@ -1,14 +1,19 @@
 <div class="container-fluid">
-    <div class="row" style="margin-top : 15px;">
-        <input type="hidden" id="caseHeight" value="<?= $this->hauteur; ?>">
-        <input type="hidden" id="caseWidth" value="<?= $this->largeur; ?>">
+    <?php
+    if ($this->session->userdata('parametres')['messageEtablissement'] != ''):
+        echo '<div class="row"><div class="col alert alert-info">' . $this->session->userdata('parametres')['messageEtablissement'] . '</div></div>';
+    endif;
+    ?>
+    <div class = "row" style = "margin-top : 15px;">
+        <input type = "hidden" id = "caseHeight" value = "<?= $this->hauteur; ?>">
+        <input type = "hidden" id = "caseWidth" value = "<?= $this->largeur; ?>">
 
-        <div class="col-12">
-            <div class="row">
-                <!-- liste du personnel -->
-                <div class="col-3" align="right">
-                    <table id="tablePlanningPersonnel">
-                        <tr height="43">
+        <div class = "col-12">
+            <div class = "row">
+                <!--liste du personnel -->
+                <div class = "col-3" align = "right">
+                    <table id = "tablePlanningPersonnel">
+                        <tr height = "43">
                             <td></td>
                         </tr>
                         <?php
@@ -35,7 +40,7 @@
                     </table>
                 </div>
 
-                <div class="col-9" id="divPlanning" today="<?= $today; ?>" style=" padding-left: 0px;">
+                <div class="col-9" id="divPlanning" today="<?= $today; ?>" style="overflow-x: scroll; padding-left: 0px;">
                     <div id="masquePlanning" style="width: <?= ($nbSemainesPlanning * 7 * ((($this->largeur + 1) * 2))) . 'px'; ?>;"></div>
 
                     <table cellspacing="0" border="0" id="tablePlanning" style="width: <?= ($nbSemainesPlanning * 7 * ((($this->largeur + 1) * 2))) . 'px'; ?>;">
@@ -257,6 +262,7 @@
                         <tr>
                             <th width="70%">Date</th>
                             <th>Heures</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -308,9 +314,12 @@
                     <div class="col-6" style="padding:20px; text-align: center;">
                         <span id="spanNomPersonnelConnect"></span>
                         <input type="password" id="connectCode" value="" class="form-control" disabled style="text-align: center;">
-                        <br><button type="button" class="btn btn-sm btn-outline-primary">
+                        <br><button type="button" class="btn btn-sm btn-outline-primary" id="connectStart">
                             Connection
                         </button>
+                        <div id="loaderConnect" class="formloader">
+                            <i class="fas <?= $this->session->userdata('loaderIcon'); ?> fa-spin"></i>
+                        </div>
                     </div>
                 </div>
 
@@ -319,7 +328,7 @@
     </div>
 </div>
 <div id="changeLandscape">
-    <img src="<?= base_url('assets/img/logoClair.png'); ?>" height="70" style="font-size:80px;">
-    <br><br><i class="fas fa-mobile-alt fa-spin"></i>
-    <br>Passer en paysage !
+    <br><br><img src="<?= base_url('assets/img/logoClair.png'); ?>" height="70" style="font-size:80px;">
+    <br><br><i class="fas fa-mobile-alt" id="changeLandscapeIcon"></i>
+    <br>Idéal en paysage !
 </div>

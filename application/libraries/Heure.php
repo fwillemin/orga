@@ -40,6 +40,10 @@ class Heure {
         $this->heurePersonnelId = $this->heureAffectation->getAffectationPersonnelId();
     }
 
+    public function valide() {
+        $this->heureValide = 1;
+    }
+
     function getHeureId() {
         return $this->heureId;
     }

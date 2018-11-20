@@ -17,6 +17,7 @@ class Parametre {
     protected $tailleAffectations;
     protected $tranchePointage;
     protected $genererPaniers;
+    protected $messageEtablissement;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -78,6 +79,14 @@ class Parametre {
 
     function setGenererPaniers($genererPaniers) {
         $this->genererPaniers = $genererPaniers;
+    }
+
+    function getMessageEtablissement() {
+        return $this->messageEtablissement;
+    }
+
+    function setMessageEtablissement($messageEtablissement) {
+        $this->messageEtablissement = $messageEtablissement;
     }
 
 }

@@ -92,4 +92,17 @@ $(document).ready(function () {
             }
         }
     });
+    
+    /* Validation rapide des heures saisies par les ouvriers en un click */
+    $('.trou.unchecked').on('click', function () {
+        var trou = $(this);
+        var elem = $(this).next();
+        // on modifie l'heure à valide
+        $.post(chemin + 'pointages/quickValide/', {heureId: elem.attr('data-heureid')}, function (retour) {
+            if (retour.type == 'success') {
+//                $.toaster({priority: 'success', title: '<strong><i class="fas fa-check"></i> OK</strong>', message: '<br>' + 'Heures validées'});
+                trou.attr('class', 'trou valide');                
+            }
+        }, 'json');
+    });
 });

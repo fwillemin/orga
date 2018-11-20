@@ -22,17 +22,30 @@ $(document).ready(function () {
     $('[data-toggle="popover"]').popover({
         html: true
     });
+    
+    $('#messageGlobal').on('change', function() {
+        $.post(chemin + 'planning/changeMessageGlobal', {message:$(this).val()}, function(retour){
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    $.toaster({priority: 'success', title: '<strong><i class="fas fa-check"></i> OK</strong>', message: '<br>' + 'Message global mis à jour'});
+                    break;
+            }
+        }, 'json');
+    });
     $('#modalAffichageLivraison').modal({
         show: false,
         backdrop: false
     }).draggable({
         handle: ".modal-header"
-    });   
+    });
     $('#modalAddAffectation, #modalAffectation').modal({
         show: false
     }).draggable({
         handle: ".modal-header"
-    });   
+    });
     $("#divPlanning").animate({scrollLeft: getCookie('positionPlanning')}, 800);
     if ($('#divPlanning').scrollLeft() == 0) {
         $('#divPlanning').scrollLeft($('#divPlanning').attr('today'));
@@ -266,9 +279,9 @@ $(document).ready(function () {
         var datum = new Date(timestamp * 1000);
         return datum.getDay();
     }
-    
+
     function majNbHeuresAffectation() {
-        $.post(chemin + 'planning/getNbHeuresFormAffectation', {personnelId:$('#addAffectationPersonnelsIds').val()[0], debutDate:$('#addAffectationDebutDate').val(), debutMoment:$('#addAffectationDebutMoment').val(), finDate: $('#addAffectationFinDate').val(), finMoment:$('#addAffectationFinMoment').val()}, function(retour){
+        $.post(chemin + 'planning/getNbHeuresFormAffectation', {personnelId: $('#addAffectationPersonnelsIds').val()[0], debutDate: $('#addAffectationDebutDate').val(), debutMoment: $('#addAffectationDebutMoment').val(), finDate: $('#addAffectationFinDate').val(), finMoment: $('#addAffectationFinMoment').val()}, function (retour) {
             switch (retour.type) {
                 case 'error':
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
@@ -308,15 +321,15 @@ $(document).ready(function () {
                 nbDemiRestant -= 2;
             }
         }
-        $('#addAffectationFinDate').val(timestampToDate(timeEnd));        
+        $('#addAffectationFinDate').val(timestampToDate(timeEnd));
         majNbHeuresAffectation();
     });
-    
-    $('#addAffectationPersonnelsIds').on('change', function(){
+
+    $('#addAffectationPersonnelsIds').on('change', function () {
         $(this).selectpicker('refresh');
         majNbHeuresAffectation();
     });
-    
+
     $('#addAffectationFinDate, #addAffectationFinMoment').on('change', function () {
         /* On recalcule le nombre de demi journées ouvrées entre la nouvelle date de fin et la date de début */
         var timeStart = dateToTimestamp($('#addAffectationDebutDate').val());
@@ -339,9 +352,9 @@ $(document).ready(function () {
         $('#addAffectationNbDemi').val(nbDemiAffect);
         majNbHeuresAffectation();
     });
-    
-    $('#addAffectationNbHeures').on('change', function(){
-        $.post(chemin + 'planning/getFinAffectationWithNbHeures', {personnelId:$('#addAffectationPersonnelsIds').val()[0], debutDate:dateToTimestamp($('#addAffectationDebutDate').val()), debutMoment:$('#addAffectationDebutMoment').val(), nbHeures:$(this).val()}, function(retour){
+
+    $('#addAffectationNbHeures').on('change', function () {
+        $.post(chemin + 'planning/getFinAffectationWithNbHeures', {personnelId: $('#addAffectationPersonnelsIds').val()[0], debutDate: dateToTimestamp($('#addAffectationDebutDate').val()), debutMoment: $('#addAffectationDebutMoment').val(), nbHeures: $(this).val()}, function (retour) {
             switch (retour.type) {
                 case 'error':
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
@@ -354,7 +367,7 @@ $(document).ready(function () {
             }
         }, 'json')
     });
-    
+
     $('#formAddAffectation').on('submit', function (e) {
         e.preventDefault();
         if ($("#addAffectationPersonnelsIds option:selected").length < 1) {
@@ -418,7 +431,12 @@ $(document).ready(function () {
                     if (retour.heures.length > 0) {
                         $('#tableAffectationHeures tbody tr').remove();
                         for (i = 0; i < retour.heures.length; i++) {
-                            $('#tableAffectationHeures tbody').append('<tr><td>' + retour.heures[i].heureDate + '</td><td>' + retour.heures[i].heureDuree + '</td></tr>');
+                            if(retour.heures[i].heureValide == '1'){
+                                etat = '<i class="fas fa-check"></i>';
+                            }else{
+                                etat = '';
+                            }
+                            $('#tableAffectationHeures tbody').append('<tr><td>' + retour.heures[i].heureDate + '</td><td align="right">' + retour.heures[i].heureDuree + '</td><td>' + etat + '</td></tr>');
                         }
                     }
 
@@ -427,7 +445,7 @@ $(document).ready(function () {
                     $('#textAffectationAffaire').html('<a href="' + chemin + 'affaires/ficheAffaire/' + retour.affaire.affaireId + '">' + retour.affaire.affaireObjet + '</a>');
                     $('#textAffectationPersonnel').html('<a href="' + chemin + 'personnels/fichePersonnel/' + retour.personnel.personnelId + '">' + retour.personnel.personnelNom + '</a>');
                     $('#textAffectationChantier').html('<a href="' + chemin + 'chantiers/ficheChantier/' + retour.chantier.chantierId + '">' + retour.chantier.chantierObjet + '</a>');
-                    
+
                     if (retour.chantier.chantierEtat === '2') {
                         $('#btnCutAffectation').prop('disabled', true);
                         $('#btnDecaleAffectation').prop('disabled', true);
@@ -847,44 +865,61 @@ $(document).ready(function () {
             }
         }, 'json');
     });
-    
-    $('.connectPersonnel').on('click', function(){
+
+    $('.connectPersonnel').on('click', function () {
         $('#spanNomPersonnelConnect').html($(this).attr('data-personnelnom'));
         $('#modalConnect').modal('show');
     });
-    
-    $('#digit1').on('click', function(){
-        $('#connectCode').val( $('#connectCode').val() + '1');
+
+    $('#digit1').on('click', function () {
+        $('#connectCode').val($('#connectCode').val() + '1');
     });
-    $('#digit2').on('click', function(){
-        $('#connectCode').val( $('#connectCode').val() + '2');
+    $('#digit2').on('click', function () {
+        $('#connectCode').val($('#connectCode').val() + '2');
     });
-    $('#digit3').on('click', function(){
-        $('#connectCode').val( $('#connectCode').val() + '3');
+    $('#digit3').on('click', function () {
+        $('#connectCode').val($('#connectCode').val() + '3');
     });
-    $('#digit4').on('click', function(){
-        $('#connectCode').val( $('#connectCode').val() + '4');
+    $('#digit4').on('click', function () {
+        $('#connectCode').val($('#connectCode').val() + '4');
     });
-    $('#digit5').on('click', function(){
-        $('#connectCode').val( $('#connectCode').val() + '5');
+    $('#digit5').on('click', function () {
+        $('#connectCode').val($('#connectCode').val() + '5');
     });
-    $('#digit6').on('click', function(){
-        $('#connectCode').val( $('#connectCode').val() + '6');
+    $('#digit6').on('click', function () {
+        $('#connectCode').val($('#connectCode').val() + '6');
     });
-    $('#digit7').on('click', function(){
-        $('#connectCode').val( $('#connectCode').val() + '7');
+    $('#digit7').on('click', function () {
+        $('#connectCode').val($('#connectCode').val() + '7');
     });
-    $('#digit8').on('click', function(){
-        $('#connectCode').val( $('#connectCode').val() + '8');
+    $('#digit8').on('click', function () {
+        $('#connectCode').val($('#connectCode').val() + '8');
     });
-    $('#digit9').on('click', function(){
-        $('#connectCode').val( $('#connectCode').val() + '9');
+    $('#digit9').on('click', function () {
+        $('#connectCode').val($('#connectCode').val() + '9');
     });
-    $('#digit0').on('click', function(){
-        $('#connectCode').val( $('#connectCode').val() + '0');
+    $('#digit0').on('click', function () {
+        $('#connectCode').val($('#connectCode').val() + '0');
     });
-    $('#digitReset').on('click', function(){
+    $('#digitReset').on('click', function () {
         $('#connectCode').val('');
+    });
+
+    $('#connectStart').on('click', function () {
+        $(this).hide();
+        $('#loaderConnect').show();
+        $.post(chemin + 'light/tryConnectOuvrier', {personnelId: $('#connectPersonnelId').val(), code: $('#connectCode').val()}, function (retour) {
+            switch (retour.type) {
+                case 'error':
+                    $(this).show();
+                    $('#loaderConnect').hide();
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    window.location.assign(chemin + 'light/saisie');
+                    break;
+            }
+        }, 'json');
     });
 
 });

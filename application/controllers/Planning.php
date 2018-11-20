@@ -12,6 +12,8 @@ class Planning extends My_Controller {
 
         if (!$this->ion_auth->logged_in()) :
             redirect('organibat/board');
+        elseif ($this->ion_auth->in_group(4)):
+            redirect('light/baseRestrict');
         endif;
 
         /* Définition des variables de planning */
@@ -32,6 +34,16 @@ class Planning extends My_Controller {
         echo 'Done';
     }
 
+    public function changeMessageGlobal() {
+        $parametre = $this->managerParametres->getParametres();
+        $parametre->setMessageEtablissement($this->input->post('message'));
+        $this->managerParametres->editer($parametre);
+        /* Mise à jour de la session */
+        $this->session->unset_userdata('parametres');
+        $this->session->set_userdata('parametres', (array) $this->managerParametres->getParametres('array'));
+        echo json_encode(array('type' => 'success'));
+    }
+
     /* Permet la selection ou non des chantiers terminés dans le slide gauche */
 
     public function modAffichageTermines() {
@@ -48,9 +60,6 @@ class Planning extends My_Controller {
      * @param String $debut Format YYYY-MM-DD
      */
     public function base($debut = null) {
-        if ($this->ion_auth->in_group(4)):
-            redirect('planning/baseRestrict');
-        endif;
 
         /* Recherche du premier jour du planning en excluant le dossier divers */
         if ($debut):
@@ -399,7 +408,7 @@ class Planning extends My_Controller {
             $affectation->hydrateHeures();
             if (!empty($affectation->getAffectationHeures())):
                 foreach ($affectation->getAffectationHeures() as $heure):
-                    $heures[] = array('heureDate' => $this->cal->dateFrancais($heure->getHeureDate(), 'jDM'), 'heureDuree' => floor($heure->getHeureDuree() / 60) . 'h ' . $heure->getHeureDuree() % 60 . 'min');
+                    $heures[] = array('heureDate' => $this->cal->dateFrancais($heure->getHeureDate(), 'jDM'), 'heureDuree' => floor($heure->getHeureDuree() / 60) . 'h ' . $heure->getHeureDuree() % 60 . '', 'heureValide' => $heure->getHeureValide());
                 endforeach;
             else:
                 $heures = array();

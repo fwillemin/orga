@@ -9,12 +9,16 @@ class Pointages extends My_Controller {
         parent::__construct();
         $this->viewFolder = strtolower(__CLASS__) . '/';
 
-        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(50, 51, 52)))) :
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(50, 51, 52, 4)))) :
+            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'User non autorisé');
             redirect('organibat/board');
         endif;
     }
 
     public function heures($semaine = null, $annee = null) {
+        if (!$this->ion_auth->in_group(array(50, 51, 52))) :
+            redirect('organibat/board');
+        endif;
 
         if (!$annee):
             $annee = date('Y', time());
@@ -82,23 +86,29 @@ class Pointages extends My_Controller {
      * Valide une heure directement depuis son Id
      */
     public function quickValide() {
-        $this->form_validation->set_rules('heureId', 'Heure', 'required|is_natural_no_zero|trim');
-        if (!$this->form_validation->run()):
+        if (!$this->ion_auth->in_group(array(50, 51, 52))) :
+            redirect('organibat/board');
+        endif;
+
+        if (!$this->form_validation->run('getHeure')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
-            exit;
         else:
             $heure = $this->managerHeures->getHeureById(intval($this->input->post('heureId')));
             $heure->valide();
             $this->managerHeures->editer($heure);
             echo json_encode(array('type' => 'success'));
-            exit;
         endif;
     }
 
     /**
-     * Ajoute des heures à une affectation par la direction
+     * Ajoute des heures à une affectation
      */
     public function addHeure() {
+        if ($this->ion_auth->in_group(array(50, 51, 52))) :
+            $heureValide = 1;
+        else:
+            $heureValide = 0;
+        endif;
 
         if (!$this->form_validation->run('addHeure')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
@@ -112,18 +122,26 @@ class Pointages extends My_Controller {
                 else:
                     $heure->setHeureDuree($this->input->post('duree'));
                     $this->managerHeures->editer($heure);
-                    $retourClass = 'valide';
+                    if ($this->ion_auth->in_group(array(4))) :
+                        $retourClass = 'unchecked';
+                    else:
+                        $retourClass = 'valide';
+                    endif;
                 endif;
             else:
                 $arrayHeure = array(
                     'heureAffectationId' => $this->input->post('affectationId'),
                     'heureDate' => $this->input->post('jour'),
                     'heureDuree' => $this->input->post('duree'),
-                    'heureValide' => 1
+                    'heureValide' => $heureValide
                 );
                 $heure = new Heure($arrayHeure);
                 $this->managerHeures->ajouter($heure);
-                $retourClass = 'valide';
+                if ($this->ion_auth->in_group(array(4))) :
+                    $retourClass = 'unchecked';
+                else:
+                    $retourClass = 'valide';
+                endif;
             endif;
             echo json_encode(array('type' => 'success', 'retourClass' => $retourClass, 'heureId' => (!empty($heure) ? $heure->getHeureId() : '')));
 
@@ -136,6 +154,9 @@ class Pointages extends My_Controller {
      * @param string $periode période de la feuille de pointage sous le format
      */
     public function feuilles($personnelId = null, $periode = null) {
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(50, 51, 52)))) :
+            redirect('organibat/board');
+        endif;
 
         if (!$this->existPersonnel($personnelId) || !$periode):
             $personnel = $sauvegarde = '';

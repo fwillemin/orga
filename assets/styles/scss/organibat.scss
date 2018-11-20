@@ -370,7 +370,7 @@ and open the template in the editor.
             padding: 4px 4px 10px 4px;
         }    
     }
-    .cadreHeure{    
+    .cadreHeure, .cadreHeureLight{    
         position:relative;
         font-weight:bold;
         padding : 0px 2px;    
@@ -378,10 +378,15 @@ and open the template in the editor.
         text-align: center;
         margin: 2px;
         float:left;
-        width: 47%;
         min-width: 65px;
         @include border-radius(8px);
         @include box-shadow($noir 3px 3px 10px);
+    }
+    .cadreHeureLight {
+        width:24%;
+    }
+    .cadreHeure {
+        width:47%;
     }
     .heureSelect {
         font-size:22px;
@@ -419,8 +424,9 @@ and open the template in the editor.
             display : block;
         }
         &.unchecked {
-            background-color: #df4560;
+            background-color: #fab25f;
             display : block;
+            cursor: pointer;
         }
         &.empty {
             background-color: none;
@@ -441,12 +447,12 @@ and open the template in the editor.
     }
     .inputCenter { text-align: center; }
     #enteteReleve, #piedReleve {display:none;}
-    
+
     #enteteAffaire {
         background-color: $noir;
         color: #EEE;
     }
-    
+
     #tableAnalyseFicheChantier tbody tr {
         text-align: right;
     }
@@ -454,11 +460,11 @@ and open the template in the editor.
         position: relative;
         text-align: right;
     }
-    
+
     .badgeAnalyseChantier {
         font-size: 12px;
     }
-    
+
     #selectChantierFiche{
         font-size : 20px;
         width:60%;
@@ -473,7 +479,7 @@ and open the template in the editor.
         left:0px;
         height:100%;
         width:100%;
-        z-index:100;           
+        z-index:1000;           
         background-color: $noir;
         text-align: center;
         padding-top: 30px;
@@ -490,6 +496,20 @@ and open the template in the editor.
             height:40px;
             font-size:18px;
             font-weight: bold;
+        }
+    }
+    #changeLandscapeIcon {
+        display: inline-block;
+        animation: rotation 3s infinite linear;
+        font-size : 60px;
+    }
+
+    @keyframes rotation {
+        50% {
+            transform: rotate(90deg);
+        }
+        100% {
+            transform: rotate(0deg);
         }
     }
 }

@@ -133,4 +133,22 @@ class Model_affectations extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function getAffectationsSaisie($personnelId, $premierJour, $dernierJour, $etat = 1, $tri = 'affectationDebutDate ASC', $type = 'object') {
+
+        $selection = array('a.affectationFinDate >=' => $premierJour, 'c.chantierEtat <=' => $etat, 'affectationPersonnelId' => $personnelId);
+        if ($dernierJour):
+            $selection['a.affectationDebutDate <='] = $dernierJour;
+        endif;
+
+        $query = $this->db->select('a.*, c.chantierEtat AS affectationChantierEtat')
+                ->from('affectations a')
+                ->join('chantiers c', 'c.chantierId = a.affectationChantierId', 'left')
+                ->join('affaires d', 'd.affaireId = c.chantierAffaireId', 'left')
+                ->where('d.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where($selection)
+                ->order_by($tri)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
 }
