@@ -98,6 +98,11 @@ checkOrientation();
                     if (retour.heures.length > 0) {
                         $('#tableAffectationHeures tbody tr').remove();
                         for (i = 0; i < retour.heures.length; i++) {
+                            if(retour.heures[i].heureValide == '1'){
+                                etat = '<i class="fas fa-check"></i>';
+                            }else{
+                                etat = '';
+                            }
                             $('#tableAffectationHeures tbody').append('<tr><td>' + retour.heures[i].heureDate + '</td><td align="right">' + retour.heures[i].heureDuree + '</td><td>' + etat + '</td></tr>');
                         }
                     }
