@@ -5,7 +5,6 @@ application/config/email.php
 application/cache/*
 !application/cache/index.html
 
-application/.sass-cache/*
 application/logs/*
 !application/logs/index.html
 
@@ -23,3 +22,4 @@ package-lock.json
 /nbproject/
 /node_modules/
 /system/
+/.sass-cache/

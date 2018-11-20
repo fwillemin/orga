@@ -152,9 +152,9 @@ class Affectation {
 
         /* Un décallage de position apparait dans le cas ou la premier jour de planning est en heure d'hiver et que l'affectation est en haure d'été */
         if (date('I', $premierJourPlanning) == 0 && date('I', $this->affectationDebutDate) == 1):
-            $positionLeft = ceil(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
-        else:
             $positionLeft = floor(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
+        else:
+            $positionLeft = ceil(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
         endif;
 
         //si on commence de l'aprem, on ajoute une 1/2 journée
@@ -163,15 +163,18 @@ class Affectation {
         }
 
         $classes = 'affectation';
-        $attributs = 'js-affectationid="' . $this->affectationId . '" js-chantierid="' . $this->affectationChantierId; /* ac signifie affectation du chantier + l'id du chantier associé => utilisé pour mettre toutes les affectations les elements d'un chantier en surbrillance lors du click dans le slide gauche */
+        //$attributs = 'js-affectationid="' . $this->affectationId . '" js-chantierid="' . $this->affectationChantierId; /* ac signifie affectation du chantier + l'id du chantier associé => utilisé pour mettre toutes les affectations les elements d'un chantier en surbrillance lors du click dans le slide gauche */
+        $attributs = '';
         $taille = $this->affectationCases * ($largeur + 1) - 3;
         $background = $this->affectationChantier->getChantierCouleur();
         if ($this->getAffectationChantier()->getChantierEtat() == 1):
-            $classes .= ' resizable';
-            if (empty($this->affectationHeures)):
-                $classes .= ' draggable';
-            else:
-                $classes .= ' draggableHorizontal';
+            if ($this->getAffectationDebutDate() >= $premierJourPlanning):
+                $classes .= ' resizable';
+                if (empty($this->affectationHeures)):
+                    $classes .= ' draggable';
+                else:
+                    $classes .= ' draggableHorizontal';
+                endif;
             endif;
             $border = 'border : 1px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
             $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur(), 0.85);
@@ -181,9 +184,10 @@ class Affectation {
         endif;
         if (!empty($this->affectationHeures)):
             $border .= ' border-left: 3px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
+            $border .= ' border-right: 3px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
         endif;
 
-        $txt = '<span class="planningDivText" data-toggle="tooltip" title="' . $this->getAffectationClient()->getClientNom() . ' [' . $this->getAffectationChantier()->getChantierCategorie() . ' - ' . $this->getAffectationChantier()->getChantierObjet() . ']" style="color:' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';">'
+        $txt = '<span class="planningDivText" data-toggle="tooltip" title="' . $this->getAffectationClient()->getClientNom() . ' [' . $this->getAffectationChantier()->getChantierCategorie() . ' - ' . $this->getAffectationChantier()->getChantierObjet() . ']" style="color:' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . '; float: ' . ($this->getAffectationDebutDate() >= $premierJourPlanning ? 'left' : 'right') . ';">'
                 . substr($this->getAffectationClient()->getClientNom(), 0, floor($taille / 10))
                 . '</span>';
 

@@ -102,9 +102,9 @@ class Planning extends My_Controller {
 
         if ($affectations):
             /* Permier et dernier jours du planning */
-            if ($affectations[0]->getAffectationDebutDate() < $premierJourPlanning):
-                $premierJourPlanning = $this->cal->premierJourSemaine($affectations[0]->getAffectationDebutDate(), 0);
-            endif;
+//            if ($affectations[0]->getAffectationDebutDate() < $premierJourPlanning):
+//                $premierJourPlanning = $this->cal->premierJourSemaine($affectations[0]->getAffectationDebutDate(), 0);
+//            endif;
 
             foreach ($affectations as $affectation):
                 $affectation->hydrateOrigines();
