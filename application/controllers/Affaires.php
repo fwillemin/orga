@@ -208,7 +208,7 @@ class Affaires extends My_Controller {
         $affaire->hydratePlace();
 
         $data = array(
-            'analyse' => $this->analyseAffaire($affaire),
+            'analyse' => $affaire->getAffaireId() != $this->session->userdata('affaireDiversId') ? $this->analyseAffaire($affaire) : null,
             'commerciaux' => $this->managerUtilisateurs->getCommerciaux(),
             'clients' => $clients,
             'categories' => $this->managerCategories->getCategories(),

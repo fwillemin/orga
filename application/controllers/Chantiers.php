@@ -46,12 +46,25 @@ class Chantiers extends My_Controller {
         $affaire = $chantier->getChantierAffaire();
         $affaire->hydrateChantiers();
 
+        if ($affaire->getAffaireId() == $this->session->userdata('affaireDiversId')):
+            $affairesALier = $this->managerAffaires->getAffaires(array('affaireEtat' => 2));
+            if (!empty($affairesALier)):
+                foreach ($affairesALier as $affaire1):
+                    $affaire1->hydrateChantiers();
+                    $affaire1->hydrateClient();
+                endforeach;
+            endif;
+        else:
+            $affairesALier = array();
+        endif;
+
         $data = array(
             'fournisseurs' => $this->managerFournisseurs->getFournisseurs(),
             'categories' => $this->managerCategories->getCategories(),
             'chantier' => $chantier,
             'affaire' => $affaire,
-            'analyse' => $this->analyseChantier($chantier),
+            'analyse' => $affaire->getAffaireId() != $this->session->userdata('affaireDiversId') ? $this->analyseChantier($chantier) : null,
+            'affairesALier' => $affairesALier,
             'title' => 'Fiche Chantier',
             'description' => 'Fiche chantier',
             'content' => $this->viewFolder . '/' . __FUNCTION__

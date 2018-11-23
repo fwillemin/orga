@@ -57,12 +57,14 @@
             <li class="nav-item">
                 <a class="nav-link" id="tabHeures" data-toggle="tab" href="#heuresChantier"><i class="fas fa-clock"></i> Heures</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" id="tabAchats" data-toggle="tab" href="#achatsChantier"><i class="fas fa-piggy-bank"></i> Achats</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="tabAnalyse" data-toggle="tab" href="#analyseChantier"><i class="fas fa-chart-pie"></i> Analyse</a>
-            </li>
+            <?php if ($affaire->getAffaireId() != $this->session->userdata('affaireDiversId')) : ?>
+                <li class="nav-item">
+                    <a class="nav-link" id="tabAchats" data-toggle="tab" href="#achatsChantier"><i class="fas fa-piggy-bank"></i> Achats</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tabAnalyse" data-toggle="tab" href="#analyseChantier"><i class="fas fa-chart-pie"></i> Analyse</a>
+                </li>
+            <?php endif; ?>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#modChantier"><i class="fas fa-edit"></i> Modifier</a>
             </li>
@@ -90,7 +92,13 @@
             </div>
 
             <div class="tab-pane" id="heuresChantier">
-                <?php include('tabHeures.php'); ?>
+                <?php
+                if ($affaire->getAffaireId() != $this->session->userdata('affaireDiversId')) :
+                    include('tabHeures.php');
+                else:
+                    include('tabHeuresDivers.php');
+                endif;
+                ?>
             </div>
 
             <div class="tab-pane" id="deleteChantier" style="border-left: 4px solid red; font-size:14px; padding:10px;">
@@ -120,15 +128,14 @@
                 endif;
                 ?>
             </div>
-
-            <div class="tab-pane" id="achatsChantier" style="padding:10px;">
-                <?php include('tabAchats.php'); ?>
-            </div>
-
-            <div class="tab-pane" id="analyseChantier" style="padding: 10px; margin-bottom:10px;">
-                <?php include('tabAnalyse.php'); ?>
-            </div>
-
+            <?php if ($affaire->getAffaireId() != $this->session->userdata('affaireDiversId')) : ?>
+                <div class="tab-pane" id="achatsChantier" style="padding:10px;">
+                    <?php include('tabAchats.php'); ?>
+                </div>
+                <div class="tab-pane" id="analyseChantier" style="padding: 10px; margin-bottom:10px;">
+                    <?php include('tabAnalyse.php'); ?>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

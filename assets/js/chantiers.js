@@ -100,7 +100,7 @@ $(document).ready(function () {
         $('#addAchatFournisseurId option[value="0"]').prop('selected', true);
         $('#addAchatLivraisonAvancement option[value="0"]').prop('selected', true);
         $('#addAchatLivraisonDate').val('');
-        
+
         $('#tableAchats tr').removeClass('ligneSelectionnee');
         $('.js-onAchatMod').hide();
         $('#btnSubmitFormAchat').html('<i class="fas fa-plus-square"></i> Ajouter');
@@ -260,12 +260,36 @@ $(document).ready(function () {
         }
     });
 
-    $('#tableResumeAchats tr.ligneClikable').on('click', function(){
+    $('#tableResumeAchats tr.ligneClikable').on('click', function () {
         window.location.assign(chemin + 'chantiers/ficheChantier/' + $('#tableResumeAchats').attr('data-chantierid') + '/a' + $(this).attr('data-achatid'));
     });
-    
-    $('#selectChantierFiche').on('change', function(){
+
+    $('#selectChantierFiche').on('change', function () {
         window.location.assign(chemin + 'chantiers/ficheChantier/' + $(this).val());
+    });
+
+    $('.btnReAffecter').on('click', function () {
+        $('#lierAffectationId').val($(this).closest('tr').attr('data-affectationid'));
+        $('#suivreApresLier').prop('checked', false);
+        $('#modalLierAffectationChantier').modal('show');
+    });
+    $('#formLierAffectation').on('submit', function (e) {
+        e.preventDefault();
+        var donnees = $(this).serialize();
+        $.post(chemin + 'planning/relierAffectation', donnees, function (retour) {
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    if ($('#suivreApresLier').prop('checked') === true) {
+                        window.location.assign(chemin + 'chantiers/ficheChantier/' + $('#lierChantierId').val() + '/h');
+                    } else {
+                        window.location.reload();
+                    }
+                    break;
+            }
+        }, 'json');
     });
 
     /* GRAPHS */
@@ -354,7 +378,7 @@ $(document).ready(function () {
                     borderWidth: 1
                 }]
         },
-        options: {            
+        options: {
             responsive: false,
             scales: {
                 xAxes: [{
@@ -364,7 +388,7 @@ $(document).ready(function () {
                     }]
             },
             legend: {
-              position: 'bottom'  
+                position: 'bottom'
             },
             annotation: {
                 annotations: [{
@@ -384,21 +408,21 @@ $(document).ready(function () {
         }
     });
 
-    var graphChantierResume = document.getElementById("graphChantierResume").getContext('2d');    
+    var graphChantierResume = document.getElementById("graphChantierResume").getContext('2d');
     var marges = $('#graphChantierResume').attr('js-datamarge').split(',');
-    if( parseFloat(marges[0]) > 0 ){
+    if (parseFloat(marges[0]) > 0) {
         colorCommercial = 'lightgreen';
-    }else{
+    } else {
         colorCommercial = '#E92768';
     }
-    if( parseFloat(marges[1]) > 0 ){
+    if (parseFloat(marges[1]) > 0) {
         colorTempsReel = 'lightgreen';
-    }else{
+    } else {
         colorTempsReel = '#E92768';
     }
-    if( parseFloat(marges[2]) > 0 ){
+    if (parseFloat(marges[2]) > 0) {
         colorFinChantier = 'lightgreen';
-    }else{
+    } else {
         colorFinChantier = '#E92768';
     }
     new Chart(graphChantierResume, {
@@ -422,7 +446,7 @@ $(document).ready(function () {
                 }, {
                     label: "Marge",
                     data: marges,
-                   backgroundColor: [colorCommercial,colorTempsReel, colorFinChantier],
+                    backgroundColor: [colorCommercial, colorTempsReel, colorFinChantier],
                 }]
         },
         options: {
@@ -436,7 +460,7 @@ $(document).ready(function () {
                 yAxes: [{stacked: true}]
             },
             legend: {
-              position: 'bottom',  
+                position: 'bottom',
             },
             annotation: {
                 annotations: [{
@@ -450,7 +474,7 @@ $(document).ready(function () {
                             enabled: true,
                             content: 'Chiffrage : ' + $('#graphChantierResume').attr('js-chiffrage') + '€',
                             backgroundColor: 'rgba(89, 89, 89, 0)',
-                            fontColor:'rgba(89, 89, 89, 0.9)',
+                            fontColor: 'rgba(89, 89, 89, 0.9)',
                             yAdjust: 10,
                             position: 'left'
                         }

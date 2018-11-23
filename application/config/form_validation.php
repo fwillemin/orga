@@ -940,6 +940,19 @@ $config = array(
             'label' => 'Mode de contact',
             'rules' => 'in_list[1,2,3,4,5]'
         )
+    ),
+    /* Lier Affectation à un chantier */
+    'relierAffectation' => array(
+        array(
+            'field' => 'lierAffectationId',
+            'label' => 'ID de l\'affectation',
+            'rules' => 'required|callback_existAffectation'
+        ),
+        array(
+            'field' => 'lierChantierId',
+            'label' => 'ID du chantier',
+            'rules' => 'required|callback_existChantier'
+        )
     )
 );
 ?>

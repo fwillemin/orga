@@ -1039,4 +1039,15 @@ class Planning extends My_Controller {
         $this->load->view('template/content', $data);
     }
 
+    public function relierAffectation() {
+        if (!$this->form_validation->run('relierAffectation')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $affectation = $this->managerAffectations->getAffectationById($this->input->post('lierAffectationId'));
+            $affectation->setAffectationChantierId($this->input->post('lierChantierId'));
+            $this->managerAffectations->editer($affectation);
+            echo json_encode(array('type' => 'success'));
+        endif;
+    }
+
 }
