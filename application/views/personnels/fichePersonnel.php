@@ -23,7 +23,8 @@
                 <?= $personnel->getPersonnelActif() ? '<label class="badge badge-info">Actif</label>' : '<label class="badge badge-secondary">Inactif</label>'; ?> <strong><?= $personnel->getPersonnelQualif(); ?></strong>
                 <br>Taux horaire actuel : <strong><?= ($personnel->getPersonnelTauxHoraire() ?: '<span class="badge badge-warning">NR</span>') . ' <small>€/h</small>'; ?></strong>
                 <br><span style="font-size:14px;">Horaire d'entreprise : <?= $personnel->getPersonnelHoraireId() ? $personnel->getPersonnelHoraire()->getHoraireNom() : 'Aucun horaire appliqué'; ?>
-                    <br>Feuilles de pointages : <?= $personnel->getPersonnelPointages() == 1 ? 'Au réél des heures pointées' : 'Selon l\'horaire attribué'; ?></span>
+                    <br>Feuilles de pointages : <?= $personnel->getPersonnelPointages() == 1 ? 'Au réél des heures pointées' : 'Selon l\'horaire attribué'; ?>
+                    <br>Portable : <?= $personnel->getPersonnelPortable(); ?></span>
                 <br>
                 <br>
                 <h5>Taux horaires</h5>

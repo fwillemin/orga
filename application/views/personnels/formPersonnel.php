@@ -65,12 +65,17 @@
     </div>
 </div>
 <div class="form-row" style="margin-top: 4px;">
-    <div class="col">
+    <div class="col-4">
         <label for="addPersonnelCode">Code</label>
         <input type="text" class="form-control form-control-sm" id="addPersonnelCode" name="addPersonnelCode" placeholder="Code secret" value="<?= !empty($personnel) ? $personnel->getPersonnelCode() : ''; ?>">
         <small class="form-text text-muted">4 chiffres</small>
     </div>
-    <div class="col" style="text-align: center;">
+    <div class="col-6">
+        <label for="addPersonnelPortable">Portable</label>
+        <input type="text" class="form-control form-control-sm" id="addPersonnelPortable" name="addPersonnelPortable" placeholder="N° Tel Portable" value="<?= !empty($personnel) ? $personnel->getPersonnelPortable() : ''; ?>">
+        <small class="form-text text-muted">pour SMS</small>
+    </div>
+    <div class="col-2" style="text-align: center;">
         <label for="addPersonnelActif">Actif</label>
         <input class="form-control form-control-sm" type="checkbox" class="form-control form-control-sm" id="addPersonnelActif" name="addPersonnelActif" <?= (!empty($personnel) && $personnel->getPersonnelActif()) ? 'checked' : ''; ?>>
     </div>

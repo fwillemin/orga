@@ -19,6 +19,7 @@ class Personnel {
     protected $personnelQualif;
     protected $personnelActif;
     protected $personnelCode;
+    protected $personnelPortable;
     protected $personnelMessage;
     protected $personnelHoraireId;
     protected $personnelHoraire;
@@ -212,6 +213,14 @@ class Personnel {
 
     function setPersonnelPointages($personnelPointages) {
         $this->personnelPointages = $personnelPointages;
+    }
+
+    function getPersonnelPortable() {
+        return $this->personnelPortable;
+    }
+
+    function setPersonnelPortable($personnelPortable) {
+        $this->personnelPortable = $personnelPortable;
     }
 
 }

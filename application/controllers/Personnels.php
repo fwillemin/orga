@@ -84,6 +84,7 @@ class Personnels extends My_Controller {
                 $personnel->setPersonnelPrenom(ucfirst($this->input->post('addPersonnelPrenom')));
                 $personnel->setPersonnelQualif($this->input->post('addPersonnelQualif'));
                 $personnel->setPersonnelCode($this->input->post('addPersonnelCode'));
+                $personnel->setPersonnelPortable(str_replace(array(' ', '.'), array('', ''), $this->input->post('addPersonnelPortable')));
                 $personnel->setPersonnelMessage($this->input->post('addPersonnelMessage'));
                 $personnel->setPersonnelEquipeId($this->input->post('addPersonnelEquipeId') ?: null);
                 $personnel->setPersonnelHoraireId($this->input->post('addPersonnelHoraireId') ?: null);
@@ -99,6 +100,7 @@ class Personnels extends My_Controller {
                     'personnelPrenom' => ucfirst($this->input->post('addPersonnelPrenom')),
                     'personnelQualif' => $this->input->post('addPersonnelQualif'),
                     'personnelCode' => $this->input->post('addPersonnelCode'),
+                    'personnelPortable' => str_replace(array(' ', '.'), array('', ''), $this->input->post('addPersonnelPortable')),
                     'personnelMessage' => $this->input->post('addPersonnelMessage'),
                     'personnelEquipeId' => $this->input->post('addPersonnelEquipeId') ?: null,
                     'personnelHoraireId' => $this->input->post('addPersonnelHoraireId') ?: null,

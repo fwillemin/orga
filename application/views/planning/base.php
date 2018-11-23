@@ -330,8 +330,9 @@ if ($this->ion_auth->in_group(array(55))):
                 </div>
                 <hr>
                 <small class="medium">Affectation planifiée</small> <span id="textAffectationPeriode"></span>
-                <br><small class="medium">Heures planifiées :</small> <span id="textAffectationHeuresPlanifiees"></span>
                 <br><small class="medium">Type :</small> <span id="textAffectationType"></span>
+                , <small class="medium">Heures planifiées :</small> <span id="textAffectationHeuresPlanifiees"></span>
+
                 <br><small class="medium">Commentaire :</small> <span id="textAffectationCommentaire"></span>
                 <br><small class="medium">Adresse d'intervention :</small> <span id="textAffectationAdresse"></span>
 
@@ -358,7 +359,7 @@ if ($this->ion_auth->in_group(array(55))):
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td colspan="2">Aucune heure saisie</td></tr>
+                            <tr><td colspan="3">Aucune heure saisie</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -382,8 +383,7 @@ if ($this->ion_auth->in_group(array(55))):
                             </button>
                         </div>
                     </div>
-                    <hr>
-                    <div class="form-row">
+                    <div class="form-row" style="margin-top:6px;">
                         <div class="col">
                             <label for="addAffectationDebutDate">Décaler cette affectation</label>
                             <select id="decalageCible" class="form-control form-control-sm">
