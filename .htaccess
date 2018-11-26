@@ -19,12 +19,32 @@ RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
   </FilesMatch>
 
   # Mise en cache du html et xml pour 12 heures
-  <filesMatch ".(html|htm|xml)$">
+  <filesMatch ".(xml)$">
    Header set Cache-Control "max-age=43200"
   </filesMatch>
 
   # Désactive la mise en cache pour les fichier PHP et CGI
-  <FilesMatch ".(php|cgi)$">
+  <FilesMatch ".(html|htm|php|cgi)$">
    Header unset Cache-Control
   </FilesMatch>
 </IfModule>
+#
+#<IfModule mod_expires.c>
+#ExpiresActive on
+#ExpiresDefault "access plus 1 month"
+#ExpiresByType image/x-icon "access plus 1 month"
+#ExpiresByType image/gif "access plus 1 month"
+#ExpiresByType image/png "access plus 1 month"
+#ExpiresByType image/jpg "access plus 1 month"
+#ExpiresByType image/jpeg "access plus 1 month"
+#ExpiresByType text/x-component "access plus 1 month"
+#ExpiresByType font/truetype "access plus 1 month"
+#ExpiresByType font/opentype "access plus 1 month"
+#ExpiresByType application/x-font-woff "access plus 1 month"
+#ExpiresByType application/vnd.ms-fontobject "access plus 1 month"
+#ExpiresByType text/css "access plus 1 month"
+#ExpiresByType application/javascript "access plus 1 month"
+#ExpiresByType text/javascript "access plus 1 month"
+#ExpiresByType text/js "access plus 1 month"
+#ExpiresByType application/x-javascript "access plus 1 year"
+#</IfModule>

@@ -15,7 +15,7 @@ class Pointages extends My_Controller {
         endif;
     }
 
-    public function heures($semaine = null, $annee = null) {
+    public function heuresOLD($semaine = null, $annee = null) {
         if (!$this->ion_auth->in_group(array(50, 51, 52))) :
             redirect('organibat/board');
         endif;
@@ -48,6 +48,8 @@ class Pointages extends My_Controller {
                 endif;
             endforeach;
         endif;
+
+
         if (!empty($indisponibilites)):
             foreach ($indisponibilites AS $indispo):
                 if (!in_array($indispo->getIndispoPersonnelId(), $listePersonnelId)):
@@ -67,6 +69,62 @@ class Pointages extends My_Controller {
             'affectations' => $affectations,
             'heures' => $heures,
             'indisponibilites' => $indisponibilites,
+            'semaine' => $semaine,
+            'annee' => $annee,
+            'personnels' => $personnels,
+            'title' => 'Gestion des heures',
+            'description' => 'Gestion des heures du personnel, validation, réaffectation client, préparation salaires',
+            'content' => $this->viewFolder . __FUNCTION__
+        );
+        $this->load->view('template/content', $data);
+    }
+
+    public function heures($semaine = null, $annee = null) {
+        if (!$this->ion_auth->in_group(array(50, 51, 52))) :
+            redirect('organibat/board');
+        endif;
+
+        if (!$annee):
+            $annee = date('Y', time());
+        endif;
+        if (!$semaine):
+            $semaine = date('W', time());
+        endif;
+
+        $premierJourSemaine = $this->cal->premierJourFromNumSemaine($semaine, $annee);
+        $results = array();
+        $affectations = $this->managerAffectations->getAffectations(array('affectationDebutDate <' => ($premierJourSemaine + 7 * 86400), 'affectationFinDate >=' => $premierJourSemaine));
+
+        /* liste du personnel */
+        $listePersonnelId = array();
+        if (!empty($affectations)):
+            foreach ($affectations AS $affectation):
+                if (!in_array($affectation->getAffectationPersonnelId(), $listePersonnelId)):
+                    $listePersonnelId[] = $affectation->getAffectationPersonnelId();
+                endif;
+            endforeach;
+        endif;
+        if (!empty($listePersonnelId)):
+            $personnels = $this->managerPersonnels->getPersonnelsFromListeIds($listePersonnelId);
+            foreach ($personnels as $personnel):
+                $results[$personnel->getPersonnelId()]['affectations'] = $this->managerAffectations->getAffectations(array('affectationDebutDate <' => ($premierJourSemaine + 7 * 86400), 'affectationFinDate >=' => $premierJourSemaine, 'affectationPersonnelId' => $personnel->getPersonnelId()));
+                if (!empty($results[$personnel->getPersonnelId()]['affectations'])):
+                    foreach ($results[$personnel->getPersonnelId()]['affectations'] as $affectation):
+                        $affectation->hydrateHeures();
+                        $affectation->hydrateChantier();
+                        $affectation->getAffectationChantier()->hydrateClient();
+                    endforeach;
+                endif;
+                $results[$personnel->getPersonnelId()]['indisponibilites'] = $this->managerIndisponibilites->getIndisponibilites(array('indispoDebutDate <' => ($premierJourSemaine + 7 * 86400), 'indispoFinDate >=' => $premierJourSemaine, 'indispoPersonnelId' => $personnel->getPersonnelId()));
+            endforeach;
+
+        else:
+            $personnels = array();
+        endif;
+
+        $data = array(
+            'premierJourSemaine' => $premierJourSemaine,
+            'results' => $results,
             'semaine' => $semaine,
             'annee' => $annee,
             'personnels' => $personnels,

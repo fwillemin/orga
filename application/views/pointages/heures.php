@@ -61,61 +61,71 @@
                         $jour = 0; // jour de la case du tableau 0 = lundi, ...
 
                         for ($i = 1; $i < 8; $i++):
-                            echo '<td>';
-                            $jourIndispo = false;
-                            $heuresExist = array(); // tableau avec les affectations de la journée qui ont des heures de saisies
 
                             $jourEncours = $premierJourSemaine + ($i - 1) * 86400;
 
-                            //recherche de toutes les indispo
-                            if (!empty($indisponibilites)):
-                                foreach ($indisponibilites as $indispo):
+                            echo '<td>';
 
-                                    if ($indispo->getIndispoPersonnelId() == $personnel->getPersonnelId()):
+                            if (!empty($results[$personnel->getPersonnelId()]['indisponibilites'])):
+                                foreach ($results[$personnel->getPersonnelId()]['indisponibilites'] as $indispo):
 
-                                        if ($jourEncours >= $indispo->getIndispoDebutDate() && $jourEncours <= $indispo->getIndispoFinDate()):
-                                            ?>
-                                        <div class="indispo ombragelight text-center" style="position:relative; width:95%; font-weight: bold;">
-                                            <?= $indispo->getIndispoMotif()->getMotifNom(); ?>
-                                        </div>
-                                        <?php
-                                    endif;
+                                    if ($jourEncours >= $indispo->getIndispoDebutDate() && $jourEncours <= $indispo->getIndispoFinDate()):
+                                        ?>
+                                    <div class="indispo ombragelight text-center" style="position:relative; width:95%; font-weight: bold;">
+                                        <?= $indispo->getIndispoMotif()->getMotifNom(); ?>
+                                    </div>
+                                    <?php
                                 endif;
 
                             endforeach;
                         endif;
 
 
-                        //puis on recherche des heures
-                        if (!empty($heures)):
-                            foreach ($heures as $heure):
-                                if ($heure->getHeureDate() == $jourEncours && $heure->getHeurePersonnelId() == $personnel->getPersonnelId()):
-                                    if ($heure->getHeureAffectation()->getAffectationChantierEtat() == 1):
-                                        if ($heure->getHeureValide() == 0):
-                                            $classHeure = 'unchecked';
+                        if (!empty($results[$personnel->getPersonnelId()]['affectations'])):
+                            foreach ($results[$personnel->getPersonnelId()]['affectations'] as $affectation):
+                                $isHeure = false;
+                                unset($heure);
+
+                                if ($jourEncours >= $affectation->getAffectationDebutDate() && $jourEncours <= $affectation->getAffectationFinDate()):
+
+                                    if (!empty($affectation->getAffectationHeures())):
+                                        foreach ($affectation->getAffectationHeures() as $heureTest):
+                                            if ($heureTest->getHeureDate() == $jourEncours):
+                                                $heure = $heureTest;
+                                                continue;
+                                            endif;
+                                        endforeach;
+
+                                        if (!empty($heure)):
+                                            if ($heure->getHeureValide() == 1):
+                                                $classHeure = 'valide';
+                                            else:
+                                                $classHeure = 'unchecked';
+                                            endif;
                                         else:
-                                            $classHeure = 'valide';
+                                            $classHeure = 'empty';
                                         endif;
+
                                     else:
+                                        $classHeure = 'empty';
+                                    endif;
+                                    if ($affectation->getAffectationChantier()->getChantierEtat() == 2):
                                         $classHeure = 'locked';
                                     endif;
-                                    $affectation = $heure->getHeureAffectation();
-                                    $affectation->hydrateChantier();
-                                    $affectation->getAffectationChantier()->hydrateClient();
                                     ?>
                                     <div class="tooltipOk cadreHeure"
                                          style="color:<?= $affectation->getAffectationChantier()->getChantierCouleurSecondaire(); ?>; background-color:<?= $affectation->getAffectationChantier()->getChantierCouleur(); ?>"
                                          data-placement="center" title="<?= $affectation->getAffectationChantier()->getChantierClient()->getClientNom() . ' : ' . $affectation->getAffectationChantier()->getChantierObjet(); ?>">
 
                                         <div class="trou <?= $classHeure; ?>"></div>
-                                        <div style="font-size:25px;" data-affectationid="<?= $affectation->getAffectationId(); ?>" nbHeure="0" data-date="<?= $jourEncours; ?>" data-heureId="<?= $heure->getHeureId(); ?>">
+                                        <div style="font-size:25px;" data-affectationid="<?= $affectation->getAffectationId(); ?>" nbHeure="0" data-date="<?= $jourEncours; ?>" data-heureId="<?= !empty($heure) ? $heure->getHeureId() : ''; ?>">
                                             <select class="heureSelect" <?= $classHeure == 'locked' ? 'disabled' : ''; ?> >
                                                 <?php
                                                 for ($h = 0; $h <= 12; $h++):
                                                     $m = 0;
                                                     while ($m < 60):
                                                         $duree = ($h * 60 + $m);
-                                                        echo '<option value="' . $duree . '"' . ($duree == $heure->getHeureDuree() ? 'selected' : '') . '>' . str_pad($h, 2, "0", STR_PAD_LEFT) . ':' . str_pad($m, 2, "0", STR_PAD_LEFT) . '</option>';
+                                                        echo '<option value="' . $duree . '"' . (!empty($heure) && $duree == $heure->getHeureDuree() ? 'selected' : '') . '>' . str_pad($h, 2, "0", STR_PAD_LEFT) . ':' . str_pad($m, 2, "0", STR_PAD_LEFT) . '</option>';
                                                         $m += intval($this->session->userdata('parametres')['tranchePointage']);
                                                     endwhile;
                                                 endfor;
@@ -124,53 +134,7 @@
                                         </div>
                                         <div>
                                             <a href = "<?php
-                                            if ($affectation->getAffectationChantierId() != $this->session->userdata('divers')):
-                                                echo site_url('chantiers/ficheChantier/' . $affectation->getAffectationChantierId());
-                                            else:
-                                                echo '#';
-                                            endif;
-                                            ?>" style = "color: <?= $affectation->getAffectationChantier()->getChantierCouleurSecondaire(); ?>;"><?= substr($affectation->getAffectationChantier()->getChantierClient()->getClientNom(), 0, 7);
-                                            ?></a>
-                                        </div>
-                                    </div>
-
-                                    <?php
-                                    $heuresExist[] = $affectation->getAffectationId();
-                                endif;
-                            endforeach;
-                            unset($affectation);
-
-                        endif;
-
-                        //liste des affectations du salarié sans heures ce jour
-                        if (!empty($affectations)):
-                            foreach ($affectations as $affectation):
-                                $affectation->hydrateChantier();
-                                $affectation->getAffectationChantier()->hydrateClient();
-
-                                if ($jourEncours >= $affectation->getAffectationDebutDate() && $jourEncours <= $affectation->getAffectationFinDate() && $affectation->getAffectationPersonnelId() == $personnel->getPersonnelId() && !in_array($affectation->getAffectationId(), $heuresExist)):
-                                    ?>
-                                    <div class="tooltipOk cadreHeure"
-                                         style="color:<?= $affectation->getAffectationChantier()->getChantierCouleurSecondaire(); ?>; background-color:<?= $affectation->getAffectationChantier()->getChantierCouleur(); ?>"
-                                         data-placement="center" title="<?= $affectation->getAffectationChantier()->getChantierClient()->getClientNom() . ' : ' . $affectation->getAffectationChantier()->getChantierObjet(); ?>">
-
-                                        <div class="trou <?= $affectation->getAffectationChantier()->getChantierEtat() == 1 ? 'empty' : 'locked'; ?>"></div>
-                                        <div style="font-size:25px;" data-affectationid="<?= $affectation->getAffectationId(); ?>" nbHeure="0" data-date="<?= $jourEncours; ?>" data-heureId="">
-                                            <select class="heureSelect" <?= $affectation->getAffectationChantier()->getChantierEtat() == 2 ? 'disabled' : ''; ?>>
-                                                <?php
-                                                for ($h = 0; $h <= 12; $h++):
-                                                    $m = 0;
-                                                    while ($m < 60):
-                                                        echo '<option value="' . ($h * 60 + $m) . '">' . str_pad($h, 2, "0", STR_PAD_LEFT) . ':' . str_pad($m, 2, "0", STR_PAD_LEFT) . '</option>';
-                                                        $m += intval($this->session->userdata('parametres')['tranchePointage']);
-                                                    endwhile;
-                                                endfor;
-                                                ?>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <a href = "<?php
-                                            if ($affectation->getAffectationChantierId() != $this->session->userdata('divers')):
+                                            if ($affectation->getAffectationChantier()->getChantierAffaireId() != $this->session->userdata('affaireDiversId')):
                                                 echo site_url('chantiers/ficheChantier/' . $affectation->getAffectationChantierId());
                                             else:
                                                 echo '#';
@@ -181,8 +145,11 @@
                                     </div>
                                     <?php
                                 endif;
+
                             endforeach;
                         endif;
+
+
 
                         echo '</td>';
                     endfor;

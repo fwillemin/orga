@@ -52,6 +52,7 @@ class Secure extends CI_Controller {
                             'etablissementTHM' => $etablissement->getEtablissementTauxHoraireMoyen(),
                             'affaireDiversId' => $etablissement->getEtablissementAffaireDiversId(),
                             'droits' => $groups,
+                            'smsCredits' => 0,
                             'rechAffaireEtat' => 2
                         )
                 );

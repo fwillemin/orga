@@ -329,13 +329,21 @@ if ($this->ion_auth->in_group(array(55))):
                     </div>
                 </div>
                 <hr>
-                <small class="medium">Affectation planifiée</small> <span id="textAffectationPeriode"></span>
-                <br><small class="medium">Type :</small> <span id="textAffectationType"></span>
-                , <small class="medium">Heures planifiées :</small> <span id="textAffectationHeuresPlanifiees"></span>
-
-                <br><small class="medium">Commentaire :</small> <span id="textAffectationCommentaire"></span>
-                <br><small class="medium">Adresse d'intervention :</small> <span id="textAffectationAdresse"></span>
-
+                <div class="row">
+                    <div class="col-10">
+                        <small class="medium">Affectation planifiée</small> <span id="textAffectationPeriode"></span>
+                        <br><small class="medium">Type :</small> <span id="textAffectationType"></span>
+                        , <small class="medium">Heures planifiées :</small> <span id="textAffectationHeuresPlanifiees"></span>
+                        <br><small class="medium">Adresse d'intervention :</small> <span id="textAffectationAdresse"></span>
+                        <br><small class="medium">Commentaire :</small> <span id="textAffectationCommentaire"></span>
+                    </div>
+                    <div class="col-2" style="text-align: center; display: none;">
+                        <button class="btn btn-secondary" style="height: 100%;" id="btnSMS">
+                            <i class="fas fa-envelope"></i>
+                            <br>SMS
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
 
@@ -412,6 +420,36 @@ if ($this->ion_auth->in_group(array(55))):
                         </div>
                     </div>
 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalSMS">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="font-size:14px;">
+            <div class="modal-header">
+                <h5 class="modal-title">Envoyer un SMS</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <small class="orange" style="position: absolute; top: 3px; right: 5px;">
+                    Crédits : <?= $this->session->userdata('smsCredits') . ' SMS'; ?>
+                </small>
+                <div class="form-row" style="margin-top: 4px;">
+                    <div class="col-8">
+                        <label for="addPersonnelCode">Envoyer à</label>
+                        <select class="form-control" id="envoisSmsDestinataire">
+
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label for="addPersonnelPortable">Portable</label>
+                        <input type="text" class="form-control" id="envoiSmsNumero" name="envoiSmsNumero" placeholder="N° Tel Portable" value="">
+                    </div>
                 </div>
             </div>
         </div>

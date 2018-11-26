@@ -865,6 +865,10 @@ $(document).ready(function () {
             }
         }, 'json');
     });
+    
+    $('#btnSMS').on('click', function(){
+        $('#modalSMS').modal('show');
+    });
 
     $('.connectPersonnel').on('click', function () {
         $('#spanNomPersonnelConnect').html($(this).attr('data-personnelnom'));
