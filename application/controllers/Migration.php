@@ -719,7 +719,7 @@ class Migration extends My_Controller {
                 'chantierPrix' => $chant->prix,
                 'chantierEtat' => $chant->etat == 'Termine' ? 2 : 1,
                 'chantierDateCloture' => $chant->cloture,
-                'chantierHeuresPrevues' => $chant->nb_heures_prev,
+                'chantierHeuresPrevues' => $chant->nb_heures_prev > 0 ?: 1,
                 'chantierBudgetAchats' => $chant->budgetAchat,
                 'chantierFraisGeneraux' => $chant->chantierFraisGeneraux,
                 'chantierTauxHoraireMoyen' => $chant->chantierTxHoraireMoyen,

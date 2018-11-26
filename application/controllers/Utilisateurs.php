@@ -20,6 +20,19 @@ class Utilisateurs extends My_Controller {
         $utilisateurs = $this->managerUtilisateurs->getUtilisateurs();
         foreach ($utilisateurs as $utilisateur):
             $utilisateur->hydrateGroups();
+            foreach ($utilisateur->getUserGroups() as $groupe):
+                switch ($groupe->id):
+                    case 1:
+                        $utilisateur->setUserType('Direction');
+                        break;
+                    case 2:
+                        $utilisateur->setUserType('Personnel administratif');
+                        break;
+                    case 4:
+                        $utilisateur->setUserType('Accès chantier');
+                        break;
+                endswitch;
+            endforeach;
         endforeach;
 
         $data = array(
@@ -32,7 +45,6 @@ class Utilisateurs extends My_Controller {
     }
 
     public function ficheUtilisateur($userId = null) {
-
 
         if (!$this->ion_auth->in_group(11)):
             redirect('utilisateurs/liste');
@@ -47,7 +59,7 @@ class Utilisateurs extends My_Controller {
 
         $data = array(
             'utilisateur' => $utilisateur,
-            'listeGroupes' => $this->db->select('*')->from('groups')->where('id > ', 2)->get()->result(),
+            //'listeGroupes' => $this->db->select('*')->from('groups')->where('id > ', 9)->get()->result(),
             'title' => 'Fiche ' . $utilisateur->getUserNom(),
             'description' => 'Fiche utilisateur',
             'content' => $this->viewFolder . '/' . __FUNCTION__
@@ -101,10 +113,24 @@ class Utilisateurs extends My_Controller {
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         endif;
 
-        if ($this->input->post('acces') == '0'):
-            $this->db->where(array('group_id' => $this->input->post('groupeId'), 'user_id' => $this->input->post('userId')))->delete('users_groups');
-        else:
+        if (in_array($this->input->post('groupeId'), [1, 2, 4])):
+            $this->db->where(array('group_id' => 2, 'user_id' => $this->input->post('userId')))->delete('users_groups');
+            $this->db->where(array('group_id' => 4, 'user_id' => $this->input->post('userId')))->delete('users_groups');
+            $this->db->where(array('group_id' => 1, 'user_id' => $this->input->post('userId')))->delete('users_groups');
             $this->db->set('user_id', $this->input->post('userId'))->set('group_id', $this->input->post('groupeId'))->insert('users_groups');
+
+            switch ($this->input->post('groupeId')):
+                case 4:
+                    $this->db->where(array('group_id >' => 4, 'user_id' => $this->input->post('userId')))->delete('users_groups');
+                    break;
+            endswitch;
+
+        else:
+            if ($this->input->post('acces') == '0'):
+                $this->db->where(array('group_id' => $this->input->post('groupeId'), 'user_id' => $this->input->post('userId')))->delete('users_groups');
+            else:
+                $this->db->set('user_id', $this->input->post('userId'))->set('group_id', $this->input->post('groupeId'))->insert('users_groups');
+            endif;
         endif;
         echo json_encode(array('type' => 'success'));
     }

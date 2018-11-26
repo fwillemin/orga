@@ -30,7 +30,7 @@ class Model_utilisateurs extends MY_model {
      * @param array $tri Critères de tri des raisonSociales
      * @return array Liste d'objets de la classe Utilisateur
      */
-    public function getUtilisateurs($where = array(), $tri = 'userNom DESC', $type = 'object') {
+    public function getUtilisateurs($where = array(), $tri = 'userNom ASC', $type = 'object') {
         $query = $this->db->select('*')
                 ->from($this->table)
                 ->where('userEtablissementId', $this->session->userdata('etablissementId'))

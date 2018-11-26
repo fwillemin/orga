@@ -14,7 +14,7 @@
                     <td style="width: 30px;"></td>
                     <td style="min-width:150px;">Nom</td>
                     <td>Login</td>
-                    <td>Groupes</td>
+                    <td>Type</td>
                 </tr>
             </thead>
             <tbody>
@@ -25,11 +25,7 @@
                         . '<td style="text-align:center; font-size:15px;">' . ($user->getActive() ? '<label class="badge badge-info">Actif</label>' : '<label class="badge badge-secondary">Inactif</label>') . '</td>'
                         . '<td>' . $user->getUserNom() . ' ' . $user->getUserPrenom() . '</td>'
                         . '<td>' . $user->getUsername() . '</td>'
-                        . '<td>';
-                        foreach ($user->getUserGroups() as $group):
-                            echo $group->name . ', ';
-                        endforeach;
-                        echo '</td></tr>';
+                        . '<td>' . $user->getUserType() . '</td></tr>';
                     endforeach;
                 endif;
                 ?>

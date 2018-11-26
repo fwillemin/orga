@@ -15,6 +15,7 @@ class Utilisateur {
     protected $username;
     protected $userNom;
     protected $userPrenom;
+    protected $userType; /* Direction, Administratif ou Chantier */
     protected $userEtablissementId;
     protected $email;
     protected $active;
@@ -122,6 +123,14 @@ class Utilisateur {
 
     function setUserGroupsIds($userGroupsIds) {
         $this->userGroupsIds = $userGroupsIds;
+    }
+
+    function getUserType() {
+        return $this->userType;
+    }
+
+    function setUserType($userType) {
+        $this->userType = $userType;
     }
 
 }

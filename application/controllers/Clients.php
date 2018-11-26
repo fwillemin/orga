@@ -189,7 +189,6 @@ class Clients extends My_Controller {
                 );
 
                 $place = new Place($arrayPlace);
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($place, true));
                 $this->managerPlaces->ajouter($place);
 
             endif;

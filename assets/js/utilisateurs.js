@@ -59,12 +59,21 @@ $(document).ready(function () {
         }, 'json');
     });
 
-    $('.changeAcces').on('change', function () {
+    $('.changeAcces, .typeCompte').on('change', function () {
         if ($(this).prop('checked') === true) {
             var acces = 1;
         } else {
             var acces = 0;
         }
+        
+        if( $(this).val() == '4'){
+            $('.changeAcces').prop('checked', false);
+            $('.changeAcces').prop('disabled', true);
+        } else{
+            if($(this).val() == '1' || $(this).val() == '2') {
+            $('.changeAcces').prop('disabled', false);
+        }}
+        
         $.post(chemin + 'utilisateurs/modifierAcces', {userId: $('#addUserId').val(), groupeId: $(this).val(), acces: acces}, function(retour){
             switch (retour.type) {
                 case 'error':
