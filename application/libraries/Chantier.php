@@ -55,7 +55,7 @@ class Chantier {
         endforeach;
         $CI = & get_instance();
         $categorie = $CI->managerCategories->getCategorieById($this->chantierCategorieId);
-        $this->chantierCategorie = $categorie ? $categorie->getCategorieNom() : '<span class="badge badge-warning">Non classé</span>';
+        $this->chantierCategorie = $categorie ? $categorie->getCategorieNom() : 'Non classé';
         switch ($this->chantierEtat):
             case 1:
                 $this->chantierEtatHtml = '<span class="badge badge-success">En cours</span>';

@@ -1,0 +1,145 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/*
+    Created on : 28 juin 2018, 12:12:09
+    Author     : francois
+*/
+@import "compass";
+@import "_variables";
+
+@media screen {
+    body {
+        background-color: lighten($background, 30);
+        font-family: 'Ubuntu', sans-serif;
+    }
+    #header {
+        background-color: $noir; 
+        position:relative;
+        border-bottom: 1px solid white;
+    }
+    #animation {
+        position:absolute;
+        top:250px;
+        width:100%;
+        height:100%;
+        opacity:0.2;
+        z-index: 0;
+    }
+
+    .fond {
+        background-color: #fafafa;
+        border-left : 1px solid $noir;
+        border-right : 1px solid $noir;
+    }
+
+    .affectation {
+        z-index: 2;
+        position:absolute;
+        border: 1px solid;    
+        padding:3px 5px 2px 2px;
+        font-size:12px;
+        height: 40px;
+        @include border-radius(4px, 4px);
+    }
+    .showroomAffect {
+        border-radius : 8px;
+        height: 50px; 
+        z-index: 0;
+        padding: 0px 0px;
+    }
+    #videoAccueil {
+        z-index:100;
+        position:absolute;
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto; 
+        width: 35%;
+        min-width: 400px;        
+    }
+    #entete {        
+        margin:0px;
+        padding: 0px;
+        text-align: center;
+        overflow-x: hidden;
+        border-bottom: 1px solid $noir;
+    }
+    #contenu {
+        position: relative;
+    }
+    .cadre {
+        border: 1px solid #5b5d6e;
+        background-color: #efefee;
+        color: #e3a149;
+        padding:10px;
+        text-align: center;
+        font-size:14px;
+        & .fas {
+            font-size:30px;
+            color: #5b5d6e;
+        }
+        margin-bottom:10px;
+        @include border-radius(4px, 4px);
+    }
+
+}
+@media screen and (max-width:770px) {
+    #videoAccueil {
+        top:200px; 
+        height : 200px;
+    }
+#contenu {
+        padding-top:100px;
+    }
+}
+@media screen and (min-width:771px) {
+    #videoAccueil {
+        top:180px;     
+        height: 210px;
+    }
+    #contenu {
+        padding-top:110px;
+    }
+}
+@media screen and (min-width:1000px) {
+    #videoAccueil {
+        top:220px;     
+        height: 240px;
+    }
+    #contenu {
+        padding-top:130px;
+    }    
+}
+@media screen and (min-width:1200px) {
+    .cadre {
+        font-size:22px;
+        & .fas {
+            font-size:50px;
+        }
+    }
+}
+@media screen and (min-width:1400px) {
+    #videoAccueil {
+        top:240px;     
+        height: 300px;
+    }
+    #contenu {
+        padding-top:90px;
+    }
+}
+@media screen and (min-width:1600px) {
+    #videoAccueil {
+        top:270px;     
+        height: 300px;
+    }
+    #contenu {
+        padding-top:60px;
+    }
+}
+
+
+
+

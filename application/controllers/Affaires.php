@@ -19,7 +19,7 @@ class Affaires extends My_Controller {
 
         /* Initialisation */
         $analyse['heures']['prevues'] = $analyse['heures']['planifiees'] = $analyse['heures']['pointees'] = $analyse['heures']['finAffaire'] = $analyse['mainO']['commercial'] = $analyse['mainO']['tempsReel'] = $analyse['mainO']['finAffaire'] = $analyse['mainO']['restant'] = $analyse['achats']['commercial'] = $analyse['achats']['tempsReel'] = $analyse['achats']['finAffaire'] = $analyse['debourseSec']['commercial'] = $analyse['debourseSec']['tempsReel'] = $analyse['debourseSec']['finAffaire'] = $analyse['marge']['commerciale'] = $analyse['marge']['tempsReel'] = $analyse['marge']['finAffaire'] = $analyse['fraisGeneraux'] = 0;
-        $analyse['margeHoraire']['commerciale'] = $analyse['margeHoraire']['tempsReel'] = $analyse['margeHoraire']['finChantier'] = '-';
+        $analyse['margeHoraire']['commerciale'] = $analyse['margeHoraire']['tempsReel'] = $analyse['margeHoraire']['finChantier'] = 0;
         $analyse['mainO']['ecartTempsReelHtml'] = $analyse['mainO']['ecartFinChantierHtml'] = $analyse['achats']['ecartTempsReelHtml'] = $analyse['achats']['ecartFinChantierHtml'] = '<span class="badge-secondary">-</span>';
         $analyse['debourseSec']['ecartTempsReelHtml'] = $analyse['debourseSec']['ecartFinChantierHtml'] = $analyse['marge']['ecartTempsReelHtml'] = $analyse['marge']['ecartFinChantierHtml'] = '<span class="badge-secondary">-</span>';
 

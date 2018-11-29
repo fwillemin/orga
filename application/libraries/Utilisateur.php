@@ -15,8 +15,10 @@ class Utilisateur {
     protected $username;
     protected $userNom;
     protected $userPrenom;
+    protected $userClairMdp;
     protected $userType; /* Direction, Administratif ou Chantier */
     protected $userEtablissementId;
+    protected $userOriginId;
     protected $email;
     protected $active;
     protected $last_login;
@@ -131,6 +133,22 @@ class Utilisateur {
 
     function setUserType($userType) {
         $this->userType = $userType;
+    }
+
+    function setUserClairMdp($userClairMdp) {
+        $this->userClairMdp = $userClairMdp;
+    }
+
+    function getUserClairMdp() {
+        return $this->userClairMdp;
+    }
+
+    function getUserOriginId() {
+        return $this->userOriginId;
+    }
+
+    function setUserOriginId($userOriginId) {
+        $this->userOriginId = $userOriginId;
     }
 
 }

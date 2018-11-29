@@ -83,6 +83,8 @@ class Utilisateurs extends My_Controller {
                 if ($this->input->post('addUserPassword')):
                     /* Modification du mot de passe */
                     $this->ion_auth_model->reset_password($utilisateur->getUsername(), $this->input->post('addUserPassword'));
+                    $utilisateur->setUserClairMdp($this->input->post('addUserPassword'));
+                    $this->managerUtilisateurs->editer($utilisateur);
                 endif;
 
             else:
@@ -96,7 +98,8 @@ class Utilisateurs extends My_Controller {
                     'userNom' => strtoupper($this->input->post('addUserNom')),
                     'userPrenom' => ucfirst($this->input->post('addUserPrenom')),
                     'userEtablissementId' => $this->session->userdata('etablissementId'),
-                    'userClairMdp' => '',
+                    'userOriginId' => null,
+                    'userClairMdp' => $this->input->post('addUserPassword'),
                     'userCode' => 0000
                 );
 
@@ -121,7 +124,7 @@ class Utilisateurs extends My_Controller {
 
             switch ($this->input->post('groupeId')):
                 case 4:
-                    $this->db->where(array('group_id >' => 4, 'user_id' => $this->input->post('userId')))->delete('users_groups');
+                    $this->db->where(array('group_id <>' => 4, 'user_id' => $this->input->post('userId')))->delete('users_groups');
                     break;
             endswitch;
 

@@ -96,9 +96,14 @@ class Affectation {
         if (!$this->affectationPersonnel):
             $this->hydratePersonnel();
         endif;
+//        if (empty($this->affectationPersonnel)):
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Affectation sans personnel attitré / PersonnelId : ' . $this->affectationPersonnelId);
+//            $this->affectationHeuresPlanifiees = 0;
+//        else:
         $this->affectationPersonnel->hydrateHoraire();
         $nbHeures = $CI->own->nbHeuresAffectation($this);
         $this->affectationHeuresPlanifiees = $nbHeures;
+//        endif;
     }
 
     public function hydrateChantier() {

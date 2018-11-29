@@ -47,7 +47,7 @@ class Chantiers extends My_Controller {
         $affaire->hydrateChantiers();
 
         if ($affaire->getAffaireId() == $this->session->userdata('affaireDiversId')):
-            $affairesALier = $this->managerAffaires->getAffaires(array('affaireEtat' => 2));
+            $affairesALier = $this->managerAffaires->getAffaires(array('affaireEtat >' => 1, 'affaireCreation <=' => (time() - 60480000)));
             if (!empty($affairesALier)):
                 foreach ($affairesALier as $affaire1):
                     $affaire1->hydrateChantiers();

@@ -76,7 +76,7 @@
                 . '<td style="text-align: right;">' . $a->getAchatPrix() . '</td>'
                 . '<td style="text-align: right; border-right: 1px solid black;">' . $a->getAchatTotal() . '</td>'
                 . '<td style="text-align: right; color:' . $statColor . ';">' . ($a->getAchatTotalPrevisionnel() > 0 ? floor($a->getAchatTotal() / $a->getAchatTotalPrevisionnel() * 100) : '-' ) . '%</td>'
-                . '<td style="border-left: 1px solid black;">' . (!is_null($a->getAchatFournisseur()) ? $a->getAchatFournisseur()->getFournisseurNom() : '-') . '</td>'
+                . '<td style="border-left: 1px solid black;">' . (!empty($a->getAchatFournisseur()) ? $a->getAchatFournisseur()->getFournisseurNom() : '-') . '</td>'
                 . '<td>' . $this->cal->dateFrancais($a->getAchatLivraisonDate(), 'Dma') . '</td>'
                 . '<td style="border-right: 1px solid black;">' . $a->getAchatLivraisonAvancementText() . '</td>'
                 . '</tr>';

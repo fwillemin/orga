@@ -19,6 +19,7 @@ class Model_utilisateurs extends MY_model {
                 ->set('userNom', $utilisateur->getUserNom())
                 ->set('userPrenom', $utilisateur->getUserPrenom())
                 ->set('email', $utilisateur->getEmail())
+                ->set('userClairMdp', $utilisateur->getUserClairMdp())
                 ->where('id', $utilisateur->getId())
                 ->update($this->table);
         return $this->db->affected_rows();
@@ -62,6 +63,13 @@ class Model_utilisateurs extends MY_model {
                 ->from($this->table)
                 ->where('id', $userId)
                 ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getUtilisateurByOriginId($userId, $type = 'object') {
+        $query = $this->db->select('*')
+                        ->from($this->table)
+                        ->where('userOriginId', $userId)->get();
         return $this->retourne($query, $type, self::classe, true);
     }
 

@@ -66,7 +66,7 @@
                                 endif;
                                 ?>
                                 <td class="cellSemaines" colspan="14" align="center" style="width: <?= 14 * ($this->largeur + 1.5); ?>px;">
-                                    <?= $this->cal->dateFrancais($currentDate, 'Ma') . ' | Semaine ' . date('W', $currentDate); ?>
+                                    <?= $this->cal->dateFrancais($currentDate, 'Ma') . ' | Semaine ' . date('W', $currentDate) . ' ' . date('Y', $currentDate); ?>
                                 </td>
                                 <?php
                             endfor;
@@ -181,7 +181,7 @@
                                 ?>
                                 <td class="cellSemaines" colspan="14" align="center" style="min-width: <?= 14 * ($this->largeur + 1.5); ?>px;">
                                     <button class="btn btn-sm btn-outline-info btnListingLivraison" semaine="<?= date('W', $jourEncours); ?>" annee ="<?= date('Y', $jourEncours); ?>">Livraisons</button>
-                                    <?= $this->cal->dateFrancais($jourEncours, 'Ma') . ' | Semaine ' . date('W', $jourEncours); ?>
+                                    <?= $this->cal->dateFrancais($jourEncours, 'Ma') . ' | Semaine ' . date('W', $jourEncours) . ' ' . date('Y', $currentDate); ?>
                                 </td>
                                 <?php
                             endfor;
@@ -216,7 +216,6 @@
 
     </div>
 </div>
-
 
 <div class="modal fade" id="modalAffichageLivraison">
     <div class="modal-dialog" role="document">
@@ -346,80 +345,80 @@ if ($this->ion_auth->in_group(array(55))):
                 </div>
             </div>
             <div class="modal-footer">
-
-                <div class="col-4">
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-dark" id="btnModAffectation">
-                            <i class="fas fa-edit"></i> Modifier
-                        </button>
-                        <button class="btn btn-outline-danger" id="btnDelAffectation">
-                            <i class="fas fa-trash"></i> Supprimer
-                        </button>
+                <div class="row" style="width:100%;">
+                    <div class="col-4">
+                        <table class="table table-sm style1" id="tableAffectationHeures">
+                            <thead>
+                                <tr>
+                                    <th width="70%">Date</th>
+                                    <th>Heures</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="3">Aucune heure saisie</td></tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <br>
-                    <br>
-                    <table class="table table-sm style1" id="tableAffectationHeures">
-                        <thead>
-                            <tr>
-                                <th width="70%">Date</th>
-                                <th>Heures</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td colspan="3">Aucune heure saisie</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-8">
-                    <div class="form-row" style="padding:0px; margin: 0px;">
-                        <div class="col">
-                            <label for="couperDate">Couper l'affectation le</label>
-                            <input type="date" class="form-control form-control-sm" id="couperDate" value="" style="text-align: right;">
-                        </div>
-                        <div class="col">
-                            <br>
-                            <select class="form-control form-control-sm" id="couperMoment">
-                                <option value="1">Fin de matinée</option>
-                                <option value="2">Fin de journée</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <br>
-                            <button class="btn btn-outline-dark btn-sm" type="button" id="btnCutAffectation">
-                                <i class="fas fa-cut"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-row" style="margin-top:6px;">
-                        <div class="col">
-                            <label for="addAffectationDebutDate">Décaler cette affectation</label>
-                            <select id="decalageCible" class="form-control form-control-sm">
-                                <option value="1" selected>uniquement</option>
-                                <option value="2">et les suivantes</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label for="addAffectationDebutDate">Jours calendaires</label>
-                            <select class="form-control form-control-sm" id="decalageQte">
-                                <?php
-                                for ($i = 1; $i <= 30; $i++):
-                                    echo '<option value="' . $i . '">' . $i . '</option>';
-                                endfor;
-                                ?>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <br>
-                            <button class="btn btn-outline-dark btn-sm" type="button" id="btnDecaleAffectationPasse">
-                                <i class="fas fa-arrow-alt-circle-left"></i>
-                            </button>
-                            <button class="btn btn-outline-dark btn-sm" type="button" id="btnDecaleAffectationFutur">
-                                <i class="fas fa-arrow-alt-circle-right"></i>
-                            </button>
+                    <div class="col" style="vertical-align: top;">
+                        <div id="operationsAffectation">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-dark" id="btnModAffectation">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </button>
+                                <button class="btn btn-outline-danger" id="btnDelAffectation">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </div>
+                            <div class="form-row" style="margin-top:6px;">
+                                <div class="col">
+                                    <label for="couperDate">Couper l'affectation le</label>
+                                    <input type="date" class="form-control form-control-sm" id="couperDate" value="" style="text-align: right;">
+                                </div>
+                                <div class="col">
+                                    <br>
+                                    <select class="form-control form-control-sm" id="couperMoment">
+                                        <option value="1">Fin de matinée</option>
+                                        <option value="2">Fin de journée</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <br>
+                                    <button class="btn btn-outline-dark btn-sm" type="button" id="btnCutAffectation">
+                                        <i class="fas fa-cut"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-row" style="margin-top:6px;">
+                                <div class="col">
+                                    <label for="addAffectationDebutDate">Décaler cette affectation</label>
+                                    <select id="decalageCible" class="form-control form-control-sm">
+                                        <option value="1" selected>uniquement</option>
+                                        <option value="2">et les suivantes</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label for="addAffectationDebutDate">Jours calendaires</label>
+                                    <select class="form-control form-control-sm" id="decalageQte">
+                                        <?php
+                                        for ($i = 1; $i <= 30; $i++):
+                                            echo '<option value="' . $i . '">' . $i . '</option>';
+                                        endfor;
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <br>
+                                    <button class="btn btn-outline-dark btn-sm" type="button" id="btnDecaleAffectationPasse">
+                                        <i class="fas fa-arrow-alt-circle-left"></i>
+                                    </button>
+                                    <button class="btn btn-outline-dark btn-sm" type="button" id="btnDecaleAffectationFutur">
+                                        <i class="fas fa-arrow-alt-circle-right"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

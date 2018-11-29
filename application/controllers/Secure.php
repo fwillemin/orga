@@ -9,7 +9,7 @@ class Secure extends CI_Controller {
         $this->viewFolder = strtolower(__CLASS__);
 
         if ($this->ion_auth->logged_in()) :
-            redirect('organibat/board');
+            redirect('planning/base');
             exit;
         endif;
     }
@@ -29,9 +29,10 @@ class Secure extends CI_Controller {
 
     public function tryLogin() {
         if (!$this->form_validation->run('identification')) :
+            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r(validation_errors(), true));
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
-            exit;
         else :
+
             /* On teste la demande de connexion */
             if ($this->ion_auth->login($this->input->post('login'), $this->input->post('pass'), 0)) :
 
@@ -57,12 +58,12 @@ class Secure extends CI_Controller {
                         )
                 );
                 $this->session->set_userdata('parametres', (array) $this->managerParametres->getParametres('array'));
-
                 echo json_encode(array('type' => 'success'));
             else :
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' MAUVAIS ID DE CONNEXION');
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' MAUVAIS ID DE CONNEXION : ' . $this->input->post('login') . ' | ' . $this->input->post('pass'));
                 echo json_encode(array('type' => 'error', 'message' => 'Identifiants de connexion invalides.'));
             endif;
+
         endif;
     }
 

@@ -21,6 +21,7 @@ class Personnels extends My_Controller {
         if (!empty($personnels)):
             foreach ($personnels as $p):
                 $p->hydrateEquipe();
+                $p->hydrateHoraire();
             endforeach;
         endif;
 

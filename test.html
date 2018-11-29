@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+
+        <meta charset="utf-8">
+        <title>Gestion et planification de chantiers et d'interventions</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="Xanthellis - Créateur de sites internet et d'applications professionnelles - http://www.xanthellis.com">
+
+        <!-- Le styles -->
+        <link rel="icon" type="image/png" href="http://192.168.0.1/organibat2/assets/img/favicon.png" >
+        <link rel="stylesheet" type="text/css" href="http://192.168.0.1/organibat2/assets/styles/css/bootstrap.min.css" >
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="http://192.168.0.1/organibat2/assets/styles/css/showroom.css" >
+
+        <!-- reload gulp --><script src="//localhost:35729/livereload.js"></script>
+    </head>
+
+    <body>
+
+        <div style="position:absolute; top:80px; width:100%; height:100%; opacity:0.2; z-index: 1;">
+            
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-4"><div class="showroomAffect" data-sr="enter bottom, move 700px, over 0.8s" style="background-color:#fb54ec;"></div></div>
+    <div class="col-1"><div class="showroomAffect" data-sr="enter right, move 400px, over 1.2s" style="background-color:#1856d5;"></div></div>
+    <div class="col-7"><div class="showroomAffect" data-sr="enter bottom, move 700px, over 0.8s" style="background-color:#41ffbf;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-2"><div class="showroomAffect" data-sr="roll 90deg, over 1s" style="background-color:yellow;"></div></div>
+    <div class="col-5"><div class="showroomAffect" data-sr="enter right, move 400px, over 1.2s" style="background-color:#ffb41e;"></div></div>
+    <div class="col-2"><div class="showroomAffect" data-sr="enter bottom, move 700px, over 0.8s" style="background-color: #ac65f8;"></div></div>
+    <div class="col-3"><div class="showroomAffect" data-sr="enter right, move 400px, over 1.2s" style="background-color:#ff414d;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-4"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color:#41ffbf;"></div></div>
+    <div class="col-1"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color:#fb54ec;"></div></div>
+    <div class="col-7"><div class="showroomAffect" data-sr="enter bottom, move 700px, over 0.8s" style="background-color:#ac65f8;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-8"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color:#1856d5;"></div></div>
+    <div class="col-4"><div class="showroomAffect" data-sr="enter top, move 700px, over 1.6s" style="background-color:#ffb41e;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-1"><div class="showroomAffect" data-sr="enter left, move 400px, over 0.4s" style="background-color:#ff414d;"></div></div>
+    <div class="col-4"><div class="showroomAffect" data-sr="enter left, move 400px, over 0.4s" style="background-color:#fb54ec;"></div></div>
+    <div class="col-5"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#ffb41e;"></div></div>
+    <div class="col-2"><div class="showroomAffect" data-sr="enter left, move 400px, over 0.4s" style="background-color:#41ffbf;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-6"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color:#41ffbf;"></div></div>
+    <div class="col-2"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color:#ff414d;"></div></div>
+    <div class="col-4"><div class="showroomAffect" data-sr="enter bottom, move 700px, over 0.8s" style="background-color:#fb54ec;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-12"><div class="showroomAffect" data-sr="roll 90deg, over 1s" style="background-color:#1856d5;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-3"><div class="showroomAffect" data-sr="enter left, move 400px, over 0.4s" style="background-color:#ac65f8;"></div></div>
+    <div class="col-2"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#fb54ec;"></div></div>
+    <div class="col-2"><div class="showroomAffect" data-sr="enter right, move 400px, over 1.2s" style="background-color:#ffb41e;"></div></div>
+    <div class="col-5"><div class="showroomAffect" data-sr="roll 90deg, over 1s" style="background-color:#41ffbf;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-9"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color:#ff414d;"></div></div>
+    <div class="col-3"><div class="showroomAffect" data-sr="enter left, move 400px, over 0.4s" style="background-color:#ffb41e;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-4"><div class="showroomAffect" data-sr="enter top, move 700px, over 1.6s" style="background-color:#fb54ec;"></div></div>
+    <div class="col-1"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#1856d5;"></div></div>
+    <div class="col-7"><div class="showroomAffect" data-sr="enter top, move 700px, over 1.6s" style="background-color:#41ffbf;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-2"><div class="showroomAffect" data-sr="roll 90deg, over 1s" style="background-color:yellow;"></div></div>
+    <div class="col-5"><div class="showroomAffect" data-sr="enter top, move 700px, over 1.6s" style="background-color:#ffb41e;"></div></div>
+    <div class="col-2"><div class="showroomAffect" data-sr="roll 90deg, over 1s" style="background-color: #ac65f8;"></div></div>
+    <div class="col-3"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#ff414d;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-4"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color:#41ffbf;"></div></div>
+    <div class="col-1"><div class="showroomAffect" data-sr="enter bottom, move 700px, over 0.8s" style="background-color:#fb54ec;"></div></div>
+    <div class="col-7"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#ac65f8;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-8"><div class="showroomAffect" data-sr="roll 90deg, over 1s" style="background-color:#1856d5;"></div></div>
+    <div class="col-4"><div class="showroomAffect" data-sr="enter right, move 400px, over 1.2s" style="background-color:#ffb41e;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-12"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#1856d5;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-3"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#ac65f8;"></div></div>
+    <div class="col-2"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#fb54ec;"></div></div>
+    <div class="col-2"><div class="showroomAffect" data-sr="enter top, move 700px, over 1.6s" style="background-color:#ffb41e;"></div></div>
+    <div class="col-5"><div class="showroomAffect" data-sr="enter bottom, move 700px, over 0.8s" style="background-color:#41ffbf;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-9"><div class="showroomAffect" data-sr="enter bottom, move 700px, over 0.8s" style="background-color:#ff414d;"></div></div>
+    <div class="col-3"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#ffb41e;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-4"><div class="showroomAffect" data-sr="roll 90deg, over 1s" style="background-color:#fb54ec;"></div></div>
+    <div class="col-1"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color:#1856d5;"></div></div>
+    <div class="col-7"><div class="showroomAffect" data-sr="enter top, move 700px, over 1.6s" style="background-color:#41ffbf;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-2"><div class="showroomAffect" data-sr="roll 90deg, over 1s" style="background-color:yellow;"></div></div>
+    <div class="col-5"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#ffb41e;"></div></div>
+    <div class="col-2"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color: #ac65f8;"></div></div>
+    <div class="col-3"><div class="showroomAffect" data-sr="enter left, move 400px, over 0.4s" style="background-color:#ff414d;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-9"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color:#ff414d;"></div></div>
+    <div class="col-3"><div class="showroomAffect" data-sr="roll 90deg, over 1s" style="background-color:#ffb41e;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-4"><div class="showroomAffect" data-sr="enter top, move 700px, over 1.6s" style="background-color:#fb54ec;"></div></div>
+    <div class="col-1"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color:#1856d5;"></div></div>
+    <div class="col-7"><div class="showroomAffect" data-sr="enter top, move 700px, over 1.6s" style="background-color:#41ffbf;"></div></div>
+</div>
+<div class="row" style="margin: 8px 0px;">
+    <div class="col-2"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:yellow;"></div></div>
+    <div class="col-5"><div class="showroomAffect" data-sr="enter left, move 400px, over 0.4s" style="background-color:#ffb41e;"></div></div>
+    <div class="col-2"><div class="showroomAffect" data-sr="roll 45deg, over 2s" style="background-color: #ac65f8;"></div></div>
+    <div class="col-3"><div class="showroomAffect" data-sr="roll -45deg, over 1.5s" style="background-color:#ff414d;"></div></div>
+</div>        </div>
+
+        <div class="container-fluid">
+            <div class="row" id="header">
+                <!--            <div class="affectation" style="top: 25px; right: 5%; background-color: #6ba2f5; color:#002A7D; border:1px solid #002A7D; width:60%;">PLANIFIEZ VOS INTERVENTIONS</div>
+                            <div class="affectation" style="top: 66px; right: 40%; background-color: #6ba2f5; color:#002A7D; border:1px solid #002A7D; width:29%;">MAITRISEZ VOTRE MARGE</div>
+                            <div class="affectation" style="top: 66px; right: 25%; background-color: #6ba2f5; color:#002A7D; border:1px solid #002A7D; width:15%;">ANALYSEZ VOS PERFORMANCES</div>-->
+                <div class="col">
+                    <img src="http://192.168.0.1/organibat2/assets/img/logoClairTexte.png" style="padding:5px; max-height: 65px;">
+                </div>
+            </div>
+        </div><div class="container fond">
+    <div class="row" style="z-index: 10;">
+        <div class="col">
+            test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+            <br>test
+        </div>
+    </div>
+</div>
+<script defer type="text/javascript" src="http://192.168.0.1/organibat2/assets/js/jquery.min.js"></script>
+<script defer type="text/javascript" src="http://192.168.0.1/organibat2/assets/js/showroom.js"></script>
+
+<script src="http://192.168.0.1/organibat2/assets/js/scrollReveal.min.js"></script>
+<script>window.sr = new scrollReveal();</script>
+</body>
+</html>

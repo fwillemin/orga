@@ -18,6 +18,21 @@ class Migration extends My_Controller {
         $this->view_folder = strtolower(__CLASS__) . '/';
     }
 
+    public function correctif() {
+
+        $chantiers = $this->managerChantiers->getChantiers();
+        foreach ($chantiers as $chantier):
+            $oldChantier = $this->db->select('*')->from('V1_chantier')->where('id', $chantier->getChantierOriginId())->get()->result();
+            if (!empty($oldChantier)):
+                $chantier->setChantierHeuresPrevues($oldChantier[0]->nb_heures_prev);
+            else:
+                $chantier->setChantierHeuresPrevues(1);
+            endif;
+            $this->managerChantiers->editer($chantier);
+        endforeach;
+        echo 'Done';
+    }
+
     /* Avant de lancer le script, il est imperatif de copier toutes les tables de la V1 (hors licences et transactions) avec le préfixe V1 dans la BDD de la V2
      * - Etre déconnecté !!!!!!!
      * - Vérifier que l'etablissement à un email valide avec un domaine qui lui est propre
@@ -66,6 +81,8 @@ class Migration extends My_Controller {
 
             /* Utilisateurs administratifs */
             $identifiants = $this->importUsers($etablissement, $domaine);
+            $this->importCategories($rs);
+            $this->importContacts($etablissement);
             $this->importFournisseurs($etablissement);
             $this->importHoraires($etablissement);
             $this->importPersonnels($etablissement);
@@ -185,6 +202,7 @@ class Migration extends My_Controller {
                     'userNom' => strtoupper($user->nom),
                     'userPrenom' => ucfirst($user->prenom),
                     'userEtablissementId' => $etablissement->getEtablissementId(),
+                    'userOriginId' => $user->id,
                     'userClairMdp' => $mdp,
                     'userCode' => 0000
                 );
@@ -225,6 +243,54 @@ class Migration extends My_Controller {
             $fournisseur = new Fournisseur($dataFst);
             $this->managerFournisseurs->ajouter($fournisseur);
             unset($fournisseur);
+
+        endforeach;
+    }
+
+    private function importContacts(Etablissement $etablissement) {
+
+        foreach ($this->db->select('*')->from('V1_contact')->where('contactEtablissementId', $etablissement->getEtablissementOriginId())->get()->result() as $contact):
+
+            $etat = 1;
+            if ($contact->contactEtat > 1):
+                $contact->contactEtat += 1;
+            endif;
+
+            $categorie = null;
+            if ($contact->contactCategorieId != 0):
+                $categorieOrigin = $this->managerCategories->getCategorieByOriginId($contact->contactCategorieId);
+                if ($categorieOrigin):
+                    $categorie = $categorieOrigin->getCategorieId();
+                endif;
+            endif;
+
+            $commercial = null;
+            if ($contact->contactCommercialId != 0):
+                $commercialOrigin = $this->managerUtilisateurs->getUtilisateurByOriginId($contact->contactCommercialId);
+                if ($commercialOrigin):
+                    $commercial = $commercialOrigin->getId();
+                endif;
+            endif;
+
+            $dataContact = array(
+                'contactEtablissementId' => $etablissement->getEtablissementId(),
+                'contactDate' => $contact->contactDate,
+                'contactMode' => $contact->contactOrigine,
+                'contactNom' => $contact->contactNom . ' ' . $contact->contactPrenom,
+                'contactAdresse' => $contact->contactAdresse,
+                'contactCp' => $contact->contactCp,
+                'contactVille' => $contact->contactVille,
+                'contactTelephone' => $contact->contactTelephone,
+                'contactEmail' => $contact->contactEmail,
+                'contactObjet' => $contact->contactObjet,
+                'contactCategorieId' => $categorie,
+                'contactSource' => $contact->contactSource,
+                'contactCommercialId' => $commercial,
+                'contactEtat' => $contact->contactEtat
+            );
+            $contact = new Contact($dataContact);
+            $this->managerContacts->ajouter($contact);
+            unset($contact);
 
         endforeach;
     }
@@ -719,7 +785,7 @@ class Migration extends My_Controller {
                 'chantierPrix' => $chant->prix,
                 'chantierEtat' => $chant->etat == 'Termine' ? 2 : 1,
                 'chantierDateCloture' => $chant->cloture,
-                'chantierHeuresPrevues' => $chant->nb_heures_prev > 0 ?: 1,
+                'chantierHeuresPrevues' => ($chant->nb_heures_prev > 0) ? $chant->nb_heures_prev : 1,
                 'chantierBudgetAchats' => $chant->budgetAchat,
                 'chantierFraisGeneraux' => $chant->chantierFraisGeneraux,
                 'chantierTauxHoraireMoyen' => $chant->chantierTxHoraireMoyen,
@@ -922,9 +988,9 @@ class Migration extends My_Controller {
                 );
                 $affectation = new Affectation($dataAffectation);
                 $affectation->setAffectationCases($this->own->nbCasesAffectation($affectation));
-                $affectation->calculHeuresPlanifiees();
                 $this->managerAffectations->ajouter($affectation);
-
+//                $affectation->calculHeuresPlanifiees();
+//                $this->managerAffectations->editer($affectation);
                 $this->importHeures($affectation);
 
             else:

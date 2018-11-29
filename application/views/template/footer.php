@@ -31,12 +31,13 @@
 <script defer type="text/javascript" src="<?= base_url('assets/jqueryConfirm/jquery-confirm.min.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/popper.min.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap.bundle.min.js'); ?>"></script>
+<script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-select.min.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/toaster.js'); ?>"></script>
 
 <?php if ($this->ion_auth->logged_in()): ?>
     <script defer type="text/javascript" src="<?= base_url('assets/MegaNavbarBS4/assets/js/MegaNavbarBS4.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/dataTable/datatables.min.js'); ?>"></script>
-    <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-select.min.js'); ?>"></script>
+
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-colorpicker.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-datepicker.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/js/chartjs.bundle.min.js'); ?>"></script>

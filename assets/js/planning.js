@@ -22,10 +22,13 @@ $(document).ready(function () {
     $('[data-toggle="popover"]').popover({
         html: true
     });
-    
-    $('#messageGlobal').on('change', function() {
-        $.post(chemin + 'planning/changeMessageGlobal', {message:$(this).val()}, function(retour){
+
+    $('#messageGlobal').on('change', function () {
+        $.post(chemin + 'planning/changeMessageGlobal', {message: $(this).val()}, function (retour) {
             switch (retour.type) {
+                case 'sessionTimeout':
+                    window.location.assign(chemin + 'secure/login');
+                    break;
                 case 'error':
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
                     break;
@@ -408,7 +411,7 @@ $(document).ready(function () {
                 case 'success':
                     affectationRAZ();
                     /* Modif du formulaire affectation */
-                    if ($('#addAffectationId')) {
+                    if ($('#addAffectationId') && retour.chantier.chantierEtat == '1') {
                         $('#addAffectationId').val(retour.affectation.affectationId);
                         $('#addAffectationChantierId option[value="' + retour.affectation.affectationChantierId + '"]').prop('selected', true);
                         $('#addAffectationPersonnelsIds option[value="' + retour.affectation.affectationPersonnelId + '"]').prop('selected', true);
@@ -427,13 +430,21 @@ $(document).ready(function () {
                         $('#btnAddIndispo').hide();
                     }
 
+                    if (retour.chantier.chantierEtat == '2') {
+                        $('#operationsAffectation button').prop('disabled', true);
+                        $('#operationsAffectation').hide();
+                    } else {
+                        $('#operationsAffectation button').prop('disabled', false);
+                        $('#operationsAffectation').show();
+                    }
+
                     /* Liste des heures */
                     if (retour.heures.length > 0) {
                         $('#tableAffectationHeures tbody tr').remove();
                         for (i = 0; i < retour.heures.length; i++) {
-                            if(retour.heures[i].heureValide == '1'){
+                            if (retour.heures[i].heureValide == '1') {
                                 etat = '<i class="fas fa-check"></i>';
-                            }else{
+                            } else {
                                 etat = '';
                             }
                             $('#tableAffectationHeures tbody').append('<tr><td>' + retour.heures[i].heureDate + '</td><td align="right">' + retour.heures[i].heureDuree + '</td><td>' + etat + '</td></tr>');
@@ -451,7 +462,9 @@ $(document).ready(function () {
                         $('#btnDecaleAffectation').prop('disabled', true);
                     }
                     $('#textAffectationAvancementHeures').css('width', retour.chantier.chantierRatio + '%');
+                    $('#textAffectationAvancementHeures').removeClass();
                     $('#textAffectationAvancementHeures').addClass(retour.chantier.chantierProgressBar);
+                    $('#textAffectationAvancementHeures').html(retour.chantier.chantierProgressBarText);
                     $('#textAffectationPeriode').html(retour.affectation.affectationPeriode);
                     $('#textAffectationHeuresPlanifiees').html(retour.affectation.affectationHeuresPlanifiees);
                     $('#textAffectationType').html(retour.affectation.affectationTypeText);
@@ -865,8 +878,8 @@ $(document).ready(function () {
             }
         }, 'json');
     });
-    
-    $('#btnSMS').on('click', function(){
+
+    $('#btnSMS').on('click', function () {
         $('#modalSMS').modal('show');
     });
 
