@@ -77,7 +77,7 @@
     </div>
     <div class="col-2" style="text-align: center;">
         <label for="addPersonnelActif">Actif</label>
-        <input class="form-control form-control-sm" type="checkbox" class="form-control form-control-sm" id="addPersonnelActif" name="addPersonnelActif" <?= (!empty($personnel) && $personnel->getPersonnelActif()) ? 'checked' : ''; ?>>
+        <input class="form-control form-control-sm" type="checkbox" class="form-control form-control-sm" id="addPersonnelActif" name="addPersonnelActif" <?= (!empty($personnel) && $personnel->getPersonnelActif() == 0) ? '' : 'checked'; ?>>
     </div>
 </div>
 <center>

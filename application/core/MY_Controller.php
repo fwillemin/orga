@@ -378,13 +378,13 @@ class My_Controller extends CI_Controller {
             $analyse['margeHoraire']['tempsReel'] = 0;
         endif;
         $analyse['marge']['finChantier'] = $chantier->getChantierPrix() - $analyse['fraisGeneraux'] - $analyse['achats']['finChantier'] - $analyse['mainO']['finChantier'];
-        if ($chantier->getChantierheuresPlanifiees()):
+        if ($chantier->getChantierheuresPlanifiees() && $chantier->getChantierheuresPlanifiees() > 0):
             $analyse['margeHoraire']['finChantier'] = round($analyse['marge']['finChantier'] / $chantier->getChantierheuresPlanifiees(), 2);
         else:
             $analyse['margeHoraire']['finChantier'] = 0;
         endif;
 
-        $analyse['marge']['ecartTempsReel'] = $analyse['marge']['tempsReel'] - $analyse['marge']['commerciale'];
+        $analyse['marge']['ecartTempsReel'] = round($analyse['marge']['tempsReel'] - $analyse['marge']['commerciale'], 2);
         if ($analyse['marge']['ecartTempsReel'] > 0):
             $analyse['marge']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-success">+' . $analyse['marge']['ecartTempsReel'] . '</span>';
         elseif ($analyse['marge']['ecartTempsReel'] < 0):
@@ -393,7 +393,7 @@ class My_Controller extends CI_Controller {
             $analyse['marge']['ecartTempsReelHtml'] = '<span class="badge-secondary"><0/span>';
         endif;
 
-        $analyse['marge']['ecartFinChantier'] = $analyse['marge']['finChantier'] - $analyse['marge']['commerciale'];
+        $analyse['marge']['ecartFinChantier'] = round($analyse['marge']['finChantier'] - $analyse['marge']['commerciale'], 2);
         if ($analyse['marge']['ecartFinChantier'] > 0):
             $analyse['marge']['ecartFinChantierHtml'] = '<span class="badgeAnalyseChantier badge badge-success">+' . $analyse['marge']['ecartFinChantier'] . '</span>';
         elseif ($analyse['marge']['ecartFinChantier'] < 0):

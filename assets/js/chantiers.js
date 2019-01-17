@@ -265,7 +265,15 @@ $(document).ready(function () {
     });
 
     $('#selectChantierFiche').on('change', function () {
-        window.location.assign(chemin + 'chantiers/ficheChantier/' + $(this).val());
+        if ($('#tabAnalyse').hasClass('active')) {
+            window.location.assign(chemin + 'chantiers/ficheChantier/' + $(this).val() + '/x');
+        } else if ($('#tabHeures').hasClass('active')) {
+            window.location.assign(chemin + 'chantiers/ficheChantier/' + $(this).val() + '/h');
+        } else if ($('#tabAchats').hasClass('active')) {
+            window.location.assign(chemin + 'chantiers/ficheChantier/' + $(this).val() + '/a');
+        } else {
+            window.location.assign(chemin + 'chantiers/ficheChantier/' + $(this).val());
+        }
     });
 
     $('.btnReAffecter').on('click', function () {

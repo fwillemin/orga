@@ -19,7 +19,6 @@ class Migration extends My_Controller {
     }
 
     public function correctif() {
-
         $chantiers = $this->managerChantiers->getChantiers();
         foreach ($chantiers as $chantier):
             $oldChantier = $this->db->select('*')->from('V1_chantier')->where('id', $chantier->getChantierOriginId())->get()->result();
@@ -31,6 +30,30 @@ class Migration extends My_Controller {
             $this->managerChantiers->editer($chantier);
         endforeach;
         echo 'Done';
+    }
+
+    /**
+     * renseigne la date de cloture des affaires cloturées à la date de cloture du dernier chantier
+     * Opération à réaliser déconnecté de tout compte client
+     */
+    public function correctifDateClotureAffaire() {
+
+        foreach ($this->db->select('*')->from('affaires')->where(array('affaireEtat' => 3, 'affaireDateCloture' => null))->get()->result() as $affaire):
+            $chantiers = $this->db->select('*')->from('chantiers')->where('chantierAffaireId', $affaire->affaireId)->get()->result();
+            if (!empty($chantiers)):
+                $dateCloture = null;
+                foreach ($chantiers as $chantier):
+                    if ($chantier->chantierDateCloture > $dateCloture):
+                        $dateCloture = $chantier->chantierDateCloture;
+                    endif;
+                endforeach;
+                $this->db->set('affaireDateCloture', $dateCloture)->where('affaireId', $affaire->affaireId)->update('affaires');
+            else:
+                echo 'Affaire ' . $affaire->getAffaireId() . ' semble ne pas avoir de chantier mais est indiquée comme cloturée !';
+            endif;
+        endforeach;
+
+        echo 'Opération terminée avec succès. ';
     }
 
     /* Avant de lancer le script, il est imperatif de copier toutes les tables de la V1 (hors licences et transactions) avec le préfixe V1 dans la BDD de la V2
@@ -108,7 +131,7 @@ class Migration extends My_Controller {
         else:
             $arrayRs = array(
                 'rsOriginId' => $rsOLD->id,
-                'rsNom' => strtoupper($rsOLD->nom),
+                'rsNom' => mb_strtoupper($rsOLD->nom),
                 'rsInscription' => $rsOLD->rs_inscription,
                 'rsMoisFiscal' => $rsOLD->rs_mois_fiscal,
                 'rsCategorieNC' => $rsOLD->rs_categorieNC
@@ -703,7 +726,7 @@ class Migration extends My_Controller {
                 'affaireCreation' => $creation,
                 'affaireClientId' => $client->getClientId(),
                 'affaireCategorieId' => $categorie,
-                'affaireCommercialId' => $dossier->id_commercial,
+                'affaireCommercialId' => $this->managerUsers->getUtilisateurByOriginId($dossier->id_commercial),
                 'affairePlaceId' => !empty($place) ? $place->getPlaceId() : null,
                 'affaireDevis' => $dossier->devis,
                 'affairePrix' => $dossier->dossierPrix,

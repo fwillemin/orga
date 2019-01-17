@@ -156,10 +156,9 @@ class Affectation {
         $this->hydrateHeures();
 
         /* Un décallage de position apparait dans le cas ou la premier jour de planning est en heure d'hiver et que l'affectation est en haure d'été */
+        $positionLeft = floor(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
         if (date('I', $premierJourPlanning) == 0 && date('I', $this->affectationDebutDate) == 1):
-            $positionLeft = floor(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
-        else:
-            $positionLeft = ceil(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
+            $positionLeft += ($largeur * 2 + 2);
         endif;
 
         //si on commence de l'aprem, on ajoute une 1/2 journée

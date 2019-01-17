@@ -71,6 +71,21 @@ class Model_heures extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    /* Utile lors des migrations pour les MAJ des heures ; planning/majHeures */
+
+    public function getHeuresMaj($where = array(), $from = 0, $type = 'object') {
+        $query = $this->db->select('*')
+                ->from('heures h')
+                ->join('affectations a', 'a.affectationId = h.heureAffectationId', 'left')
+                ->join('chantiers c', 'c.chantierId = a.affectationChantierId', 'left')
+                ->join('affaires af', 'af.affaireId = c.chantierAffaireId', 'left')
+                ->where('af.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where($where)
+                ->limit(($from + 4000), $from)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
     /**
      * Retourne un objet de la classe Heure correspondant à l'id
      * @param integer $heureId ID de l'raisonSociale

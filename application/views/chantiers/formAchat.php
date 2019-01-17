@@ -1,7 +1,7 @@
 <?= form_open('chantiers/addAchat', array('id' => 'formAddAchat'));
 ?>
 <input type="hidden" name="addAchatId" id="addAchatId" value="<?= !empty($achat) ? $achat->getAchatId() : ''; ?>">
-<input type="hidden" name="addAchatChantierId" id="addAchatChantierId" value="<?= $chantier->getChantierId(); ?>">
+<input type="hidden" name="addAchatChantierId" id="addAchatChantierId" value="<?= !empty($chantier) ? $chantier->getChantierId() : ''; ?>">
 <span class="badge badge-danger js-onAchatMod" style="<?= !$this->uri->segment(4) ? 'display:none;' : ''; ?>">
     Modification d'un achat en cours...
 </span>

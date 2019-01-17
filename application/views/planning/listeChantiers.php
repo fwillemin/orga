@@ -1,7 +1,7 @@
 <div id="listeChantiers">
     <img src="<?= base_url('assets/img/chantiersHandler.png'); ?>" style="position:absolute; right:0px; top:80px;" >
     <div style="position: absolute; bottom:2px; right:30px; font-size:10px; color:grey; text-align: right;">
-        <?= sizeof($affairesPlanning) . ' Affaires'; ?>
+        <?= (!empty($affairesPlanning) ? sizeof($affairesPlanning) : '0') . ' Affaires'; ?>
     </div>
     <div class="row">
         <button type="button" class="btn btn-default btn-sm btn-link" id="toggleCalendar">
@@ -61,16 +61,25 @@
                         <?php
                         if (!empty($affaire->getAffaireChantiers())):
                             foreach ($affaire->getAffaireChantiers() as $chantier):
+                                $listeAffect = "";
+                                $chantier->hydrateAffectations();
+                                if (!empty($chantier->getChantierAffectations())):
+                                    foreach ($chantier->getChantierAffectations() as $affectSlide):
+                                        $listeAffect .= $affectSlide->getAffectationId() . ',';
+                                    endforeach;
+                                endif;
                                 ?>
                                 <tr data-chantierid="<?= $chantier->getChantierId(); ?>" data-affaireParent="<?= $affaire->getAffaireId(); ?>">
-                                    <td style="background-color: <?= $affaire->getAffaireCouleur(); ?>; width: 20px;">
-                                        <?php
-                                        if ($chantier->getChantierEtat() == 2):
-                                            echo '<i class="fas fa-lock" style="color:' . $affaire->getAffaireCouleurSecondaire() . ';"></i>';
-                                        endif;
-                                        ?>
+                                    <td class="colorAffectationsChantier" style="background-color: <?= $affaire->getAffaireCouleur(); ?>; width: 20px;"
+                                        data-affectations="<?= $listeAffect; ?>">
+                                            <?php
+                                            if ($chantier->getChantierEtat() == 2):
+                                                echo '<i class="fas fa-lock" style="color:' . $affaire->getAffaireCouleurSecondaire() . ';"></i>';
+                                            endif;
+                                            ?>
                                     </td>
-                                    <td style="background-color: <?= $chantier->getChantierCouleur(); ?>; color: <?= $affaire->getAffaireCouleurSecondaire(); ?>; width: 20px; text-align: right;">
+                                    <td  class="colorAffectationsChantier" style="background-color: <?= $chantier->getChantierCouleur(); ?>; color: <?= $affaire->getAffaireCouleurSecondaire(); ?>; width: 20px; text-align: right;"
+                                         data-affectations="<?= $listeAffect; ?>">
                                         <i class="fas fa-chevron-circle-right" style="color: <?= $chantier->getChantierCouleurSecondaire(); ?>"></i>
                                     </td>
                                     <td class="slideLigneChantier">

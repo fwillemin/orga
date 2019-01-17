@@ -29,7 +29,6 @@ class Secure extends CI_Controller {
 
     public function tryLogin() {
         if (!$this->form_validation->run('identification')) :
-            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r(validation_errors(), true));
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else :
 

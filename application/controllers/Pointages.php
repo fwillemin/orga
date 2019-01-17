@@ -9,14 +9,13 @@ class Pointages extends My_Controller {
         parent::__construct();
         $this->viewFolder = strtolower(__CLASS__) . '/';
 
-        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(50, 51, 52, 4)))) :
-            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'User non autorisé');
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(80, 81, 82, 83, 4)))) :
             redirect('organibat/board');
         endif;
     }
 
     public function heuresOLD($semaine = null, $annee = null) {
-        if (!$this->ion_auth->in_group(array(50, 51, 52))) :
+        if (!$this->ion_auth->in_group(array(80, 81, 82))) :
             redirect('organibat/board');
         endif;
 
@@ -80,7 +79,7 @@ class Pointages extends My_Controller {
     }
 
     public function heures($semaine = null, $annee = null) {
-        if (!$this->ion_auth->in_group(array(50, 51, 52))) :
+        if (!$this->ion_auth->in_group(array(80, 81, 82))) :
             redirect('organibat/board');
         endif;
 
@@ -144,7 +143,7 @@ class Pointages extends My_Controller {
      * Valide une heure directement depuis son Id
      */
     public function quickValide() {
-        if (!$this->ion_auth->in_group(array(50, 51, 52))) :
+        if (!$this->ion_auth->in_group(array(80, 81, 82))) :
             redirect('organibat/board');
         endif;
 
@@ -212,7 +211,7 @@ class Pointages extends My_Controller {
      * @param string $periode période de la feuille de pointage sous le format
      */
     public function feuilles($personnelId = null, $periode = null) {
-        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(50, 51, 52)))) :
+        if (!$this->ion_auth->logged_in() || (!$this->ion_auth->in_group(array(80, 81, 82)))) :
             redirect('organibat/board');
         endif;
 

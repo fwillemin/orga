@@ -1,11 +1,12 @@
-SetEnv PHP_VER 5
+SetEnv PHP_VER 7
 SetEnv REGISTER_GLOBALS 0
 
 RewriteEngine on
 RewriteBase /
 
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://v2.organibat.com/$1 [R=301,L]
+RewriteCond %{HTTPS} on
+#RewriteRule ^(.*)$ https://v2.organibat.com/$1 [R=301,L]
+RewriteRule ^(.*)$ http://192.168.0.1/ORGANIBAT/organibat2/$1 [R=301,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

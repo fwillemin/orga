@@ -543,6 +543,18 @@ $(document).ready(function () {
             }
         }, 'json');
     });
+    
+    $('.colorAffectationsChantier').on('click', function () {        
+        $('#masquePlanning').fadeIn(300);
+        $('.affectation, .livraison').css('z-index', 2);        
+        /* Surbrillance des affectations contraintes */
+        console.log($(this).attr('data-affectations'));
+        var affectations = $(this).attr('data-affectations').split(",");
+        for (i = 0; affectations.length > i; i++) {
+            var affectation = $('div.affectation[data-affectationid="' + affectations[i] + '"]');
+            affectation.css('z-index', 15);
+        }
+    });
 
     $('#masquePlanning').on('click', function () {
         $(this).fadeOut(200);

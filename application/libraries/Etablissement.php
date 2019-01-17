@@ -23,7 +23,7 @@ class Etablissement {
     protected $etablissementEmail;
     protected $etablissementGps;
     protected $etablissementStatut;
-    protected $etablissementChantierDiversId;
+    protected $etablissementAffaireDiversId;
     protected $etablissementMessage;
     protected $etablissementTauxFraisGeneraux;
     protected $etablissementTauxHoraireMoyen;
@@ -44,6 +44,10 @@ class Etablissement {
 
     function getEtablissementId() {
         return $this->etablissementId;
+    }
+
+    function getEtablissementOriginId() {
+        return $this->etablissementOriginId;
     }
 
     function getEtablissementRsId() {
@@ -87,7 +91,7 @@ class Etablissement {
     }
 
     function getEtablissementAffaireDiversId() {
-        return $this->etablissementChantierDiversId;
+        return $this->etablissementAffaireDiversId;
     }
 
     function getEtablissementMessage() {
@@ -104,6 +108,10 @@ class Etablissement {
 
     function setEtablissementId($etablissementId) {
         $this->etablissementId = $etablissementId;
+    }
+
+    function setEtablissementOriginId($etablissementOriginId) {
+        $this->etablissementOriginId = $etablissementOriginId;
     }
 
     function setEtablissementRsId($etablissementRsId) {
@@ -146,8 +154,8 @@ class Etablissement {
         $this->etablissementStatut = $etablissementStatut;
     }
 
-    function setEtablissementAffaireDiversId($etablissementChantierDiversId) {
-        $this->etablissementChantierDiversId = $etablissementChantierDiversId;
+    function setEtablissementAffaireDiversId($etablissementAffaireDiversId) {
+        $this->etablissementAffaireDiversId = $etablissementAffaireDiversId;
     }
 
     function setEtablissementMessage($etablissementMessage) {
@@ -160,14 +168,6 @@ class Etablissement {
 
     function setEtablissementTauxHoraireMoyen($etablissementTauxHoraireMoyen) {
         $this->etablissementTauxHoraireMoyen = $etablissementTauxHoraireMoyen;
-    }
-
-    function getEtablissementOriginId() {
-        return $this->etablissementOriginId;
-    }
-
-    function setEtablissementOriginId($etablissementOriginId) {
-        $this->etablissementOriginId = $etablissementOriginId;
     }
 
 }

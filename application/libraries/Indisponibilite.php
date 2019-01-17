@@ -56,6 +56,9 @@ class Indisponibilite {
         $CI = & get_instance();
 
         $positionLeft = floor(($this->indispoDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
+        if (date('I', $premierJourPlanning) == 0 && date('I', $this->indispoDebutDate) == 1):
+            $positionLeft += ($largeur * 2 + 2);
+        endif;
         //si on commence de l'aprem, on ajoute une 1/2 journée
         if ($this->indispoDebutMoment == 2) {
             $positionLeft += $largeur;

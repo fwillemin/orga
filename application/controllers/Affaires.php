@@ -134,7 +134,7 @@ class Affaires extends My_Controller {
                     $analyse['debourseSec']['ecartFinAffaireHtml'] = '<span class="badge-secondary">-</span>';
                 endif;
 
-                $analyse['marge']['ecartTempsReel'] = $analyse['marge']['tempsReel'] - $analyse['marge']['commerciale'];
+                $analyse['marge']['ecartTempsReel'] = round($analyse['marge']['tempsReel'] - $analyse['marge']['commerciale'], 2);
                 if ($analyse['marge']['ecartTempsReel'] > 0):
                     $analyse['marge']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-success">+' . $analyse['marge']['ecartTempsReel'] . '</span>';
                 elseif ($analyse['marge']['ecartTempsReel'] < 0):
@@ -143,7 +143,7 @@ class Affaires extends My_Controller {
                     $analyse['marge']['ecartTempsReelHtml'] = '<span class="badge-secondary"><0/span>';
                 endif;
 
-                $analyse['marge']['ecartFinAffaire'] = $analyse['marge']['finAffaire'] - $analyse['marge']['commerciale'];
+                $analyse['marge']['ecartFinAffaire'] = round($analyse['marge']['finAffaire'] - $analyse['marge']['commerciale'], 2);
                 if ($analyse['marge']['ecartFinAffaire'] > 0):
                     $analyse['marge']['ecartFinAffaireHtml'] = '<span class="badgeAnalyseChantier badge badge-success">+' . $analyse['marge']['ecartFinAffaire'] . '</span>';
                 elseif ($analyse['marge']['ecartFinAffaire'] < 0):
@@ -155,7 +155,6 @@ class Affaires extends My_Controller {
             endforeach;
         endif;
 
-        //log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($analyse, true));
         return $analyse;
     }
 

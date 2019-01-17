@@ -5,7 +5,6 @@ $totalZ2 = 0;
 $totalZ3 = 0;
 $totalZ4 = 0;
 $totalZ5 = 0;
-log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegarde, true));
 ?>
 <div class="row" id="formPointage">
     <div class="col-12" style="margin-bottom: 20px;">
@@ -130,8 +129,9 @@ log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegar
                         $timeJour = mktime(0, 0, 0, $mois, $i, $annee);
                         //$timeIndispo = mktime(0, 0, 0, $mois, $i, $annee);
 
-                        if (date('w', $timeJour) == 1)
+                        if (date('w', $timeJour) == 1):
                             $totalHebdo = 0; /* on repasse le total hebdo à 0 le lundi */
+                        endif;
                         if (date('w', $timeJour) == 0 || date('w', $timeJour) == 6):
                             $isWe = true;
                         else:
@@ -158,7 +158,7 @@ log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($sauvegar
                                         $chantiersJour .= ', ';
                                     $chantiersJour .= ($h->getHeureAffectation()->getAffectationPlace() ? $h->getHeureAffectation()->getAffectationPlace()->getPlaceVille() : 'NR');
 
-                                    if (empty($personnel->getPersonnelHoraire())):
+                                    if ($personnel->getPersonnelPointages() == 1):
                                         $totalHebdo += $h->getHeureDuree(); /* en minutes */
                                         $totalMois += $h->getHeureDuree(); /* en minutes */
                                     endif;

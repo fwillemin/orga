@@ -14,7 +14,7 @@
                 <i class="fas fa-plus-square"></i> Ajouter
             </button>
         </h2>
-        <small><?= count($affaires) - 1; ?> affaires</small>
+        <small><?= !empty($affaires) ? count($affaires) - 1 : '0'; ?> affaires</small>
         <table class="table table-bordered table-responsive-sm table-sm style1" id="tableAffaires" style="font-size:13px; display: none; width:100%;">
             <thead>
                 <tr>
