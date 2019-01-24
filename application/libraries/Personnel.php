@@ -17,6 +17,7 @@ class Personnel {
     protected $personnelNom;
     protected $personnelPrenom;
     protected $personnelQualif;
+    protected $personnelType; /* 1=classique, 2=apprenti, 3=interimaire */
     protected $personnelActif;
     protected $personnelCode;
     protected $personnelPortable;
@@ -221,6 +222,14 @@ class Personnel {
 
     function setPersonnelPortable($personnelPortable) {
         $this->personnelPortable = $personnelPortable;
+    }
+
+    function getPersonnelType() {
+        return $this->personnelType;
+    }
+
+    function setPersonnelType($personnelType) {
+        $this->personnelType = $personnelType;
     }
 
 }

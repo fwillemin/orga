@@ -15,25 +15,38 @@
                 <tr>
                     <td style="width: 30px;"></td>
                     <td>Nom</td>
+                    <td style="width:50px;">Type</td>
                     <td>Qualification</td>
                     <td>Horaire</td>
                     <td style="text-align: center;">T. Horaire</td>
                     <td style="text-align: center;">Equipe</td>
-                    <td>Actuellement</td>
                 </tr>
             </thead>
             <tbody>
                 <?php
                 if (!empty($personnels)):
                     foreach ($personnels as $personnel):
+                        switch ($personnel->getPersonnelType()):
+                            case 1:
+                                $type = '<label style="font-size:11px;" class="badge badge-primary">Salarié</label> ';
+                                break;
+                            case 2:
+                                $type = '<label style="font-size:11px;" class="badge badge-warning">Apprenti</label> ';
+                                break;
+                            case 3:
+                                $type = '<label style="font-size:11px;" class="badge badge-dark">Intérimaire</label> ';
+                                break;
+                        endswitch;
+
                         echo '<tr class="ligneClikable" data-personnelid="' . $personnel->getPersonnelId() . '">'
                         . '<td style="text-align:center; font-size:15px;">' . ($personnel->getPersonnelActif() ? '<label class="badge badge-info">Actif</label>' : '<label class="badge badge-secondary">Inactif</label>') . '</td>'
                         . '<td>' . $personnel->getPersonnelNom() . ' ' . $personnel->getPersonnelPrenom() . '</td>'
+                        . '<td>' . $type . '</td>'
                         . '<td>' . $personnel->getPersonnelQualif() . '</td>'
                         . '<td style="text-align: center;">' . (!empty($personnel->getPersonnelHoraire()) ? $personnel->getPersonnelHoraire()->getHoraireNom() : '<span class="badge badge-warning">NR</span>') . '</td>'
                         . '<td style="text-align: center;">' . ($personnel->getPersonnelTauxHoraire() ?: '<span class="badge badge-warning">NR</span>') . '</td>'
                         . '<td style="text-align: center;">' . ($personnel->getPersonnelEquipeId() ? $personnel->getPersonnelEquipe()->getEquipeNom() : '') . '</td>'
-                        . '<td></td></tr>';
+                        . '</tr>';
                     endforeach;
                     unset($personnel);
                 endif;

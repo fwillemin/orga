@@ -20,7 +20,21 @@
                     <?php include('formPersonnel.php'); ?>
                     <i class="formClose fas fa-times"></i>
                 </div>
-                <?= $personnel->getPersonnelActif() ? '<label class="badge badge-info">Actif</label>' : '<label class="badge badge-secondary">Inactif</label>'; ?> <strong><?= $personnel->getPersonnelQualif(); ?></strong>
+                <?=
+                $personnel->getPersonnelActif() ? '<label class="badge badge-info">Actif</label>' : '<label class="badge badge-secondary">Inactif</label>';
+                switch ($personnel->getPersonnelType()):
+                    case 1:
+                        echo ' <label class="badge badge-primary">Salarié</label>';
+                        break;
+                    case 2:
+                        echo ' <label class="badge badge-warning">Apprenti</label>';
+                        break;
+                    case 3:
+                        echo ' <label class="badge badge-dark">Intérimaire</label>';
+                        break;
+                endswitch;
+                ?>
+                <strong><?= $personnel->getPersonnelQualif(); ?></strong>
                 <br>Taux horaire actuel : <strong><?= ($personnel->getPersonnelTauxHoraire() ?: '<span class="badge badge-warning">NR</span>') . ' <small>€/h</small>'; ?></strong>
                 <br><span style="font-size:14px;">Horaire d'entreprise : <?= $personnel->getPersonnelHoraireId() ? $personnel->getPersonnelHoraire()->getHoraireNom() : 'Aucun horaire appliqué'; ?>
                     <br>Feuilles de pointages : <?= $personnel->getPersonnelPointages() == 1 ? 'Au réél des heures pointées' : 'Selon l\'horaire attribué'; ?>

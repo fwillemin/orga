@@ -18,6 +18,14 @@
 </div>
 <div class="form-row">
     <div class="col">
+        <label for="addPersonnelType">Type</label>
+        <select name="addPersonnelType" id="addPersonnelType" class="form-control form-control-sm">
+            <option value="1" <?= (!empty($personnel) && $personnel->getPersonnelType() == 1) ? 'selected' : ''; ?>>Salarié</option>
+            <option value="2" <?= (!empty($personnel) && $personnel->getPersonnelType() == 2) ? 'selected' : ''; ?>>Apprenti</option>
+            <option value="3" <?= (!empty($personnel) && $personnel->getPersonnelType() == 3) ? 'selected' : ''; ?>>Intérimaire</option>
+        </select>
+    </div>
+    <div class="col">
         <label for="addPersonnelEquipeId">Equipe</label>
         <select name="addPersonnelEquipeId" id="addPersonnelEquipeId" class="form-control form-control-sm">
             <option value="0" <?= (!empty($personnel) && !$personnel->getPersonnelEquipeId()) ? 'selected' : ''; ?>>Seul</option>

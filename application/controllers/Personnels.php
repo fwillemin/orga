@@ -114,6 +114,7 @@ class Personnels extends My_Controller {
                 $personnel->setPersonnelHoraireId($this->input->post('addPersonnelHoraireId') ?: null);
                 $personnel->setPersonnelPointages($this->input->post('addPersonnelHoraireId') ? $this->input->post('addPersonnelPointages') : 1);
                 $personnel->setPersonnelActif($this->input->post('addPersonnelActif') ? 1 : 0);
+                $personnel->setPersonnelType($this->input->post('addPersonnelType'));
                 $this->managerPersonnels->editer($personnel);
 
             else:
@@ -123,6 +124,7 @@ class Personnels extends My_Controller {
                     'personnelNom' => strtoupper($this->input->post('addPersonnelNom')),
                     'personnelPrenom' => ucfirst($this->input->post('addPersonnelPrenom')),
                     'personnelQualif' => $this->input->post('addPersonnelQualif'),
+                    'personnelType' => $this->input->post('addPersonnelType'),
                     'personnelCode' => $this->input->post('addPersonnelCode'),
                     'personnelPortable' => str_replace(array(' ', '.'), array('', ''), $this->input->post('addPersonnelPortable')),
                     'personnelMessage' => $this->input->post('addPersonnelMessage'),
@@ -136,9 +138,11 @@ class Personnels extends My_Controller {
 
             endif;
 
+            $etablissementBaseHebdomadaire = $this->getBaseHebdomadaire();
             $etablissement = $this->managerEtablissements->getEtablissementById($this->session->userdata('etablissementId'));
-            $etablissement->setEtablissementBaseHebdomadaire($this->getBaseHebdomadaire());
+            $etablissement->setEtablissementBaseHebdomadaire($etablissementBaseHebdomadaire);
             $this->managerEtablissements->editer($etablissement);
+            $this->session->set_userdata('etablissementBaseHebdomadaire', $etablissementBaseHebdomadaire);
 
             echo json_encode(array('type' => 'success'));
 

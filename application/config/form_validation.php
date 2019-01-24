@@ -232,7 +232,7 @@ $config = array(
             'rules' => 'required|callback_existPersonnel'
         )
     ),
-    /* Add Equipe */
+    /* Add Personnel */
     'addPersonnel' => array(
         array(
             'field' => 'addPersonnelId',
@@ -253,6 +253,11 @@ $config = array(
             'field' => 'addPersonnelQualif',
             'label' => 'Qualification du personnel',
             'rules' => 'trim|required'
+        ),
+        array(
+            'field' => 'addPersonnelType',
+            'label' => 'Catégorie de personnel',
+            'rules' => 'trim|required|in_list[1,2,3]'
         ),
         array(
             'field' => 'addPersonnelCode',

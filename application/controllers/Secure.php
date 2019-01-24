@@ -61,6 +61,7 @@ class Secure extends CI_Controller {
                             'etablissementGPS' => $etablissement->getEtablissementGps(),
                             'etablissementTFG' => $etablissement->getEtablissementTauxFraisGeneraux(),
                             'etablissementTHM' => $etablissement->getEtablissementTauxHoraireMoyen(),
+                            'etablissementBaseHebdomadaire' => $etablissement->getEtablissementBaseHebdomadaire(),
                             'affaireDiversId' => $etablissement->getEtablissementAffaireDiversId(),
                             'droits' => $groups,
                             'smsCredits' => 0,
