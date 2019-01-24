@@ -10,6 +10,12 @@
             ?>
 
             <div class="col-12">
+                <div class="row" style="margin-top:1px;">
+                    <div class="col-2"></div>
+                    <div class="col-10" style="font-size:12px; color: steelblue;">
+                        <?= $analyseRapide['nbAffairesEncours'] . ' affaires en cours - ' . $analyseRapide['nbAffairesCloses'] . ' affaires closes - <b>' . number_format($analyseRapide['nbHeuresPlannifiees'], 2, ',', ' ') . '</b> heures plannifiées'; ?>
+                    </div>
+                </div>
                 <div class="row">
                     <!-- liste du personnel -->
                     <div class="col-2" align="right">

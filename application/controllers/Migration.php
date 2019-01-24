@@ -219,7 +219,8 @@ class Migration extends My_Controller {
 
             if ($user->niveau != 5):
                 $email = str_replace(array(' ', 'é', 'è'), array('', 'e', 'e'), strtolower($user->nom) . '.' . strtolower($user->prenom)) . '@' . $domaine;
-                $mdp = $this->getPassword();
+                //$mdp = $this->getPassword();
+                $mdp = 'Organibat2019';
 
                 $additional_data = array(
                     'userNom' => strtoupper($user->nom),
@@ -229,15 +230,18 @@ class Migration extends My_Controller {
                     'userClairMdp' => $mdp,
                     'userCode' => 0000
                 );
+                unset($group);
+                $groups = $this->db->select('id')->from('groups')->where('id > ', 4)->get()->result();
+                foreach ($groups as $g):
+                    $group[] = $g->id;
+                endforeach;
                 /* Admin */
                 if ($i == 1):
-                    $groups = $this->db->select('id')->from('groups')->where('id <> ', 2)->get()->result();
-                    foreach ($groups as $g):
-                        $group[] = $g->id;
-                    endforeach;
+                    $group[] = 1;
                 else:
-                    $group = array('2');
+                    $group[] = 2;
                 endif;
+
                 $this->ion_auth->register($email, $mdp, $email, $additional_data, $group);
                 $i++;
                 if ($user->niveau == 1):
@@ -612,6 +616,8 @@ class Migration extends My_Controller {
 
     public function importDossiers(Etablissement $etablissement, $migrationPlace) {
 
+        $creation = 0;
+
         foreach ($this->db->select('*')->from('V1_dossier')
                 ->where(array('id_etablissement' => $etablissement->getEtablissementOriginId()))
                 ->order_by('dossierId DESC')
@@ -726,7 +732,7 @@ class Migration extends My_Controller {
                 'affaireCreation' => $creation,
                 'affaireClientId' => $client->getClientId(),
                 'affaireCategorieId' => $categorie,
-                'affaireCommercialId' => $this->managerUsers->getUtilisateurByOriginId($dossier->id_commercial),
+                'affaireCommercialId' => $this->managerUtilisateurs->getUtilisateurByOriginId($dossier->id_commercial)->getId(),
                 'affairePlaceId' => !empty($place) ? $place->getPlaceId() : null,
                 'affaireDevis' => $dossier->devis,
                 'affairePrix' => $dossier->dossierPrix,
@@ -907,7 +913,7 @@ class Migration extends My_Controller {
             $dataAchat = array(
                 'achatChantierId' => $chantier->getChantierId(),
                 'achatDate' => $liv->livraisonDate,
-                'achatDescription' => '[Livr V1] ' . $liv->livraisonRemarque,
+                'achatDescription' => $liv->livraisonRemarque,
                 'achatType' => 2,
                 'achatQte' => 1,
                 'achatQtePrevisionnel' => 1,

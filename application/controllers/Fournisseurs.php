@@ -15,6 +15,10 @@ class Fournisseurs extends My_Controller {
         endif;
     }
 
+    public function index() {
+        redirect('fournisseurs/listeFst');
+    }
+
     public function listeFst() {
 
         $fournisseurs = $this->managerFournisseurs->getFournisseurs();

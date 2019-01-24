@@ -40,12 +40,23 @@ class Secure extends CI_Controller {
                     $groups[] = $group->id;
                 endforeach;
                 $etablissement = $this->managerEtablissements->getEtablissementById($user->getUserEtablissementId());
+                $etablissement->hydrateRs();
+
+                if (date('m') < $etablissement->getEtablissementRs()->getRsMoisFiscal()):
+                    $annee = date('Y') - 1;
+                else:
+                    $annee = date('Y');
+                endif;
+
                 $this->session->set_userdata(
                         array(
-                            'loaderIcon' => 'fa-broom',
+                            'loaderIcon' => 'fa-repeat',
                             'utilisateurPrenom' => $user->getUserPrenom(),
                             'utilisateurNom' => $user->getUserNom(),
                             'rsId' => $etablissement->getEtablissementRsId(),
+                            'moisFiscal' => $etablissement->getEtablissementRs()->getRsMoisFiscal(),
+                            'debutFiscale' => $this->cal->debutFinExercice($etablissement->getEtablissementRs()->getRsMoisFiscal(), $annee, 'debut'),
+                            'finFiscale' => $this->cal->debutFinExercice($etablissement->getEtablissementRs()->getRsMoisFiscal(), $annee, 'fin'),
                             'etablissementId' => $user->getUserEtablissementId(),
                             'etablissementGPS' => $etablissement->getEtablissementGps(),
                             'etablissementTFG' => $etablissement->getEtablissementTauxFraisGeneraux(),

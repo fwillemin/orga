@@ -80,7 +80,7 @@ class My_Controller extends CI_Controller {
 
     public function existClient($clientId) {
         $this->form_validation->set_message('existClient', 'Ce client est introuvable.');
-        if ($this->managerClients->count(array('clientId' => $clientId)) == 1 || !$clientId) :
+        if ($this->managerClients->count(array('clientId' => $clientId, 'clientEtablissementId' => $this->session->userdata('etablissementId'))) == 1 || !$clientId) :
             return true;
         else :
             return false;
@@ -107,7 +107,7 @@ class My_Controller extends CI_Controller {
 
     public function existAffaire($affaireId) {
         $this->form_validation->set_message('existAffaire', 'Cette affaire est introuvable.');
-        if ($this->managerAffaires->count(array('affaireId' => $affaireId)) == 1 || !$affaireId) :
+        if ($this->managerAffaires->count(array('affaireId' => $affaireId, 'affaireEtablissementId' => $this->session->userdata('etablissementId'))) == 1 || !$affaireId) :
             return true;
         else :
             return false;
@@ -170,7 +170,7 @@ class My_Controller extends CI_Controller {
 
     public function existFournisseur($fournisseurId) {
         $this->form_validation->set_message('existFournisseur', 'Ce fournisseur est introuvable.');
-        if ($this->managerFournisseurs->count(array('fournisseurId' => $fournisseurId)) == 1 || !$fournisseurId) :
+        if ($this->managerFournisseurs->count(array('fournisseurId' => $fournisseurId, 'fournisseurEtablissementId' => $this->session->userdata('etablissementId'))) == 1 || !$fournisseurId) :
             return true;
         else :
             return false;
@@ -206,7 +206,7 @@ class My_Controller extends CI_Controller {
 
     public function existContact($contactId) {
         $this->form_validation->set_message('existContact', 'Ce contact est introuvable.');
-        if ($this->managerContacts->count(array('contactId' => $contactId)) == 1 || !$contactId) :
+        if ($this->managerContacts->count(array('contactId' => $contactId, 'contactEtablissementId' => $this->session->userdata('etablissementId'))) == 1 || !$contactId) :
             return true;
         else :
             return false;

@@ -15,6 +15,10 @@ class Categories extends My_Controller {
         endif;
     }
 
+    public function index() {
+        redirect('categories/liste');
+    }
+
     public function liste($categorieId = null) {
 
         $categories = $this->managerCategories->getCategories();

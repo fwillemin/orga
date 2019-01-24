@@ -19,6 +19,10 @@ class Organibat extends My_Controller {
         phpinfo();
     }
 
+    public function index() {
+        redirect('organibat/board');
+    }
+
     public function board() {
 
         $data = array(

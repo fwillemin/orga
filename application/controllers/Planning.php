@@ -25,6 +25,10 @@ class Planning extends My_Controller {
         $this->nbSemainesApres = $this->session->userdata('parametres')['nbSemainesApres'];
     }
 
+    public function index() {
+        redirect('planning/base');
+    }
+
     /* Mise à jour des heures d'une affect */
 
     public function majAffects() {
@@ -36,6 +40,7 @@ class Planning extends My_Controller {
         echo 'Done';
     }
 
+    // On lance une maj des heures pour activer les triggers de la BDD et incrementer les heures pointees
     public function majHeures($from = 0) {
         foreach ($this->managerHeures->getHeuresMaj(array(), $from) as $heure):
             $this->managerHeures->editer($heure);
@@ -64,6 +69,40 @@ class Planning extends My_Controller {
         echo json_encode(array('type' => 'success'));
     }
 
+    private function analyseRapideActivite() {
+
+        $affairesEnCours = $this->managerAffaires->getAffaires(array('affaireEtat' => 2, 'affaireId <>' => $this->session->userdata('affaireDiversId')));
+        $affairesTermines = $this->managerAffaires->getAffaires(array('affaireEtat' => 3, 'affaireDateCloture > ' => $this->session->userdata('debutFiscale'), 'affaireId <>' => $this->session->userdata('affaireDiversId')));
+
+        $caEncours = $caClos = $nbEncours = $nbClos = $nbHeuresPlannifiees = 0;
+
+        if (!empty($affairesTermines)):
+            foreach ($affairesTermines as $affaire):
+                $nbClos++;
+                $caClos += $affaire->getAffairePrix();
+            endforeach;
+            unset($affaire);
+        endif;
+
+        if (!empty($affairesEnCours)):
+            foreach ($affairesEnCours as $affaire):
+                $nbEncours++;
+                $caEncours += $affaire->getAffairePrix();
+
+                // On compte les heures plannifiées restantes pour le futur
+                $affaire->hydrateChantiers();
+                foreach ($affaire->getAffaireChantiers() as $chantier):
+                    if ($chantier->getChantierEtat() == 1):
+                        $nbHeuresPlannifiees += $chantier->getChantierHeuresPlanifiees() - $chantier->getChantierHeuresPointees();
+                    endif;
+                endforeach;
+
+            endforeach;
+            unset($affaire);
+        endif;
+        return array('nbAffairesEncours' => $nbEncours, 'caEncours' => $caEncours, 'nbAffairesCloses' => $nbClos, 'caClos' => $caClos, 'nbHeuresPlannifiees' => $nbHeuresPlannifiees);
+    }
+
     /**
      * Affiche le planning
      * @param String $debut Format YYYY-MM-DD
@@ -72,7 +111,7 @@ class Planning extends My_Controller {
 
         /* Recherche du premier jour du planning en excluant le dossier divers */
         if ($debut):
-            $this->session->set_userdata('dateFocus', $this->own->mktimeFromInputDate($debut));
+            $this->session->set_userdata('dateFocus', $debut);
         elseif ($this->session->userdata('dateFocus')):
             $debut = $this->session->userdata('dateFocus');
         else:
@@ -85,7 +124,7 @@ class Planning extends My_Controller {
         /* Le dernier jour du planning est le premier jour auquel on additionne
          * les semaines avant et apres la dateFocus et la derniere semaine en cours
          */
-//        if ($debut >= date('Y-m-d')):
+//        if ($debut > date('Y-m-d')):
 //            $dernierJourPlanning = null;
 //        else:
         $dernierJourPlanning = $premierJourPlanning + (1 + $this->nbSemainesAvant + $this->nbSemainesApres) * 604800;
@@ -94,15 +133,22 @@ class Planning extends My_Controller {
         /* Récuperation des données */
         $personnelsActifs = $this->managerPersonnels->getPersonnels(array('personnelActif' => 1), 'personnelEquipeId DESC, personnelNom, personnelPrenom ASC');
         $listePersonnel = array();
+
+        /*
+         * On ne prend le personnel actif dans la liste du personnel planning que si la date de fin de planning est moins de 2 mois avant la date du jour
+         * Cela permet de ne pas polluer le planning du passé avec les gars de maintenant.
+         */
         if (!empty($personnelsActifs)):
             foreach ($personnelsActifs as $persoActif):
                 $persoActif->hydrateEquipe();
                 $persoActif->hydrateHoraire();
-                $listePersonnel[] = $persoActif->getPersonnelId();
+                if ($dernierJourPlanning >= (time() - 5184000)):
+                    $listePersonnel[] = $persoActif->getPersonnelId();
+                endif;
             endforeach;
         endif;
 
-        if (!empty($listePersonnel)):
+        if (!empty($personnelsActifs)):
 
             /* Affectations */
             $affectations = $this->managerAffectations->getAffectationsPlanning($premierJourPlanning, $dernierJourPlanning, ($this->session->userdata('inclureTermines') ? 2 : 1), 'a.affectationDebutDate ASC');
@@ -114,7 +160,7 @@ class Planning extends My_Controller {
             //$dernier = $dernierJourPlanning ?: ($premierJourPlanning + (86400 * 7 * ($this->nbSemainesAvant + $this->nbSemainesApres)));
             $dernier = $dernierJourPlanning;
 
-            if ($affectations):
+            if (!empty($affectations)):
                 /* Permier et dernier jours du planning */
 //            if ($affectations[0]->getAffectationDebutDate() < $premierJourPlanning):
 //                $premierJourPlanning = $this->cal->premierJourSemaine($affectations[0]->getAffectationDebutDate(), 0);
@@ -150,7 +196,6 @@ class Planning extends My_Controller {
                     /* Planning libre sur le futur (dateFocus >= today) on ajoute 2 semaines libres */
                     $dernierJourPlanning = $this->cal->dernierJourSemaine($dernier) + 86400 * 14;
                 endif;
-
             endif;
             $this->session->set_userdata('planningPersonnelsIds', $listePersonnel);
 
@@ -248,6 +293,7 @@ class Planning extends My_Controller {
             'premierJourPlanning' => $premierJourPlanning,
             'dernierJourPlanning' => $dernierJourPlanning,
             'nbSemainesPlanning' => $n,
+            'analyseRapide' => $this->analyseRapideActivite(),
             'title' => $this->session->userdata('rs') . '|Planning',
             'description' => 'Planning de votre activité',
             'content' => $this->viewFolder . __FUNCTION__

@@ -24,6 +24,10 @@ class Contacts extends My_Controller {
         endif;
     }
 
+    public function index() {
+        redirect('contacts/liste');
+    }
+
     public function liste() {
 
         $where = array();

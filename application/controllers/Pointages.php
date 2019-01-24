@@ -78,6 +78,10 @@ class Pointages extends My_Controller {
         $this->load->view('template/content', $data);
     }
 
+    public function index() {
+        redirect('pointages/heures');
+    }
+
     public function heures($semaine = null, $annee = null) {
         if (!$this->ion_auth->in_group(array(80, 81, 82))) :
             redirect('organibat/board');

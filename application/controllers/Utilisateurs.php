@@ -15,6 +15,10 @@ class Utilisateurs extends My_Controller {
         endif;
     }
 
+    public function index() {
+        redirect('personnels/liste');
+    }
+
     public function liste() {
 
         $utilisateurs = $this->managerUtilisateurs->getUtilisateurs();

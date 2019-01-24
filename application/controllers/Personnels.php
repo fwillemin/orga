@@ -15,6 +15,29 @@ class Personnels extends My_Controller {
         endif;
     }
 
+    public function index() {
+        redirect('personnels/liste');
+    }
+
+    /**
+     * Calcule la somme des heures hebdomadaire du personnel actif en fonction de l'horaire qui leur est attribué
+     */
+    private function getBaseHebdomadaire() {
+        $personnels = $this->managerPersonnels->getPersonnels(array('personnelActif' => 1));
+        $baseHebdomadaire = 0;
+        if (!empty($personnels)):
+            foreach ($personnels as $personnel):
+                $personnel->hydrateHoraire();
+                if (!empty($personnel->getPersonnelHoraire())):
+                    $baseHebdomadaire += $personnel->getPersonnelHoraire()->getHoraireTotal();
+                else:
+                    $baseHebdomadaire += 35;
+                endif;
+            endforeach;
+        endif;
+        return $baseHebdomadaire;
+    }
+
     public function liste() {
 
         $personnels = $this->managerPersonnels->getPersonnels();
@@ -112,6 +135,10 @@ class Personnels extends My_Controller {
                 $this->managerPersonnels->ajouter($personnel);
 
             endif;
+
+            $etablissement = $this->managerEtablissements->getEtablissementById($this->session->userdata('etablissementId'));
+            $etablissement->setEtablissementBaseHebdomadaire($this->getBaseHebdomadaire());
+            $this->managerEtablissements->editer($etablissement);
 
             echo json_encode(array('type' => 'success'));
 

@@ -923,7 +923,7 @@ $config = array(
         array(
             'field' => 'addContactCategorieId',
             'label' => 'Catégorie du contact',
-            'rules' => 'trim|callback_existCategorie'
+            'rules' => 'trim|required|callback_existCategorie'
         ),
         array(
             'field' => 'addContactSource',

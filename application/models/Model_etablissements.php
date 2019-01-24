@@ -30,6 +30,7 @@ class Model_etablissements extends MY_model {
                 ->set('etablissementMessage', $etablissement->getEtablissementMessage())
                 ->set('etablissementTauxFraisGeneraux', $etablissement->getEtablissementTauxFraisGeneraux())
                 ->set('etablissementTauxHoraireMoyen', $etablissement->getEtablissementTauxHoraireMoyen())
+                ->set('etablissementBaseHebdomadaire', $etablissement->getEtablissementBaseHebdomadaire())
                 ->insert($this->table);
         $etablissement->setEtablissementId($this->db->insert_id());
     }
@@ -55,6 +56,7 @@ class Model_etablissements extends MY_model {
                 ->set('etablissementMessage', $etablissement->getEtablissementMessage())
                 ->set('etablissementTauxFraisGeneraux', $etablissement->getEtablissementTauxFraisGeneraux())
                 ->set('etablissementTauxHoraireMoyen', $etablissement->getEtablissementTauxHoraireMoyen())
+                ->set('etablissementBaseHebdomadaire', $etablissement->getEtablissementBaseHebdomadaire())
                 ->where('etablissementId', $etablissement->getEtablissementId())
                 ->update($this->table);
         return $this->db->affected_rows();

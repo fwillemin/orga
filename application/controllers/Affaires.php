@@ -15,6 +15,10 @@ class Affaires extends My_Controller {
         endif;
     }
 
+    public function index() {
+        redirect('affaires/liste');
+    }
+
     private function analyseAffaire(Affaire $affaire) {
 
         /* Initialisation */

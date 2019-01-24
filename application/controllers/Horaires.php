@@ -15,6 +15,10 @@ class Horaires extends My_Controller {
         endif;
     }
 
+    public function index() {
+        redirect('horaires/liste');
+    }
+
     public function liste() {
 
         $horaires = $this->managerHoraires->getHoraires();

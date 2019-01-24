@@ -68,6 +68,22 @@ class Cal {
         return $dateFR;
     }
 
+    public function debutFinExercice($mois, $annee, $phase) {
+        if ($mois == 1):
+            if ($phase == 'debut'):
+                return mktime(0, 0, 0, 1, 1, $annee);
+            else:
+                return mktime(0, 0, 0, 12, 31, $annee);
+            endif;
+        else:
+            if ($phase == 'debut'):
+                return mktime(0, 0, 0, $mois, 1, $annee);
+            else:
+                return mktime(0, 0, 0, $mois - 1, date('t', mktime(0, 0, 0, $mois - 1, 1, $annee + 1)), $annee + 1);
+            endif;
+        endif;
+    }
+
     public function nbDemiEntreDates($debutDate, $debutMoment, $finDate, $finMoment) {
         if ($debutMoment == 2) {
             $nbDemiAffectation = 1;

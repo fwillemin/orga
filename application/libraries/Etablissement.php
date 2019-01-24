@@ -5,8 +5,10 @@
  * Manager : Model_Etablissements
  *
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
- */
-/*
+ *
+  ALTER TABLE `etablissements` ADD `etablissementBaseHebdomadaire` DECIMAL(6,2) NOT NULL COMMENT 'Nb h\'eures d\'une semaine. Somme des heures des horaires du personnel actif' AFTER `etablissementTauxHoraireMoyen`;
+
+  /*
 
  */
 class Etablissement {
@@ -14,6 +16,7 @@ class Etablissement {
     protected $etablissementId;
     protected $etablissementOriginId;
     protected $etablissementRsId;
+    protected $etablissementRs;
     protected $etablissementNom;
     protected $etablissementAdresse;
     protected $etablissementCp;
@@ -27,6 +30,7 @@ class Etablissement {
     protected $etablissementMessage;
     protected $etablissementTauxFraisGeneraux;
     protected $etablissementTauxHoraireMoyen;
+    protected $etablissementBaseHebdomadaire;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -40,6 +44,11 @@ class Etablissement {
             if (method_exists($this, $method))
                 $this->$method($value);
         endforeach;
+    }
+
+    public function hydrateRs() {
+        $CI = & get_instance();
+        $this->etablissementRs = $CI->managerRaisonsSociales->getRaisonSocialeById($this->etablissementRsId);
     }
 
     function getEtablissementId() {
@@ -168,6 +177,22 @@ class Etablissement {
 
     function setEtablissementTauxHoraireMoyen($etablissementTauxHoraireMoyen) {
         $this->etablissementTauxHoraireMoyen = $etablissementTauxHoraireMoyen;
+    }
+
+    function getEtablissementRs() {
+        return $this->etablissementRs;
+    }
+
+    function setEtablissementRs($etablissementRs) {
+        $this->etablissementRs = $etablissementRs;
+    }
+
+    function getEtablissementBaseHebdomadaire() {
+        return $this->etablissementBaseHebdomadaire;
+    }
+
+    function setEtablissementBaseHebdomadaire($etablissementBaseHebdomadaire) {
+        $this->etablissementBaseHebdomadaire = $etablissementBaseHebdomadaire;
     }
 
 }

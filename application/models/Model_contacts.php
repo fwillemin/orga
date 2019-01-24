@@ -77,7 +77,7 @@ class Model_contacts extends MY_model {
      * @param array $tri Critères de tri des raisonSociales
      * @return array Liste d'objets de la classe Contact
      */
-    public function getContacts($where = array(), $tri = 'contactEtat, contactDate DESC', $type = 'object') {
+    public function getContacts($where = array(), $tri = 'contactDate DESC', $type = 'object') {
         $query = $this->db->select('*')
                 ->from($this->table)
                 ->where('contactEtablissementId', $this->session->userdata('etablissementId'))

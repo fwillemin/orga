@@ -16,7 +16,7 @@ class Model_fournisseurs extends MY_model {
     public function ajouter(Fournisseur $fournisseur) {
         $this->db
                 ->set('fournisseurOriginId', $fournisseur->getFournisseurOriginId())
-                ->set('fournisseurEtablissementId', !empty($fournisseur->getFournisseurEtablissementId()) ?: $this->session->userdata('etablissementId'))
+                ->set('fournisseurEtablissementId', $fournisseur->getFournisseurEtablissementId())
                 ->set('fournisseurNom', $fournisseur->getFournisseurNom())
                 ->set('fournisseurAdresse', $fournisseur->getFournisseurAdresse())
                 ->set('fournisseurCp', $fournisseur->getFournisseurCp())
