@@ -24,17 +24,17 @@
 </div>
 
 <script defer type="text/javascript" src="<?= base_url('assets/js/jquery.min.js'); ?>"></script>
+
 <!--Gestion des dépendances pour JS-->
-<script defer type="text/javascript" src="<?= base_url('assets/js/script.min.js'); ?>"></script>
+<!--<script defer type="text/javascript" src="<?= base_url('assets/js/script.min.js'); ?>"></script>-->
 
-
-<script defer type="text/javascript" src="<?= base_url('assets/jqueryConfirm/jquery-confirm.min.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/popper.min.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap.bundle.min.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-select.min.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/toaster.js'); ?>"></script>
 
 <?php if ($this->ion_auth->logged_in()): ?>
+    <script defer type="text/javascript" src="<?= base_url('assets/jqueryConfirm/jquery-confirm.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/MegaNavbarBS4/assets/js/MegaNavbarBS4.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/dataTable/datatables.min.js'); ?>"></script>
 
@@ -42,6 +42,8 @@
     <script defer type="text/javascript" src="<?= base_url('assets/js/bootstrap-datepicker.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/js/chartjs.bundle.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/js/chartjs-plugin-annotation.min.js'); ?>"></script>
+    <!--Gestion des affichages de cartes (A importer même si pas de carte, il gère seul-->
+    <script defer type="text/javascript" src="<?= base_url('assets/js/map.js'); ?>"></script>
     <?php
 endif;
 if ($this->uri->segment(1) === 'planning' || $this->uri->segment(1) === 'heures'):
@@ -52,8 +54,6 @@ if ($this->uri->segment(1) === 'planning' || $this->uri->segment(1) === 'heures'
 <script defer type="text/javascript" src="<?= base_url('assets/js/organibat.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/' . $this->uri->segment(1) . '.js'); ?>"></script>
 
-<!--Gestion des affichages de cartes (A importer même si pas de carte, il gère seul-->
-<script defer type="text/javascript" src="<?= base_url('assets/js/map.js'); ?>"></script>
 
 </body>
 </html>

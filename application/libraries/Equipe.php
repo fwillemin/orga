@@ -7,6 +7,8 @@
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  */
 /*
+  ALTER TABLE `equipes` ADD `equipeCouleur` VARCHAR(7) NOT NULL DEFAULT '#000000' AFTER `equipeNom`;
+  ALTER TABLE `equipes` ADD `equipeCouleurSecondaire` VARCHAR(7) NOT NULL DEFAULT '#FEFEFE' AFTER `equipeCouleur`;
 
  */
 class Equipe {
@@ -14,6 +16,8 @@ class Equipe {
     protected $equipeId;
     protected $equipeEtablissementId;
     protected $equipeNom;
+    protected $equipeCouleur;
+    protected $equipeCouleurSecondaire;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -51,6 +55,22 @@ class Equipe {
 
     function setEquipeNom($equipeNom) {
         $this->equipeNom = $equipeNom;
+    }
+
+    function getEquipeCouleur() {
+        return $this->equipeCouleur;
+    }
+
+    function getEquipeCouleurSecondaire() {
+        return $this->equipeCouleurSecondaire;
+    }
+
+    function setEquipeCouleur($equipeCouleur) {
+        $this->equipeCouleur = $equipeCouleur;
+    }
+
+    function setEquipeCouleurSecondaire($equipeCouleurSecondaire) {
+        $this->equipeCouleurSecondaire = $equipeCouleurSecondaire;
     }
 
 }

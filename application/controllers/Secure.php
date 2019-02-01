@@ -24,7 +24,7 @@ class Secure extends CI_Controller {
             'description' => 'Saississez vos identifiants pour accèder à la console.',
             'content' => $this->viewFolder . '/' . __FUNCTION__
         );
-        $this->load->view('template/content', $data);
+        $this->load->view('template/contentShowroom', $data);
     }
 
     public function tryLogin() {

@@ -35,7 +35,7 @@ class Organibat extends My_Controller {
 
     public function deconnexion() {
         $this->ion_auth->logout();
-        redirect('secure/login');
+        redirect('acces-client');
     }
 
     public function noway() {

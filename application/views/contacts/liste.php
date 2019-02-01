@@ -34,7 +34,7 @@
                         echo '<tr class="ligneClikable" data-contactid="' . $contact->getContactId() . '">'
                         . '<td><b>' . $this->cal->dateFrancais($contact->getContactDate(), 'jDma') . '</b><br>' . $contact->getContactModeText() . '<br>' . $contact->getContactSourceText() . '</td>'
                         . '<td>' . $contact->getContactNom() . '<br>' . $contact->getContactAdresse() . ', ' . $contact->getContactVille() . '<br>Téléphone : ' . $contact->getContactTelephone() . '<br>' . $contact->getContactEmail() . '</td>'
-                        . '<td><em>' . $contact->getContactCategorie()->getCategorieNom() . '</em><br>' . $contact->getContactObjet() . '</td>'
+                        . '<td><em>' . ($contact->getContactCategorie() ? $contact->getContactCategorie()->getCategorieNom() : 'Non classé') . '</em><br>' . $contact->getContactObjet() . '</td>'
                         . '<td style="text-align: center;"><select class="selectpicker changeContactEtat">'
                         . '<option value="1" ' . ($contact->getContactEtat() == 1 ? 'selected' : '') . ' data-content="<span class=\'badge badge-light\'>Non traité</span>">Non traité</option>'
                         . '<option value="2" ' . ($contact->getContactEtat() == 2 ? 'selected' : '') . ' data-content="<span class=\'badge badge-warning\'>Sans suite</span>">Sans suite</option>'

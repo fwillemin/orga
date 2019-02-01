@@ -51,5 +51,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   |		my-controller/my-method	-> my_controller/my_method
  */
 $route['default_controller'] = 'showroom';
-$route['404_override'] = 'organibat/noway';
+$route['404_override'] = 'showroom/noway';
+$route['essai-gratuit-logiciel-gestion-chantier'] = 'showroom/inscription';
+$route['acces-client'] = 'secure/login';
+$route['planifier-ses-chantier-un-petit-effort-organisation-pour-une-meilleure-visibilite'] = 'showroom/articlePlanifier';
+$route['logiciel-de-gestion-de-chantier-en-local-ou-en-ligne'] = 'showroom/localOuSaas';
+$route['tarifs'] = 'showroom/tarifs';
 $route['translate_uri_dashes'] = FALSE;

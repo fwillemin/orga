@@ -9,8 +9,14 @@ and open the template in the editor.
 */
 @import "compass";
 @import "_variables";
+$hauteurFooter : 170;
 
 @media screen {
+
+    html, body {
+        height: 100%;
+    }
+
     body {
         background-color: lighten($background, 30);
         font-family: 'Ubuntu', sans-serif;
@@ -69,77 +75,88 @@ and open the template in the editor.
     }
     #contenu {
         position: relative;
+        min-height: 100%;  
+        margin-bottom: unquote( '-' + $hauteurFooter + 'px ' );
+/*        & a {            
+            color: #45acf8;
+        }*/
+    }
+    #contenu:after {
+        content: "";
+        display: block;
     }
     .cadre {
-        border: 1px solid #5b5d6e;
-        background-color: #efefee;
-        color: #e3a149;
+        border: none;
+        color: #5b5d6e;
         padding:10px;
-        text-align: center;
-        font-size:14px;
-        & .fas {
-            font-size:30px;
-            color: #5b5d6e;
-        }
-        margin-bottom:10px;
-        @include border-radius(4px, 4px);
-    }
-
-}
-@media screen and (max-width:770px) {
-    #videoAccueil {
-        top:200px; 
-        height : 200px;
-    }
-#contenu {
-        padding-top:100px;
-    }
-}
-@media screen and (min-width:771px) {
-    #videoAccueil {
-        top:180px;     
-        height: 210px;
-    }
-    #contenu {
-        padding-top:110px;
-    }
-}
-@media screen and (min-width:1000px) {
-    #videoAccueil {
-        top:220px;     
-        height: 240px;
-    }
-    #contenu {
-        padding-top:130px;
-    }    
-}
-@media screen and (min-width:1200px) {
-    .cadre {
-        font-size:22px;
+        text-align: center;        
         & .fas {
             font-size:50px;
+            color: #5b5d6e;
+        }
+        margin:0px;
+    }
+    #imgEnteteLg, #imgEnteteSm {
+        width: 100%;
+        position: relative;        
+        margin-left: 50%;
+        transform: translateX(-50%);
+    }
+    #imgEnteteLg {
+        min-width: 700px;
+    }
+    #imgEnteteSm {
+        min-width: 300px;
+    }
+
+    #footer {
+        background-color: $noir; 
+        position:relative;
+        border-bottom: 1px solid white;
+        //min-height: unquote($hauteurFooter + 'px');  
+        color: #cccccc;
+        & a {            
+            color: #fafafa;
+        }
+        & i {            
+            margin: 0px 8px;
         }
     }
+    #footer, #contenu:after {
+        min-height: unquote($hauteurFooter + 'px'); 
+    }
+    .formloader {
+        display: none;
+        i {
+            color: $noir;
+            opacity : 0.6;
+        }
+    }
+    
+    @media screen and (max-width:649px) {
+        #imgEnteteLg{
+            display: none;
+        }
+        #imgEnteteSm{
+            display: block;
+        }
+        #cadre {
+            font-size:15px;
+        }
+    }
+    @media screen and (min-width:650px) {
+        #imgEnteteLg{
+            display: block;
+        }
+        #imgEnteteSm{
+            display: none;
+        }
+        #cadre {
+            font-size:25px;
+        }
+        #sectionTarif {
+            border-left: 1px dashed grey;
+        }
+    }
+
 }
-@media screen and (min-width:1400px) {
-    #videoAccueil {
-        top:240px;     
-        height: 300px;
-    }
-    #contenu {
-        padding-top:90px;
-    }
-}
-@media screen and (min-width:1600px) {
-    #videoAccueil {
-        top:270px;     
-        height: 300px;
-    }
-    #contenu {
-        padding-top:60px;
-    }
-}
-
-
-
-

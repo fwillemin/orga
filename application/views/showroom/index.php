@@ -1,102 +1,107 @@
+<div id="animation">
+    <?php include('application/views/template/animation.php'); ?>
+</div>
 <div class="container-fluid" id="entete">
-    <img src="<?= base_url('assets/img/wallpaper1.jpg'); ?>" width="100%" style="position: relative; min-width: 700px;margin-left: 50%;transform: translateX(-50%);">
-    <iframe id="videoAccueil" src="https://www.youtube.com/embed/mG8FRKta-CU?controls=0&showinfo=0" frameborder="0"></iframe>
+    <img src="<?= base_url('assets/img/wallpaper2.jpg'); ?>" id="imgEnteteLg" alt="image de planification de chantier" alt="ordinateur avec le logiciel Organibat">
+    <img src="<?= base_url('assets/img/wallpaper2_small.jpg'); ?>" style="" id="imgEnteteSm" alt="image de planification de chantier" alt="ordinateur avec le logiciel Organibat">
 </div>
 <div class="container fond" id="contenu">
     <div class="row">
         <div class="col" style="font-size:18px;">
+            <h1 style="font-size:36px; margin-top:15px;">Logiciel en ligne de suivi de chantier</h1>
             <b>Organibat</b> est un outil en ligne qui permet de gérer vos chantiers que vous soyez dans le secteur du bâtiment, de la maintenance ou encore de l'entretien.
-            <br>Sans installation, il fonctionne sur PC, Mac et Linux, directement dans votre navigateur internet. Vous démarrez en 5 minutes !
+            <br>Sans installation, il fonctionne sur PC, Mac et Linux, directement dans votre navigateur internet.
+            <br><a href="<?= site_url('essai-gratuit-logiciel-gestion-chantier'); ?>"><b>Vous démarrez en 5 minutes !</b></a>
             <br>
             <br>
         </div>
     </div>
     <div class="row" style="margin-bottom:10px;">
-
-        <div class="col-lg-4 col-6">
-            <div class="cadre">
-                <i class="fas fa-calendar-alt"></i>
-                <br>Planifiez vos chantiers simplement et rapidement
+        <div class="col-12 col-md-7">
+            <h2>Principales fonctionnalités</h2>
+            <br>
+            <div class="row">
+                <div class="col-6">
+                    <div class="cadre">
+                        <i class="fas fa-calendar-alt"></i>
+                        <br>Planifiez vos chantiers
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="cadre">
+                        <i class="fas fa-chart-line"></i>
+                        <br>Analysez votre activité
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="cadre">
+                        <br><i class="fas fa-truck"></i>
+                        <br>Suivez les livraisons de vos fournisseurs
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="cadre">
+                        <br><i class="fas fa-clock"></i>
+                        <br>Générez les feuilles de pointages
+                    </div>
+                </div>
+                <div class="col-12" style="text-align: center;">
+<!--                    <a href="<?= site_url('description-organibat-gestion-planning-intervention'); ?>" class="btn btn-link">
+                        En savoir plus sur le logiciel Organibat
+                    </a>-->
+                    <br>
+                    <br>
+                </div>
             </div>
         </div>
-
-        <div class="col-lg-4 col-6">
-            <div class="cadre">
-                <i class="fas fa-clock"></i>
-                <br>Générez automatiquement les feuilles de pointages
+        <div class="col-12 col-md-5" id="sectionTarif">
+            <h3><a href="<?= site_url('tarifs'); ?>">Tarifs</a></h3>
+            <div class="col-12" style="text-align: center; padding-right: 10px;">
+                <br>
+                <span style="font-size:68px; color: steelblue; font-weight: bold;">
+                    39</span>
+                <span style="font-size:18px;">€HT</span>
+                <br>
+                <span style="font-size:16px; position: relative; top: -15px;">par mois</span>
             </div>
-        </div>
-
-        <div class="col-lg-4 col-6">
-            <div class="cadre">
-                <i class="fas fa-phone"></i>
-                <br>Enregistrez et suivez les contacts clients
+            <div class="col-12">
+                Incluant :
+                <ul>
+                    <li>Connexions simultanées illimitées</li>
+                    <li>5 licences ouvriers</li>
+                    <li>Aucun frais d'hébergement</li>
+                    <li>Aucun frais d'installation</li>
+                    <li>Aucun frais de mise à niveau</li>
+                    <li>Paramètrages et formations gratuits*</li>
+                </ul>
+                <div class="col-12 text-center">
+                    <a href="<?= site_url('essai-gratuit-logiciel-gestion-chantier'); ?>" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Créer mon compte gratuitement<br><span style="color:gold;">1 mois offert sans restriction</span>
+                    </a>
+                </div>
+                <br>
             </div>
-        </div>
-        <div class="col-lg-4 col-6">
-            <div class="cadre">
-                <i class="fas fa-truck"></i>
-                <br>Suivez les livraisons de vos fournisseurs
-            </div>
-        </div>
-        <div class="col-lg-4 col-6">
-            <div class="cadre">
-                <i class="fas fa-chart-line"></i>
-                <br>Analysez votre activité
-                <br>Chiffre, marge, ...
-            </div>
-        </div>
-        <div class="col-lg-4 col-6">
-            <div class="cadre">
-                <i class="fas fa-cloud"></i>
-                <br>Aucune installation
-                <br><i class="fab fa-microsoft"></i>
-                <i class="fab fa-apple"></i>
-                <i class="fab fa-linux"></i>
-            </div>
-        </div>
-        <div class="col-12" style="text-align: center;">
-            <a href="<?= site_url('description-organibat-gestion-planning-intervention'); ?>" class="btn btn-link">
-                En savoir plus sur le logiciel Organibat
-            </a>
         </div>
     </div>
-    <div class="row">.
+    <div class="row" style="margin-top: 15px;">
         <div class="col-12">
-            <h3>Tarifs</h3>
+            <h4>Informations</h4>
         </div>
-        <div class="col-12 col-lg-3" style="text-align: center; padding-right: 10px;">
-            <br>
-            <span style="font-size:48px; color: steelblue; font-weight: bold;">
-                39</span>
-            <span style="font-size:18px;">€HT</span>
-            <br>
-            <span style="font-size:16px; position: relative; top: -15px;">par mois</span>
+    </div>
+    <div class="row" style="margin-bottom: 15px;">
+        <div class="col-12 col-sm-2" style="padding:3px;">
+            <img src="<?= base_url('assets/img/organiser-ses-chantiers.jpg'); ?>" style="width:100%; border:1px solid grey;" alt="Personnes en réunion de chantier">
         </div>
-        <div class="col-12 col-lg-4">
-            Incluant :
-            <ul>
-                <li>Connexions simultanées illimitées</li>
-                <li>5 licences ouvriers</li>
-                <li>Aucun frais d'hébergement</li>
-                <li>Aucun frais d'installation</li>
-                <li>Aucun frais de mise à niveau</li>
-                <li>Paramètrages et formations gratuits*</li>
-            </ul>
+        <div class="col-12 col-sm-4">
+            <a href="<?= site_url('planifier-ses-chantier-un-petit-effort-organisation-pour-une-meilleure-visibilite'); ?>"><h7>Planifier ses chantiers, un petit effort d'organisation pour une meilleure visibilité.</h7></a>
+            <br><small>Rédigé le 16 décembre 2018 - François W.</small>
         </div>
-        <div class="col-12 col-lg-5">
-            Non inclus :
-            <ul>
-                <li>Licence 10 ouvriers supplémentaires (25€HT)</li>
-                <li>SMS envoyés depuis Organibat</li>
-            </ul>
-            <br>
-            <br>
-            <br>
-            <br>
-            <a href="https://www.organibat.com/inscription" class="btn btn-primary" style="position:absolute; bottom:0px; left:50%; transform: translate(-50%, -50%); ">
-                <i class="fas fa-edit"></i> Créer mon compte gratuitement<br><span style="color:gold;">1 mois offert sans restriction</span>
-            </a>
+        <div class="col-12 col-sm-2" style="padding:3px;">
+            <img src="<?= base_url('assets/img/cloud-vs-local.png'); ?>" style="width:100%; border:1px solid grey;" alt="Personnages interrogatifs devant le cloud">
+        </div>
+        <div class="col-12 col-sm-4">
+            <a href="<?= site_url('logiciel-de-gestion-de-chantier-en-local-ou-en-ligne'); ?>"><h7>Logiciel traditionnel ou en ligne ? Quelles différences pour quels impacts ?</h7></a>
+            <br><small>Rédigé le 21 janvier 2019 - François W.</small>
         </div>
     </div>
 </div>

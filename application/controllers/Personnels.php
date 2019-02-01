@@ -161,7 +161,7 @@ class Personnels extends My_Controller {
             endif;
         endif;
 
-        $personnels = $this->managerPersonnels->getPersonnels(array('personnelActif' => 1), 'personnelEquipeId');
+        $personnels = $this->managerPersonnels->getPersonnels(array('personnelActif' => 1), '(-personnelEquipeId) DESC, personnelNom ASC');
         if (!empty($personnels)):
             foreach ($personnels as $personnel) {
                 $personnel->hydrateEquipe();
@@ -194,11 +194,17 @@ class Personnels extends My_Controller {
 
             $equipe = $this->managerEquipes->getEquipeById($this->input->post('addEquipeId'));
             $equipe->setEquipeNom(strtoupper($this->input->post('addEquipeNom')));
+            $equipe->setEquipeCouleur($this->input->post('addEquipeCouleur'));
+            $equipe->setEquipeCouleurSecondaire($this->couleurSecondaire($this->input->post('addEquipeCouleur')));
             $this->managerEquipes->editer($equipe);
 
         else:
 
-            $arrayEquipe = array('equipeNom' => strtoupper($this->input->post('addEquipeNom')));
+            $arrayEquipe = array(
+                'equipeNom' => strtoupper($this->input->post('addEquipeNom')),
+                'equipeCouleur' => $this->input->post('addEquipeCouleur'),
+                'equipeCouleurSecondaire' => $this->couleurSecondaire($this->input->post('addEquipeCouleur'))
+            );
             $equipe = new Equipe($arrayEquipe);
             $this->managerEquipes->ajouter($equipe);
 

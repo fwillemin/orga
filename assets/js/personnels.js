@@ -35,6 +35,11 @@ $(document).ready(function () {
         }
     });
 
+    $('#addEquipeCouleur').colorpicker({
+        format: 'auto',
+        useAlpha: false
+    });
+
 //    console.log(window.location.pathname);
 //    if (window.location.pathname == '/organibat2/index.php/personnels/liste/ajouter') {
 //        $('#modalAddPersonnel').modal('show');
@@ -103,7 +108,7 @@ $(document).ready(function () {
             confirm: {
                 btnClass: 'btn-green',
                 text: 'Supprimer',
-                action: function () {                    
+                action: function () {
                     $.post(chemin + 'personnels/delEquipe', {equipeId: $('#addEquipeId').val()}, function (retour) {
                         switch (retour.type) {
                             case 'error':
@@ -136,14 +141,14 @@ $(document).ready(function () {
             }
         }, 'json');
     });
-    
+
     $('#tableTauxHoraires').on('click', 'tbody tr', function () {
         window.location.assign(chemin + 'personnels/fichePersonnel/' + $('#addPersonnelId').val() + '/' + $(this).attr('data-tauxhoraireid'));
     });
-    
+
     $('#formAddTauxHoraire').on('submit', function (e) {
         e.preventDefault();
-        var donnees = $(this).serialize();        
+        var donnees = $(this).serialize();
         $.post(chemin + 'personnels/addTauxHoraire', donnees, function (retour) {
             switch (retour.type) {
                 case 'error':
@@ -155,7 +160,7 @@ $(document).ready(function () {
             }
         }, 'json');
     });
-    
+
     $('#btnDelTauxHoraire').confirm({
         title: 'On supprime ce taux horaire ?',
         content: 'Cela aura un impact sur les calculs de rentabilité des affaires.',
@@ -165,7 +170,7 @@ $(document).ready(function () {
             confirm: {
                 btnClass: 'btn-green',
                 text: 'Supprimer',
-                action: function () {                    
+                action: function () {
                     $.post(chemin + 'personnels/delTauxHoraire', {tauxHoraireId: $('#addTauxHoraireId').val()}, function (retour) {
                         switch (retour.type) {
                             case 'error':

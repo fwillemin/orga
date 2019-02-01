@@ -1,0 +1,50 @@
+SetEnv PHP_VER 7
+SetEnv REGISTER_GLOBALS 0
+
+RewriteEngine on
+RewriteBase /
+
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://www.organibat.com/$1 [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
+
+<IfModule mod_headers.c>
+  # Mise en cache des images et autres fichier statiques pour un mois
+  <FilesMatch ".(ico|jpe?g|png|gif|swf|flv|css|js|gz|pdf)$">
+   Header set Cache-Control "max-age=2592000"
+  </FilesMatch>
+
+  # Mise en cache du html et xml pour 12 heures
+  <filesMatch ".(xml)$">
+   Header set Cache-Control "max-age=43200"
+  </filesMatch>
+
+  # Désactive la mise en cache pour les fichier PHP et CGI
+  <FilesMatch ".(html|htm|php|cgi)$">
+   Header unset Cache-Control
+  </FilesMatch>
+</IfModule>
+#
+#<IfModule mod_expires.c>
+#ExpiresActive on
+#ExpiresDefault "access plus 1 month"
+#ExpiresByType image/x-icon "access plus 1 month"
+#ExpiresByType image/gif "access plus 1 month"
+#ExpiresByType image/png "access plus 1 month"
+#ExpiresByType image/jpg "access plus 1 month"
+#ExpiresByType image/jpeg "access plus 1 month"
+#ExpiresByType text/x-component "access plus 1 month"
+#ExpiresByType font/truetype "access plus 1 month"
+#ExpiresByType font/opentype "access plus 1 month"
+#ExpiresByType application/x-font-woff "access plus 1 month"
+#ExpiresByType application/vnd.ms-fontobject "access plus 1 month"
+#ExpiresByType text/css "access plus 1 month"
+#ExpiresByType application/javascript "access plus 1 month"
+#ExpiresByType text/javascript "access plus 1 month"
+#ExpiresByType text/js "access plus 1 month"
+#ExpiresByType application/x-javascript "access plus 1 year"
+#</IfModule>

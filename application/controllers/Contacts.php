@@ -67,7 +67,7 @@ class Contacts extends My_Controller {
                     $contact->setContactVille($this->input->post('addContactVille'));
                     $contact->setContactTelephone($this->input->post('addContactTelephone'));
                     $contact->setContactEmail($this->input->post('addContactEmail'));
-                    $contact->setContactCategorieId($this->input->post('addContactCategorieId'));
+                    $contact->setContactCategorieId($this->input->post('addContactCategorieId') ?: null);
                     $contact->setContactCommercialId($this->input->post('addContactCommercialId'));
                     $contact->setContactObjet($this->input->post('addContactObjet'));
                     $this->managerContacts->editer($contact);
@@ -84,7 +84,7 @@ class Contacts extends My_Controller {
                         'contactCp' => $this->input->post('addContactCp'),
                         'contactVille' => $this->input->post('addContactVille'),
                         'contactObjet' => $this->input->post('addContactObjet'),
-                        'contactCategorieId' => $this->input->post('addContactCategorieId'),
+                        'contactCategorieId' => $this->input->post('addContactCategorieId') ?: null,
                         'contactTelephone' => $this->input->post('addContactTelephone'),
                         'contactEmail' => $this->input->post('addContactEmail'),
                         'contactCommercialId' => $this->input->post('addContactCommercialId'),

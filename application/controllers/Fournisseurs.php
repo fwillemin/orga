@@ -39,18 +39,19 @@ class Fournisseurs extends My_Controller {
         if (!$fournisseurId || !$this->existFournisseur($fournisseurId)):
             log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Fournisseur introuvable');
             redirect('fournisseurs/listeFst');
+        else:
+
+            $fournisseur = $this->managerFournisseurs->getFournisseurById($fournisseurId);
+            $fournisseur->hydrateAchats();
+
+            $data = array(
+                'fournisseur' => $fournisseur,
+                'title' => $fournisseur->getFournisseurNom(),
+                'description' => 'Fiche du fournisseur ' . $fournisseur->getFournisseurNom(),
+                'content' => $this->viewFolder . '/' . __FUNCTION__
+            );
+            $this->load->view('template/content', $data);
         endif;
-
-        $fournisseur = $this->managerFournisseurs->getFournisseurById($fournisseurId);
-        $fournisseur->hydrateAchats();
-
-        $data = array(
-            'fournisseur' => $fournisseur,
-            'title' => $fournisseur->getFournisseurNom(),
-            'description' => 'Fiche du fournisseur ' . $fournisseur->getFournisseurNom(),
-            'content' => $this->viewFolder . '/' . __FUNCTION__
-        );
-        $this->load->view('template/content', $data);
     }
 
     public function addFournisseur() {

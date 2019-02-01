@@ -65,7 +65,7 @@ $autoload['packages'] = array();
 $autoload['libraries'] = array('session', 'database', 'form_validation', 'email', 'ion_auth', 'own',
     'raisonSociale', 'etablissement', 'Utilisateur', 'Horaire', 'Personnel', 'Equipe', 'TauxHoraire', 'Client', 'Maps', 'Place',
     'Affaire', 'Categorie', 'Chantier', 'Achat', 'Parametre', 'Affectation', 'Cal', 'Heure', 'Fournisseur'
-    , 'Livraison', 'Indisponibilite', 'Motif', 'Pointage', 'Contact'
+    , 'Livraison', 'Indisponibilite', 'Motif', 'Pointage', 'Contact', 'Mail'
 );
 
 

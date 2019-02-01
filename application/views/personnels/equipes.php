@@ -13,6 +13,7 @@
                 <input type="hidden" name="addEquipeId" id="addEquipeId" value="<?= !empty($equipe) ? $equipe->getEquipeId() : ''; ?>">
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" placeholder="Nom d'équipe" name="addEquipeNom" id="addEquipeNom"  value="<?= !empty($equipe) ? $equipe->getEquipeNom() : ''; ?>">
+                    <input type="text" class="form-control" name="addEquipeCouleur" id="addEquipeCouleur"  value="<?= !empty($equipe) ? $equipe->getEquipeCouleur() : ''; ?>" style="color:<?= !empty($equipe) ? $equipe->getEquipeCouleurSecondaire() : ''; ?>; background-color: <?= !empty($equipe) ? $equipe->getEquipeCouleur() : ''; ?>;">
                     <div class="input-group-append">
                         <button class="btn btn-outline-primary" type="submit" id="btnSubmitFormEquipe"><?= !empty($equipe) ? '<i class="fas fa-edit"></i>' : '<i class="fas fa-plus-square"></i>'; ?></button>
                         <?php if (!empty($equipe)): ?>

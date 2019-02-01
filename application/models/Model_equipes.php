@@ -17,6 +17,8 @@ class Model_equipes extends MY_model {
         $this->db
                 ->set('equipeEtablissementId', $this->session->userdata('etablissementId'))
                 ->set('equipeNom', $equipe->getEquipeNom())
+                ->set('equipeCouleur', $equipe->getEquipeCouleur())
+                ->set('equipeCouleurSecondaire', $equipe->getEquipeCouleurSecondaire())
                 ->insert($this->table);
         $equipe->setEquipeId($this->db->insert_id());
     }
@@ -29,6 +31,8 @@ class Model_equipes extends MY_model {
     public function editer(Equipe $equipe) {
         $this->db
                 ->set('equipeNom', $equipe->getEquipeNom())
+                ->set('equipeCouleur', $equipe->getEquipeCouleur())
+                ->set('equipeCouleurSecondaire', $equipe->getEquipeCouleurSecondaire())
                 ->where('equipeId', $equipe->getEquipeId())
                 ->update($this->table);
         return $this->db->affected_rows();

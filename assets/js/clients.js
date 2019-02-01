@@ -63,7 +63,7 @@ $(document).ready(function () {
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
                     break;
                 case 'success':
-                    window.location.reload();
+                    window.location.assign(chemin + '/clients/ficheClient/' + retour.client.clientId);
                     break;
             }
         }, 'json');

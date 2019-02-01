@@ -14,7 +14,6 @@
                     <td>Adresse</td>
                     <td style="text-align: center;">Téléphone</td>
                     <td style="text-align: center;">Email</td>
-                    <td>Actuellement</td>
                 </tr>
             </thead>
             <tbody>
@@ -26,7 +25,7 @@
                         . '<td>' . $fournisseur->getFournisseurAdresse() . ' ' . $fournisseur->getFournisseurVille() . '</td>'
                         . '<td>' . $fournisseur->getFournisseurTelephone() . '</td>'
                         . '<td>' . $fournisseur->getFournisseurEmail() . '</td>'
-                        . '<td></td></tr>';
+                        . '</tr>';
                     endforeach;
                     unset($fournisseur);
                 endif;

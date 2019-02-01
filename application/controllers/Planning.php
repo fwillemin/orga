@@ -93,14 +93,20 @@ class Planning extends My_Controller {
                 $affaire->hydrateChantiers();
                 foreach ($affaire->getAffaireChantiers() as $chantier):
                     if ($chantier->getChantierEtat() == 1):
-                        $nbHeuresPlannifiees += $chantier->getChantierHeuresPlanifiees() - $chantier->getChantierHeuresPointees();
+                        $nbHeuresPlannifiees += max(array($chantier->getChantierHeuresPlanifiees() - $chantier->getChantierHeuresPointees(), 0));
                     endif;
                 endforeach;
 
             endforeach;
             unset($affaire);
         endif;
-        return array('nbAffairesEncours' => $nbEncours, 'caEncours' => $caEncours, 'nbAffairesCloses' => $nbClos, 'caClos' => $caClos, 'nbHeuresPlannifiees' => $nbHeuresPlannifiees);
+
+        if ($this->session->userdata('etablissementBaseHebdomadaire') > 0):
+            $charge = round($nbHeuresPlannifiees / $this->session->userdata('etablissementBaseHebdomadaire'), 1);
+        else:
+            $charge = 'NC';
+        endif;
+        return array('nbAffairesEncours' => $nbEncours, 'caEncours' => $caEncours, 'nbAffairesCloses' => $nbClos, 'caClos' => $caClos, 'nbHeuresPlannifiees' => $nbHeuresPlannifiees, 'chargeSemaines' => $charge);
     }
 
     /**
@@ -124,11 +130,11 @@ class Planning extends My_Controller {
         /* Le dernier jour du planning est le premier jour auquel on additionne
          * les semaines avant et apres la dateFocus et la derniere semaine en cours
          */
-//        if ($debut > date('Y-m-d')):
-//            $dernierJourPlanning = null;
-//        else:
-        $dernierJourPlanning = $premierJourPlanning + (1 + $this->nbSemainesAvant + $this->nbSemainesApres) * 604800;
-//        endif;
+        if ($debut >= date('Y-m-d')):
+            $dernierJourPlanning = null;
+        else:
+            $dernierJourPlanning = $premierJourPlanning + (1 + $this->nbSemainesAvant + $this->nbSemainesApres) * 604800;
+        endif;
 
         /* Récuperation des données */
         $personnelsActifs = $this->managerPersonnels->getPersonnels(array('personnelActif' => 1), 'personnelEquipeId DESC, personnelNom, personnelPrenom ASC');
@@ -187,6 +193,8 @@ class Planning extends My_Controller {
 
                 endforeach;
                 unset($affectation);
+
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . date('d/m/Y', $dernier));
 
                 /* Mise à jour des variables du planning */
                 if ($dernierJourPlanning):

@@ -163,7 +163,10 @@ class Migration extends My_Controller {
                 'etablissementAffaireDiversId' => $etaOLD->id_chantier_divers,
                 'etablissementMessage' => $etaOLD->msg,
                 'etablissementTauxFraisGeneraux' => $etaOLD->fraisGeneraux,
-                'etablissementTauxHoraireMoyen' => $etaOLD->txHoraireMoyen
+                'etablissementTauxHoraireMoyen' => $etaOLD->txHoraireMoyen,
+                'etablissementBaseHebdomadaire' => 0,
+                'etablissementExpiration' => 0,
+                'etablissementLimiteActifs' => 5
             );
             $etablissement = new Etablissement($arrayEta);
             $this->managerEtablissements->ajouter($etablissement);
@@ -459,7 +462,8 @@ class Migration extends My_Controller {
                 'personnelCode' => $perso->code,
                 'personnelHoraireId' => $horaire ? $horaire->getHoraireId() : null,
                 'personnelPointages' => $horaire ? 2 : 1,
-                'personnelEquipeId' => null
+                'personnelEquipeId' => null,
+                'personnelType' => 1
             );
             $personnel = new Personnel($arrayPersonnel);
             $this->managerPersonnels->ajouter($personnel);

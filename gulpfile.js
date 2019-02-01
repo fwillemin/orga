@@ -23,6 +23,6 @@ gulp.task('watch', function () {
     livereload.listen();
 
     gulp.watch(['assets/styles/scss/*.scss'], ['compass']);
-    gulp.watch(['application/**/*.php', 'assets/js/*.js', 'assets/css/*.css', '!application/logs/*.php'], function(){ gulp.src(['application/**/*.php', 'assets/js/*.js', 'assets/css/*.css', '!application/logs/*.php']).pipe(livereload())});
+    gulp.watch(['!node_modules/**/*.*','application/**/*.php', 'assets/js/*.js', 'assets/css/*.css', '!application/logs/*.php'], function(){ gulp.src(['!node_modules/**/*.*','application/**/*.php', 'assets/js/*.js', 'assets/css/*.css', '!application/logs/*.php']).pipe(livereload())});
 
 });

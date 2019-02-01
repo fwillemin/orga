@@ -7,7 +7,7 @@
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  */
 /*
-
+  ALTER TABLE `chantiers` ADD `chantierDeltaHeures` DECIMAL(6,2) AS (chantierHeuresPointees - chantierHeuresPrevues) VIRTUAL COMMENT 'Heures pointées - heures prévues' AFTER `chantierBudgetPrevisionnel`, ADD `chantierPerformanceHeures` DECIMAL(10,1) AS (round((((`chantierHeuresPointees` - `chantierHeuresPrevues`) / `chantierHeuresPrevues`) * 100),1)) VIRTUAL COMMENT '% de gain/perte des heures pointées par rapport aux heures prévues' AFTER `chantierDeltaHeures`;
  */
 class Chantier {
 
@@ -40,6 +40,9 @@ class Chantier {
     protected $chantierBudgetConsomme; /* Somme des achats réalisés */
     protected $chantierheuresPlanifiees; /* Somme des heures plannifiées */
     protected $chantierheuresPointees; /* Somme des heures pointées */
+    /* VIRTUAL  - Uniquement des Getters */
+    protected $chantierDeltaHeures; /* heures pointees - heures prévues */
+    protected $chantierPerfomanceHeures; /* % de gain/perte des heures pointées par rapport aux heures prévues */
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -336,6 +339,14 @@ class Chantier {
 
     function setChantierEtatHtml($chantierEtatHtml) {
         $this->chantierEtatHtml = $chantierEtatHtml;
+    }
+
+    function getChantierDeltaHeures() {
+        return $this->chantierDeltaHeures;
+    }
+
+    function getChantierPerfomanceHeures() {
+        return $this->chantierPerfomanceHeures;
     }
 
 }

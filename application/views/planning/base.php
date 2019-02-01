@@ -13,7 +13,7 @@
                 <div class="row" style="margin-top:1px;">
                     <div class="col-2"></div>
                     <div class="col-10" style="font-size:12px; color: steelblue;">
-                        <?= $analyseRapide['nbAffairesEncours'] . ' affaires en cours - ' . $analyseRapide['nbAffairesCloses'] . ' affaires closes - <b>' . number_format($analyseRapide['nbHeuresPlannifiees'], 2, ',', ' ') . '</b> heures plannifiées'; ?>
+                        <?= $analyseRapide['nbAffairesEncours'] . ' affaires en cours - ' . $analyseRapide['nbAffairesCloses'] . ' affaires closes - <b>' . number_format($analyseRapide['nbHeuresPlannifiees'], 2, ',', ' ') . '</b> heures plannifiées soit une charge de <b>' . $analyseRapide['chargeSemaines'] . '</b> semaines'; ?>
                     </div>
                 </div>
                 <div class="row">
@@ -33,9 +33,10 @@
                                 ?>
                                 <tr height="<?= $this->hauteur; ?>">
                                     <td align="right">
-                                        <a href="<?= $link; ?>" target="_self">
-                                            <span class="<?= $personnel->getPersonnelActif() == 1 ? 'badge-light' : 'badge-secondary'; ?>" style="">
-                                                <?= $personnel->getPersonnelNom() . ' ' . substr($personnel->getPersonnelPrenom(), 0, 1) . ' <i class="fas fa-play" style=""></i>'; ?>
+                                        <a href="<?= $link; ?>" target="_self" title="<?= !empty($personnel->getPersonnelEquipe()) ? 'Equipe : ' . $personnel->getPersonnelEquipe()->getEquipeNom() : ''; ?>">
+                                            <span class="<?= $personnel->getPersonnelActif() == 1 ? 'badge-light' : 'badge-secondary'; ?>"
+                                                  <?= !empty($personnel->getPersonnelEquipe()) ? 'style="color:' . $personnel->getPersonnelEquipe()->getEquipeCouleurSecondaire() . '; background-color:' . $personnel->getPersonnelEquipe()->getEquipeCouleur() . ';"' : ''; ?>>
+                                                      <?= $personnel->getPersonnelNom() . ' ' . substr($personnel->getPersonnelPrenom(), 0, 1) . ' <i class="fas fa-play" style=""></i>'; ?>
                                             </span>
                                         </a>
                                     </td>

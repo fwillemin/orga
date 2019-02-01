@@ -6,7 +6,8 @@
  *
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  *
-  ALTER TABLE `etablissements` ADD `etablissementBaseHebdomadaire` DECIMAL(6,2) NOT NULL COMMENT 'Nb h\'eures d\'une semaine. Somme des heures des horaires du personnel actif' AFTER `etablissementTauxHoraireMoyen`;
+  ALTER TABLE `etablissements` ADD `etablissementExpiration` INT NOT NULL COMMENT 'expiration de la licence' AFTER `etablissementBaseHebdomadaire`;
+  ALTER TABLE `etablissements` ADD `etablissementLimiteActifs` SMALLINT NOT NULL DEFAULT '5' AFTER `etablissementExpiration`;
 
   /*
 
@@ -31,6 +32,8 @@ class Etablissement {
     protected $etablissementTauxFraisGeneraux;
     protected $etablissementTauxHoraireMoyen;
     protected $etablissementBaseHebdomadaire;
+    protected $etablissementExpiration;
+    protected $etablissementLimiteActifs;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -193,6 +196,22 @@ class Etablissement {
 
     function setEtablissementBaseHebdomadaire($etablissementBaseHebdomadaire) {
         $this->etablissementBaseHebdomadaire = $etablissementBaseHebdomadaire;
+    }
+
+    function getEtablissementExpiration() {
+        return $this->etablissementExpiration;
+    }
+
+    function setEtablissementExpiration($etablissementExpiration) {
+        $this->etablissementExpiration = $etablissementExpiration;
+    }
+
+    function getEtablissementLimiteActifs() {
+        return $this->etablissementLimiteActifs;
+    }
+
+    function setEtablissementLimiteActifs($etablissementLimiteActifs) {
+        $this->etablissementLimiteActifs = $etablissementLimiteActifs;
     }
 
 }

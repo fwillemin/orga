@@ -84,7 +84,7 @@ class Model_personnels extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
-    public function getPersonnelsPlanning($personnelsPlanning = array(), $tri = 'p.personnelActif DESC, p.personnelEquipeId, p.personnelNom, p.personnelPrenom ASC', $type = 'object') {
+    public function getPersonnelsPlanning($personnelsPlanning = array(), $tri = 'p.personnelActif DESC, (-p.personnelEquipeId) DESC, p.personnelNom, p.personnelPrenom ASC', $type = 'object') {
         $query = $this->db->select('*')
                 ->from('personnels p')
                 ->where('p.personnelEtablissementId', $this->session->userdata('etablissementId'))

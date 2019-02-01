@@ -166,10 +166,11 @@ class Chantiers extends My_Controller {
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
 
-            /* Cloture du chantier */
             $chantier = $this->managerChantiers->getChantierById($this->input->post('chantierId'));
             $chantier->setChantierEtat(1);
             $this->managerChantiers->editer($chantier);
+            /* Suppression des performances de ce chantier */
+            $this->managerPerformanceChantiersPersonnels->deleteFromChantierId($chantier->getChantierId());
             /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
             echo json_encode(array('type' => 'success'));
         endif;
