@@ -43,6 +43,13 @@ class Affectation {
     protected $affectationHTML;
     protected $affectationHeures;
     protected $affectationLivraisons;
+    /* - données optimisées pour l'affichage du planning et générée par la fonction getAffectationsPlanning du model Affectations - */
+    protected $affectationAffaireId;
+    protected $affectationAffaireEtat;
+    protected $affectationChantierCouleur;
+    protected $affectationChantierCouleurSecondaire;
+    protected $affectationChantierObjet;
+    protected $affectationClientNom;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -111,6 +118,14 @@ class Affectation {
         $this->affectationChantier = $CI->managerChantiers->getChantierById($this->affectationChantierId);
     }
 
+    public function hydrateAffaire() {
+        $CI = & get_instance();
+        if (!$this->affectationChantier):
+            $this->hydrateChantier();
+        endif;
+        $this->affectationAffaire = $CI->managerAffaires->getAffaireById($this->affectationChantier->getChantierAffaireId());
+    }
+
     public function hydratePersonnel() {
         $CI = & get_instance();
         $this->affectationPersonnel = $CI->managerPersonnels->getPersonnelById($this->affectationPersonnelId);
@@ -140,6 +155,20 @@ class Affectation {
         $this->affectationLivraisons = $CI->managerLivraisons->getLivraisonsByAffectationId($this->affectationId);
     }
 
+    /* Hydrate les attributs necessaires à la génération de la dvi HTML */
+
+    public function hydratePlanning() {
+        if (!$this->affectationClient):
+            $this->hydrateOrigines();
+        endif;
+        $this->affectationAffaireEtat = $this->affectationAffaire->getAffaireEtat();
+        $this->affectationChantierEtat = $this->affectationChantier->getChantierEtat();
+        $this->affectationChantierCouleur = $this->affectationChantier->getChantierCouleur();
+        $this->affectationChantierCouleurSecondaire = $this->affectationChantier->getChantierCouleurSecondaire();
+        $this->affectationChantierObjet = $this->affectationChantier->getChantierObjet();
+        $this->affectationClientNom = $this->affectationClient->getClientNom();
+    }
+
     /**
      *
      * @param type $premierJourPlanning
@@ -150,10 +179,10 @@ class Affectation {
      */
     public function getHTML($premierJourPlanning = null, $personnelsPlanning = array(), $numLigne = null, $hauteur, $largeur) {
         $CI = & get_instance();
-        if (empty($this->affectationAffaire) || empty($this->affectationChantier)):
-            $this->hydrateOrigines();
-        endif;
-        $this->hydrateHeures();
+//        if (empty($this->affectationAffaire) || empty($this->affectationChantier)):
+//            $this->hydrateOrigines();
+//        endif;
+        //$this->hydrateHeures();
 
         /* Un décallage de position apparait dans le cas ou la premier jour de planning est en heure d'hiver et que l'affectation est en haure d'été */
         $positionLeft = floor(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
@@ -170,29 +199,29 @@ class Affectation {
         //$attributs = 'js-affectationid="' . $this->affectationId . '" js-chantierid="' . $this->affectationChantierId; /* ac signifie affectation du chantier + l'id du chantier associé => utilisé pour mettre toutes les affectations les elements d'un chantier en surbrillance lors du click dans le slide gauche */
         $attributs = '';
         $taille = $this->affectationCases * ($largeur + 1) - 3;
-        $background = $this->affectationChantier->getChantierCouleur();
-        if ($this->getAffectationChantier()->getChantierEtat() == 1):
-            if ($this->getAffectationDebutDate() >= $premierJourPlanning):
+        $background = $this->affectationChantierCouleur;
+        if ($this->affectationChantierEtat == 1):
+            if ($this->affectationDebutDate >= $premierJourPlanning):
                 $classes .= ' resizable';
-                if (empty($this->affectationHeures)):
+                if ($this->affectationHeuresPointees == 0):
                     $classes .= ' draggable';
                 else:
                     $classes .= ' draggableHorizontal';
                 endif;
             endif;
-            $border = 'border : 1px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
-            $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur(), 0.85);
+            $border = 'border : 1px solid ' . $this->affectationChantierCouleurSecondaire . ';';
+            $background = $CI->own->hex2rgba($this->affectationChantierCouleur, 0.85);
         else:
-            $border = 'border : 1px dashed ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
-            $background = $CI->own->hex2rgba($this->getAffectationChantier()->getChantierCouleur(), 0.2);
+            $border = 'border : 1px dashed ' . $this->affectationChantierCouleurSecondaire . ';';
+            $background = $CI->own->hex2rgba($this->affectationChantierCouleur, 0.2);
         endif;
-        if (!empty($this->affectationHeures)):
-            $border .= ' border-left: 3px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
-            $border .= ' border-right: 3px solid ' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . ';';
+        if ($this->affectationHeuresPointees > 0):
+            $border .= ' border-left: 3px solid ' . $this->affectationChantierCouleurSecondaire . ';';
+            $border .= ' border-right: 3px solid ' . $this->affectationChantierCouleurSecondaire . ';';
         endif;
 
-        $txt = '<span class="planningDivText" data-toggle="tooltip" title="' . $this->getAffectationClient()->getClientNom() . ' [' . $this->getAffectationChantier()->getChantierCategorie() . ' - ' . $this->getAffectationChantier()->getChantierObjet() . ']" style="color:' . $this->getAffectationChantier()->getChantierCouleurSecondaire() . '; float: ' . ($this->getAffectationDebutDate() >= $premierJourPlanning ? 'left' : 'right') . ';">'
-                . substr($this->getAffectationClient()->getClientNom(), 0, floor($taille / 10))
+        $txt = '<span class="planningDivText" data-toggle="tooltip" title="' . $this->affectationClientNom . ' [' . $this->affectationChantierObjet . ']" style="color:' . $this->affectationChantierCouleurSecondaire . '; float: ' . ($this->affectationDebutDate >= $premierJourPlanning ? 'left' : 'right') . ';">'
+                . substr($this->affectationClientNom, 0, floor($taille / 10))
                 . '</span>';
 
         if (!$numLigne):
@@ -473,6 +502,54 @@ class Affectation {
 
     function setAffectationDebutMomentTextSmall($affectationDebutMomentTextSmall) {
         $this->affectationDebutMomentTextSmall = $affectationDebutMomentTextSmall;
+    }
+
+    function getAffectationAffaireId() {
+        return $this->affectationAffaireId;
+    }
+
+    function getAffectationAffaireEtat() {
+        return $this->affectationAffaireEtat;
+    }
+
+    function getAffectationChantierCouleur() {
+        return $this->affectationChantierCouleur;
+    }
+
+    function getAffectationChantierCouleurSecondaire() {
+        return $this->affectationChantierCouleurSecondaire;
+    }
+
+    function getAffectationChantierObjet() {
+        return $this->affectationChantierObjet;
+    }
+
+    function getAffectationClientNom() {
+        return $this->affectationClientNom;
+    }
+
+    function setAffectationAffaireId($affectationAffaireId) {
+        $this->affectationAffaireId = $affectationAffaireId;
+    }
+
+    function setAffectationAffaireEtat($affectationAffaireEtat) {
+        $this->affectationAffaireEtat = $affectationAffaireEtat;
+    }
+
+    function setAffectationChantierCouleur($affectationChantierCouleur) {
+        $this->affectationChantierCouleur = $affectationChantierCouleur;
+    }
+
+    function setAffectationChantierCouleurSecondaire($affectationChantierCouleurSecondaire) {
+        $this->affectationChantierCouleurSecondaire = $affectationChantierCouleurSecondaire;
+    }
+
+    function setAffectationChantierObjet($affectationChantierObjet) {
+        $this->affectationChantierObjet = $affectationChantierObjet;
+    }
+
+    function setAffectationClientNom($affectationClientNom) {
+        $this->affectationClientNom = $affectationClientNom;
     }
 
 }

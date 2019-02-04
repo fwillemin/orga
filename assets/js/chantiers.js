@@ -490,5 +490,32 @@ $(document).ready(function () {
             }
         }
     });
+
+    var graphChantierParticipation = document.getElementById("graphChantierParticipations").getContext('2d');
+    var participations = $('#graphChantierParticipations').attr('js-dataparticipation').split(',');
+
+    new Chart(graphChantierParticipation, {
+        type: 'pie',
+        data: {
+            labels: $('#graphChantierParticipations').attr('js-datapersonnels').split(','),
+            datasets: [{                    
+                    data: participations
+                }]
+        },
+        options: {
+            legend: {
+                display: true,
+                position: 'left',
+            },
+            layout: {
+                padding: {
+                    left: 20,
+                    right: 20,
+                    top: 20,
+                    bottom: 20
+                }
+            }
+        }
+    });
 });
 

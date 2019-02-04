@@ -7,12 +7,13 @@ class Model_performanceChantiersPersonnels extends MY_model {
 
     protected $table = 'performanceChantiersPersonnels';
 
-    const classe = 'PerformanceChantiersPersonnels';
+    const classe = 'PerformanceChantierPersonnel';
 
-    public function ajouter(PerformanceChantiersPersonnels $performance) {
+    public function ajouter(PerformanceChantierPersonnel $performance) {
         $this->db
                 ->set('performanceChantierId', $performance->getPerformanceChantierId())
                 ->set('performancePersonnelId', $performance->getPerformancePersonnelId())
+                ->set('performanceHeuresPointees', $performance->getPerformanceHeuresPointees())
                 ->set('performanceTauxParticipation', $performance->getPerformanceTauxParticipation())
                 ->set('performanceImpactHeures', $performance->getPerformanceImpactHeures())
                 ->set('performanceImpactTaux', $performance->getPerformanceImpactTaux())
@@ -28,7 +29,6 @@ class Model_performanceChantiersPersonnels extends MY_model {
     public function getPerformancesByChantierId(Chantier $chantier, $type = 'object') {
         $query = $this->db->select('*')
                 ->from($this->table)
-                ->join('')
                 ->where('performanceChantierId', $chantier->getChantierId())
                 ->get();
         return $this->retourne($query, $type, self::classe);

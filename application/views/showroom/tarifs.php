@@ -20,7 +20,7 @@
                 <thead>
                     <tr style="background-color: steelblue; color: lightgray;">
                         <th>Ouvriers actifs</th>
-                        <th>Abonnement mensuel*</th>
+                        <th>Abonnement mensuel HT*</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,7 +41,7 @@
                         <td class="text-right">79,00€</td>
                     </tr>
                     <tr>
-                        <td>Accès - <i class="fas fa-user"></i> 50</td>
+                        <td>Accès - <i class="fas fa-user"></i> 50 et plus</td>
                         <td class="text-right">99,00€</td>
                     </tr>
                 </tbody>

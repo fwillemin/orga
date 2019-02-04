@@ -50,7 +50,12 @@ class showroom extends My_Controller {
     }
 
     public function getDomaine() {
-        $chaine = strtolower($this->own->enleverCaracteresSpeciaux(trim(str_replace(' ', '-', $this->input->post('chaine'))))) . ".com";
+        $chaine = strtolower($this->own->enleverCaracteresSpeciaux(trim(str_replace(' ', '-', $this->input->post('prenom')))))
+                . '.'
+                . strtolower($this->own->enleverCaracteresSpeciaux(trim(str_replace(' ', '-', $this->input->post('nom')))))
+                . '@'
+                . strtolower($this->own->enleverCaracteresSpeciaux(trim(str_replace(' ', '-', $this->input->post('chaine')))))
+                . ".com";
         echo json_encode(array('type' => 'success', 'domaine' => $chaine));
     }
 
@@ -116,7 +121,7 @@ class showroom extends My_Controller {
             'userOriginId' => null,
             'userClairMdp' => $passwd
         );
-        $email = strtolower($this->input->post('inscriptionPrenom')) . '.' . strtolower($this->input->post('inscriptionNom')) . '@' . $this->input->post('inscriptionDomaine');
+        $email = $this->input->post('inscriptionDomaine');
 
         $groups = $this->db->select('id')->from('groups')->where('id <> ', 2)->where('id <> ', 4)->get()->result();
         foreach ($groups as $g):

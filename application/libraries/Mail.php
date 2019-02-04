@@ -41,9 +41,6 @@ class Mail {
 
     public function sendMail($destinataireNom, $destinataireEmail, $messageTitre, $message) {
 
-        $destinataireNom = 'destinataireTest';
-        $destinataireEmail = 'willeminfrancois@gmail.com';
-
         $httpClient = new GuzzleAdapter(new Client(['base_uri' => 'https://foo.com/api/']));
         $sparky = new SparkPost($httpClient, ['key' => '951f602d2c1fc3208cab6c5a00dff80a9a480fb2']);
 

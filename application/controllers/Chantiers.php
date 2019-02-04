@@ -15,6 +15,15 @@ class Chantiers extends My_Controller {
         endif;
     }
 
+    public function majPerformanceChantiersPersonnels() {
+        $chantiers = $this->managerChantiers->getChantiers(array('chantierEtat' => 2));
+        if (!empty($chantiers)):
+            foreach ($chantiers as $chantier):
+                $this->calculPerformancesPersonnels($chantier);
+            endforeach;
+        endif;
+    }
+
     public function ficheChantier($chantierId = null, $action = null) {
         if (!$this->ion_auth->in_group(array(53, 54))):
             redirect('affaires/liste');
@@ -36,12 +45,20 @@ class Chantiers extends My_Controller {
         $chantier->hydratePlace();
         $chantier->hydrateAchats();
         if (!empty($chantier->getChantierAchats())):
-            foreach ($chantier->getChantierAchats()as $achat):
+            foreach ($chantier->getChantierAchats() as $achat):
                 $achat->hydrateFournisseur();
             endforeach;
         endif;
         $chantier->hydrateClient(); /* hydrate aussi l'affaire */
         $chantier->getChantierClient()->hydratePlaces();
+        $chantier->hydratePerformancesPersonnels();
+        if (!empty($chantier->getChantierPerformancesPersonnels())):
+            foreach ($chantier->getChantierPerformancesPersonnels() as $performance):
+                $performance->hydratePersonnel();
+            endforeach;
+        endif;
+
+//        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($chantier->getChantierPerformancesPersonnels(), true));
 
         $affaire = $chantier->getChantierAffaire();
         $affaire->hydrateChantiers();
@@ -141,6 +158,44 @@ class Chantiers extends My_Controller {
         endif;
     }
 
+    private function calculPerformancesPersonnels(Chantier $chantier) {
+
+        $chantier->hydrateAffectations();
+        $intervenants = array();
+        if (!empty($chantier->getChantierAffectations())):
+            foreach ($chantier->getChantierAffectations() as $affectation):
+                if ($affectation->getAffectationHeuresPointees() > 0):
+                    if (!$intervenants[$affectation->getAffectationPersonnelId()]):
+                        $intervenants[$affectation->getAffectationPersonnelId()] = $affectation->getAffectationHeuresPointees();
+                    else:
+                        $intervenants[$affectation->getAffectationPersonnelId()] += $affectation->getAffectationHeuresPointees();
+                    endif;
+                endif;
+            endforeach;
+        endif;
+
+        if (!empty($intervenants)):
+            foreach ($intervenants as $id => $heures):
+
+                $tauxParticipation = round($heures / $chantier->getChantierheuresPointees(), 4);
+                $impactHeures = round($tauxParticipation * $chantier->getChantierDeltaHeures(), 2);
+
+                $arrayPerformance = array(
+                    'performanceChantierId' => $chantier->getChantierId(),
+                    'performancePersonnelId' => $id,
+                    'performanceHeuresPointees' => $heures,
+                    'performanceTauxParticipation' => $tauxParticipation * 100,
+                    'performanceImpactHeures' => $impactHeures,
+                    'performanceImpactTaux' => round(($impactHeures * 100) / $chantier->getChantierHeuresPrevues(), 2)
+                );
+                $performance = new PerformanceChantierPersonnel($arrayPerformance);
+                $this->managerPerformanceChantiersPersonnels->ajouter($performance);
+                unset($performance);
+
+            endforeach;
+        endif;
+    }
+
     public function clotureChantier() {
         if (!$this->ion_auth->in_group(54)):
             echo json_encode(array('type' => 'error', 'message' => 'Vous n\'avez pas les droits pour clôturer un chantier'));
@@ -152,8 +207,11 @@ class Chantiers extends My_Controller {
             $chantier = $this->managerChantiers->getChantierById($this->input->post('chantierId'));
             $chantier->setChantierEtat(2);
             $chantier->setChantierDateCloture(time());
-
             $this->managerChantiers->editer($chantier);
+
+            /* Calcul des performances su personnel sur ce chantier */
+            $this->calculPerformancesPersonnels($chantier);
+
             /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
             echo json_encode(array('type' => 'success'));
         endif;
@@ -170,7 +228,7 @@ class Chantiers extends My_Controller {
             $chantier->setChantierEtat(1);
             $this->managerChantiers->editer($chantier);
             /* Suppression des performances de ce chantier */
-            $this->managerPerformanceChantiersPersonnels->deleteFromChantierId($chantier->getChantierId());
+            $this->managerPerformanceChantiersPersonnels->deleteFromChantierId($chantier);
             /* La mise à jour de l'etat de l'affaire se fait par les declencheurs MYSQL */
             echo json_encode(array('type' => 'success'));
         endif;

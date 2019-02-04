@@ -7,7 +7,7 @@
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  */
 /*
-  ALTER TABLE `chantiers` ADD `chantierDeltaHeures` DECIMAL(6,2) AS (chantierHeuresPointees - chantierHeuresPrevues) VIRTUAL COMMENT 'Heures pointées - heures prévues' AFTER `chantierBudgetPrevisionnel`, ADD `chantierPerformanceHeures` DECIMAL(10,1) AS (round((((`chantierHeuresPointees` - `chantierHeuresPrevues`) / `chantierHeuresPrevues`) * 100),1)) VIRTUAL COMMENT '% de gain/perte des heures pointées par rapport aux heures prévues' AFTER `chantierDeltaHeures`;
+  ALTER TABLE `chantiers` ADD `chantierDeltaHeures` DECIMAL(6,2) AS (chantierHeuresPointees - chantierHeuresPrevues) STORED COMMENT 'Heures pointées - heures prévues' AFTER `chantierBudgetPrevisionnel`, ADD `chantierPerformanceHeures` DECIMAL(10,1) AS (round((((`chantierHeuresPointees` - `chantierHeuresPrevues`) / `chantierHeuresPrevues`) * 100),1)) STORED COMMENT '% de gain/perte des heures pointées par rapport aux heures prévues' AFTER `chantierDeltaHeures`;
  */
 class Chantier {
 
@@ -40,9 +40,10 @@ class Chantier {
     protected $chantierBudgetConsomme; /* Somme des achats réalisés */
     protected $chantierheuresPlanifiees; /* Somme des heures plannifiées */
     protected $chantierheuresPointees; /* Somme des heures pointées */
-    /* VIRTUAL  - Uniquement des Getters */
+    /* VIRTUAL */
     protected $chantierDeltaHeures; /* heures pointees - heures prévues */
     protected $chantierPerfomanceHeures; /* % de gain/perte des heures pointées par rapport aux heures prévues */
+    protected $chantierPerformancesPersonnels; /* % de gain/perte des heures pointées par rapport aux heures prévues */
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -74,16 +75,6 @@ class Chantier {
         $this->chantierPlace = $CI->managerPlaces->getPlaceById($this->chantierPlaceId);
     }
 
-//    public function hydrateLivraisons() {
-//        $CI = & get_instance();
-//        $this->chantierLivraisons = $CI->managerLivraisons->getLivraisonsByChantierId($this->chantierId);
-//    }
-//
-//    public function hydrateLivraisonsMigration() {
-//        $CI = & get_instance();
-//        $this->chantierLivraisons = $CI->managerLivraisons->getLivraisonsByChantierIdMigration($this->chantierId);
-//    }
-
     public function hydrateAffaire() {
         $CI = & get_instance();
         $this->chantierAffaire = $CI->managerAffaires->getAffaireById($this->chantierAffaireId);
@@ -106,6 +97,11 @@ class Chantier {
     public function hydrateAffectations() {
         $CI = & get_instance();
         $this->chantierAffectations = $CI->managerAffectations->getAffectations(array('affectationChantierId' => $this->chantierId), 'affectationDebutDate DESC');
+    }
+
+    public function hydratePerformancesPersonnels() {
+        $CI = & get_instance();
+        $this->chantierPerformancesPersonnels = $CI->managerPerformanceChantiersPersonnels->getPerformancesByChantierId($this);
     }
 
     public function cloturer($dateCloture) {
@@ -347,6 +343,22 @@ class Chantier {
 
     function getChantierPerfomanceHeures() {
         return $this->chantierPerfomanceHeures;
+    }
+
+    function getChantierPerformancesPersonnels() {
+        return $this->chantierPerformancesPersonnels;
+    }
+
+    function setChantierPerformancesPersonnels($chantierPerformancesPersonnels) {
+        $this->chantierPerformancesPersonnels = $chantierPerformancesPersonnels;
+    }
+
+    function setChantierDeltaHeures($chantierDeltaHeures) {
+        $this->chantierDeltaHeures = $chantierDeltaHeures;
+    }
+
+    function setChantierPerfomanceHeures($chantierPerfomanceHeures) {
+        $this->chantierPerfomanceHeures = $chantierPerfomanceHeures;
     }
 
 }

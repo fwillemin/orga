@@ -107,6 +107,24 @@ class Model_affectations extends MY_model {
         return $this->retourne($query, $type, self::classe, true);
     }
 
+    public function getAffectationPlanningById($affectationId, $type = 'object') {
+        $query = $this->db->select('a.*, c.chantierEtat AS affectationChantierEtat,'
+                        . ' d.affaireId AS affectationAffaireId,'
+                        . ' d.affaireEtat AS affectationAffaireEtat,'
+                        . ' c.chantierCouleur AS affectationChantierCouleur,'
+                        . ' c.chantierCouleurSecondaire AS affectationChantierCouleurSecondaire,'
+                        . ' c.chantierObjet AS affectationChantierObjet,'
+                        . ' cl.clientNom AS affectationClientNom')
+                ->from('affectations a')
+                ->join('chantiers c', 'c.chantierId = a.affectationChantierId', 'left')
+                ->join('affaires d', 'd.affaireId = c.chantierAffaireId', 'left')
+                ->join('clients cl', 'cl.clientId = d.affaireClientId')
+                ->where('d.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where(array('a.affectationId' => $affectationId))
+                ->get();
+        return $this->retourne($query, $type, self::classe, true);
+    }
+
     public function getAffectationByOriginId($affectationId, $type = 'object') {
         $query = $this->db->select('a.*')
                 ->from('affectations a')
@@ -122,10 +140,17 @@ class Model_affectations extends MY_model {
             $selection['a.affectationDebutDate <='] = $dernierJour;
         endif;
 
-        $query = $this->db->select('a.*, c.chantierEtat AS affectationChantierEtat')
+        $query = $this->db->select('a.*, c.chantierEtat AS affectationChantierEtat,'
+                        . ' d.affaireId AS affectationAffaireId,'
+                        . ' d.affaireEtat AS affectationAffaireEtat,'
+                        . ' c.chantierCouleur AS affectationChantierCouleur,'
+                        . ' c.chantierCouleurSecondaire AS affectationChantierCouleurSecondaire,'
+                        . ' c.chantierObjet AS affectationChantierObjet,'
+                        . ' cl.clientNom AS affectationClientNom')
                 ->from('affectations a')
                 ->join('chantiers c', 'c.chantierId = a.affectationChantierId', 'left')
                 ->join('affaires d', 'd.affaireId = c.chantierAffaireId', 'left')
+                ->join('clients cl', 'cl.clientId = d.affaireClientId')
                 ->where('d.affaireEtablissementId', $this->session->userdata('etablissementId'))
                 ->where($selection)
                 ->order_by($tri)

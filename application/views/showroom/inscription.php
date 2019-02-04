@@ -20,6 +20,14 @@
                 </div>
             </div>
             <div class="form-row">
+                <div class="form-group col-6">
+                    <input type="text" class="form-control" id="inscriptionPrenom" name="inscriptionNom" placeholder="Nom" value="" required>
+                </div>
+                <div class="form-group col-6">
+                    <input type="text" class="form-control" id="inscriptionNom" name="inscriptionPrenom" placeholder="Prénom" value="" required>
+                </div>
+            </div>
+            <div class="form-row">
                 <div class="form-group col-12">
                     <input type="text" class="form-control" id="inscriptionAdresse" name="inscriptionAdresse" placeholder="Adresse" value="">
                 </div>
@@ -30,14 +38,6 @@
                 </div>
                 <div class="form-group col-8">
                     <input type="text" class="form-control" id="inscriptionVille" name="inscriptionVille" placeholder="Ville" value="" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-6">
-                    <input type="text" class="form-control" id="inscriptionPrenom" name="inscriptionNom" placeholder="Nom" value="" required>
-                </div>
-                <div class="form-group col-6">
-                    <input type="text" class="form-control" id="inscriptionNom" name="inscriptionPrenom" placeholder="Prénom" value="" required>
                 </div>
             </div>
             <div class="form-row">
@@ -68,7 +68,7 @@
                     </select>
                 </div>
                 <div class="form-group col-12 col-sm-8">
-                    <label for="inscriptionMoisFiscal">Domaine virtuel pour vos identifiants</label>
+                    <label for="inscriptionMoisFiscal">Votre identifiant</label>
                     <input class="form-control" type="text" name="inscriptionDomaine" id="inscriptionDomaine" value="" readonly="readonly">
                 </div>
             </div>

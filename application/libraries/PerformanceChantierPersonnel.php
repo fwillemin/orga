@@ -6,10 +6,12 @@
  *
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  */
-class PerformanceChantiersPersonnels {
+class PerformanceChantierPersonnel {
 
     protected $performanceChantierId;
     protected $performancePersonnelId;
+    protected $performancePersonnel;
+    protected $performanceHeuresPointees;
     protected $performanceTauxParticipation;
     protected $performanceImpactHeures;
     protected $performanceImpactTaux;
@@ -26,6 +28,11 @@ class PerformanceChantiersPersonnels {
             if (method_exists($this, $method))
                 $this->$method($value);
         endforeach;
+    }
+
+    public function hydratePersonnel() {
+        $CI = & get_instance();
+        $this->performancePersonnel = $CI->managerPersonnels->getPersonnelById($this->performancePersonnelId);
     }
 
     function getPerformanceChantierId() {
@@ -66,6 +73,22 @@ class PerformanceChantiersPersonnels {
 
     function setPerformanceImpactTaux($performanceImpactTaux) {
         $this->performanceImpactTaux = $performanceImpactTaux;
+    }
+
+    function getPerformancePersonnel() {
+        return $this->performancePersonnel;
+    }
+
+    function getPerformanceHeuresPointees() {
+        return $this->performanceHeuresPointees;
+    }
+
+    function setPerformancePersonnel($performancePersonnel) {
+        $this->performancePersonnel = $performancePersonnel;
+    }
+
+    function setPerformanceHeuresPointees($performanceHeuresPointees) {
+        $this->performanceHeuresPointees = $performanceHeuresPointees;
     }
 
 }

@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-lg-10 offset-md-1 fond">
+    <div class="col-12 col-lg-10 offset-lg-1 fond">
         <div class="row" id="enteteAffaire">
             <div class="col-12" style="margin-bottom: 5px; border-bottom: 1px dashed white; opacity: 0.7;">
                 <div class="row" style="font-weight: bold; font-size: 14px;">

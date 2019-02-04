@@ -5,8 +5,8 @@ var cheminJs = path + '/assets/js/';
 
 $(document).ready(function () {
 
-    $('#inscriptionRS').on('keyup', function () {
-        $.post(chemin + 'showroom/getDomaine', {chaine: $(this).val()}, function (retour) {
+    $('#inscriptionRS, #inscriptionNom, #inscriptionPrenom').on('keyup', function () {
+        $.post(chemin + 'showroom/getDomaine', {chaine: $('#inscriptionRS').val(), nom:$('#inscriptionNom').val(), prenom:$('#inscriptionPrenom').val()}, function (retour) {
             switch (retour.type) {
                 case 'error':
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});

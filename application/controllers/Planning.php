@@ -114,6 +114,7 @@ class Planning extends My_Controller {
      * @param String $debut Format YYYY-MM-DD
      */
     public function base($debut = null) {
+//        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Start : ' . date('H:i:s'));
 
         /* Recherche du premier jour du planning en excluant le dossier divers */
         if ($debut):
@@ -148,11 +149,13 @@ class Planning extends My_Controller {
             foreach ($personnelsActifs as $persoActif):
                 $persoActif->hydrateEquipe();
                 $persoActif->hydrateHoraire();
-                if ($dernierJourPlanning >= (time() - 5184000)):
+                if (!$dernierJourPlanning || $dernierJourPlanning >= (time() - 5184000)):
                     $listePersonnel[] = $persoActif->getPersonnelId();
                 endif;
             endforeach;
         endif;
+
+//        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Creation des personnels actifs : ' . date('H:i:s'));
 
         if (!empty($personnelsActifs)):
 
@@ -166,14 +169,11 @@ class Planning extends My_Controller {
             //$dernier = $dernierJourPlanning ?: ($premierJourPlanning + (86400 * 7 * ($this->nbSemainesAvant + $this->nbSemainesApres)));
             $dernier = $dernierJourPlanning;
 
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Affectations récupérées : ' . date('H:i:s'));
+
             if (!empty($affectations)):
-                /* Permier et dernier jours du planning */
-//            if ($affectations[0]->getAffectationDebutDate() < $premierJourPlanning):
-//                $premierJourPlanning = $this->cal->premierJourSemaine($affectations[0]->getAffectationDebutDate(), 0);
-//            endif;
 
                 foreach ($affectations as $affectation):
-                    $affectation->hydrateOrigines();
 
                     /* Dernier jour du planning */
                     if ($affectation->getAffectationFinDate() > $dernier):
@@ -186,15 +186,13 @@ class Planning extends My_Controller {
 
                     /* Recupération des affaires cloturées apparaissant sur la planning */
                     if ($this->session->userdata('inclureTermines')):
-                        if ($affectation->getAffectationAffaire()->getAffaireEtat() == 3 && !in_array($affectation->getAffectationAffaire()->getAffaireId(), $listeAffairesClotureesPlanning)):
-                            $listeAffairesClotureesPlanning[] = $affectation->getAffectationAffaire()->getAffaireId();
+                        if ($affectation->getAffectationChantierEtat() == 2 && !in_array($affectation->getAffectationAffaireId(), $listeAffairesClotureesPlanning)):
+                            $listeAffairesClotureesPlanning[] = $affectation->getAffectationAffaireId();
                         endif;
                     endif;
 
                 endforeach;
                 unset($affectation);
-
-                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . date('d/m/Y', $dernier));
 
                 /* Mise à jour des variables du planning */
                 if ($dernierJourPlanning):
@@ -204,7 +202,12 @@ class Planning extends My_Controller {
                     /* Planning libre sur le futur (dateFocus >= today) on ajoute 2 semaines libres */
                     $dernierJourPlanning = $this->cal->dernierJourSemaine($dernier) + 86400 * 14;
                 endif;
+            else:
+                $dernierJourPlanning += $premierJourPlanning + (1 + $this->nbSemainesAvant + $this->nbSemainesApres) * 604800;
             endif;
+
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Fin du traitement des affectations : ' . date('H:i:s'));
+
             $this->session->set_userdata('planningPersonnelsIds', $listePersonnel);
 
             /* Affaires du planning (toutes les non cloturées et les cloturées ayant une affectation sur le planning généré) */
@@ -216,6 +219,8 @@ class Planning extends My_Controller {
                 endforeach;
             endif;
 
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Fin de la récupération des affaires : ' . date('H:i:s'));
+
             /* recherche des indisponibilités pour cette periode */
             $indisponibilitesPlanning = $this->managerIndisponibilites->getIndisponibilitesPlanning($premierJourPlanning, $dernierJourPlanning);
             if (!empty($indisponibilitesPlanning)):
@@ -225,6 +230,7 @@ class Planning extends My_Controller {
                     endif;
                 endforeach;
             endif;
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Fin de la récupération des Indispo : ' . date('H:i:s'));
 
             /* Personnels du planning (Actifs et les inactifs associés à une affectation du planning généré) */
             $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($listePersonnel);
@@ -234,12 +240,16 @@ class Planning extends My_Controller {
                 endforeach;
             endif;
 
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Fin de la récupération du personnel de planning : ' . date('H:i:s'));
+
             if ($affectations):
                 foreach ($affectations as $affectation):
                     $affectation->getHTML($premierJourPlanning, $personnelsPlanning, null, $this->hauteur, $this->largeur);
                 endforeach;
                 unset($affectation);
             endif;
+
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Génaration des HTML affectations ' . date('H:i:s'));
 
             /* Passage du premier jour du planning en variable de session */
             $this->session->set_userdata('premierJourPlanning', $premierJourPlanning);
@@ -252,14 +262,18 @@ class Planning extends My_Controller {
                 endforeach;
             endif;
 
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Génaration des HTML Indispo ' . date('H:i:s'));
+
             /* les chantiers */
-            $chantiers = $this->managerChantiers->getChantiers(array('chantierEtat' => 1));
-            if (!empty($chantiers)):
-                foreach ($chantiers as $chantier):
-                    $chantier->hydrateClient();
-                endforeach;
-                unset($chantier);
-            endif;
+//            $chantiers = $this->managerChantiers->getChantiers(array('chantierEtat' => 1));
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => On a les chantiers !! : ' . date('H:i:s'));
+//            if (!empty($chantiers)):
+//                foreach ($chantiers as $chantier):
+//                    $chantier->hydrateClient();
+//                endforeach;
+//                unset($chantier);
+//            endif;
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Recupération des chantier ' . date('H:i:s'));
 
             /* le planning va s'afficher sur N semaines */
             $n = ceil(($dernierJourPlanning - $premierJourPlanning) / 604800);
@@ -274,12 +288,15 @@ class Planning extends My_Controller {
                 endforeach;
             endif;
 
+//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Génaration desAchats ' . date('H:i:s'));
+
         else:
             // Personne sur le planning ( pas de personnel créé ou tout le personnel en inactif)
             $affairesPlanning = $indisponibilitesPlanning = $affectations = $achats = $personnelsPlanning = $n = null;
 
         endif;
 
+//        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . '-----------------');
 
         $data = array(
             'section' => 'planning',
@@ -315,8 +332,8 @@ class Planning extends My_Controller {
         if (!$this->form_validation->run('getAffectation')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
-            $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
-            $affectation->hydrateOrigines();
+            $affectation = $this->managerAffectations->getAffectationPlanningById($this->input->post('affectationId'));
+            //$affectation->hydrateOrigines();
             $affectation->toggleAffichage();
             $affectation->getHTML($this->session->userdata('premierJourPlanning'), array(), $this->input->post('ligne'), $this->hauteur, $this->largeur);
             $this->managerAffectations->editer($affectation);
@@ -373,7 +390,8 @@ class Planning extends My_Controller {
                 $affectation->setAffectationCases($this->own->nbCasesAffectation($affectation));
                 $affectation->calculHeuresPlanifiees();
                 $this->managerAffectations->editer($affectation);
-                $affectation->hydrateOrigines();
+                unset($affectation);
+                $affectation = $this->managerAffectations->getAffectationPlanningById($this->input->post('addAffectationId'));
                 $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
                 $html .= $affectation->getAffectationHTML();
 
@@ -401,8 +419,7 @@ class Planning extends My_Controller {
                     $affectation->setAffectationCases($this->own->nbCasesAffectation($affectation));
                     $affectation->calculHeuresPlanifiees();
                     $this->managerAffectations->ajouter($affectation);
-
-                    $affectation->hydrateOrigines();
+                    $affectation->hydratePlanning();
                     $affectation->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
                     $html .= $affectation->getAffectationHTML();
 
@@ -528,7 +545,7 @@ class Planning extends My_Controller {
         if (!$this->form_validation->run('getAffectation')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
-            $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
+            $affectation = $this->managerAffectations->getAffectationPlanningById($this->input->post('affectationId'));
             $affectation->hydrateChantier();
             if ($affectation->getAffectationChantier()->getChantierEtat() == 2):
                 echo json_encode(array('type' => 'error', 'message' => 'Impossible de modifier une affectation d\'un chantier clôturé.'));
@@ -585,7 +602,7 @@ class Planning extends My_Controller {
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
 
-            $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
+            $affectation = $this->managerAffectations->getAffectationPlanningById($this->input->post('affectationId'));
             $affectation->hydrateChantier();
             $affectation->hydrateHeures();
             if ($affectation->getAffectationChantier()->getChantierEtat() == 2 || !empty($affectation->getAffectationHeures())):
@@ -781,7 +798,7 @@ class Planning extends My_Controller {
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
 
-            $affectation = $this->managerAffectations->getAffectationById($this->input->post('affectationId'));
+            $affectation = $this->managerAffectations->getAffectationPlanningById($this->input->post('affectationId'));
             $affectation->hydrateChantier();
             if ($affectation->getAffectationChantier()->getChantierEtat() == 2):
                 echo json_encode(array('type' => 'error', 'message' => 'Impossible de modifier une affectation d\'un chantier clôturé.'));
@@ -896,6 +913,7 @@ class Planning extends My_Controller {
                     $affect->setAffectationCases($infosDecalage['cases']);
                     $affectation->calculHeuresPlanifiees();
                     $this->managerAffectations->editer($affect);
+                    $affect->hydratePlanning();
                     $affect->getHTML($this->session->userdata('premierJourPlanning'), $personnelsPlanning, null, $this->hauteur, $this->largeur);
                     $HTML .= $affect->getAffectationHTML();
 

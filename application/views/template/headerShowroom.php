@@ -72,14 +72,17 @@
 
             <div class="row" id="header">
                 <div class="col-12 col-md-6">
-                    <a href="<?= site_url(''); ?>"><img src="<?= base_url('assets/img/logoClairTexte.png'); ?>" style="padding:5px; max-height: 65px;" alt="Logo du logiciel Organibat"></a>
+                    <a href="<?= site_url(); ?>"><img src="<?= base_url('assets/img/logoClairTexte.png'); ?>" style="padding:5px; max-height: 65px;" alt="Logo du logiciel Organibat"></a>
                 </div>
-                <div class="col-md-6 col-12" style="padding: 4px 10px; text-align: right;">
-                    <a href="<?= site_url('essai-gratuit-logiciel-gestion-chantier'); ?>" class="btn btn-light btn-sm">
-                        <i class="fas fa-edit"></i> Essai gratuit
+                <div class="col-md-6 col-12" style="padding: 10px 4px 4px 0px; text-align: right;">
+                    <a href="<?= site_url(); ?>" class="btn btn-link btn-lg">
+                        <i class="fas fa-home"></i>
                     </a>
-                    <a href="<?= site_url('acces-client'); ?>" class="btn btn-info btn-sm">
-                        <i class="fas fa-sign-in-alt"></i> Accès client
+                    <a href="<?= site_url('essai-gratuit-logiciel-gestion-chantier'); ?>" class="btn btn-link btn-lg">
+                        Essai gratuit
+                    </a>
+                    <a href="<?= site_url('acces-client'); ?>" class="btn btn-link btn-lg">
+                        Accès client
                     </a>
                 </div>
             </div>

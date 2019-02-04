@@ -1,6 +1,3 @@
-<div id="animation">
-    <?php include('application/views/template/animation.php'); ?>
-</div>
 <div class="container-fluid" id="entete">
     <img src="<?= base_url('assets/img/wallpaper2.jpg'); ?>" id="imgEnteteLg" alt="image de planification de chantier" alt="ordinateur avec le logiciel Organibat">
     <img src="<?= base_url('assets/img/wallpaper2_small.jpg'); ?>" style="" id="imgEnteteSm" alt="image de planification de chantier" alt="ordinateur avec le logiciel Organibat">
@@ -55,9 +52,9 @@
             </div>
         </div>
         <div class="col-12 col-md-5" id="sectionTarif">
-            <h3><a href="<?= site_url('tarifs'); ?>">Tarifs</a></h3>
+            <h3><a href="<?= site_url('tarifs'); ?>">Tarifs <span style="font-size:12px;">à partir de</span></a></h3>
             <div class="col-12" style="text-align: center; padding-right: 10px;">
-                <br>
+
                 <span style="font-size:68px; color: steelblue; font-weight: bold;">
                     39</span>
                 <span style="font-size:18px;">€HT</span>

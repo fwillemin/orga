@@ -115,6 +115,17 @@ class Model_chantiers extends MY_model {
         return $this->retourne($query, $type, self::classe, true);
     }
 
+    public function getClientByChantierId($chantierId, $type = 'object') {
+        $query = $this->db->select('cl.*')
+                ->from($this->table . ' c')
+                ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
+                ->join('clients cl', 'cl.clientId = a.affaireClientId')
+                ->where('affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('c.chantierId', $chantierId)
+                ->get();
+        return $this->retourne($query, $type, 'Client', true);
+    }
+
     public function getChantierByOriginId($chantierId, $type = 'object') {
         $query = $this->db->select('*')
                 ->from($this->table)

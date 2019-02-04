@@ -193,7 +193,7 @@ class Personnels extends My_Controller {
         if ($this->input->post('addEquipeId')):
 
             $equipe = $this->managerEquipes->getEquipeById($this->input->post('addEquipeId'));
-            $equipe->setEquipeNom(strtoupper($this->input->post('addEquipeNom')));
+            $equipe->setEquipeNom(mb_strtoupper($this->input->post('addEquipeNom')));
             $equipe->setEquipeCouleur($this->input->post('addEquipeCouleur'));
             $equipe->setEquipeCouleurSecondaire($this->couleurSecondaire($this->input->post('addEquipeCouleur')));
             $this->managerEquipes->editer($equipe);
@@ -201,7 +201,7 @@ class Personnels extends My_Controller {
         else:
 
             $arrayEquipe = array(
-                'equipeNom' => strtoupper($this->input->post('addEquipeNom')),
+                'equipeNom' => mb_strtoupper($this->input->post('addEquipeNom')),
                 'equipeCouleur' => $this->input->post('addEquipeCouleur'),
                 'equipeCouleurSecondaire' => $this->couleurSecondaire($this->input->post('addEquipeCouleur'))
             );

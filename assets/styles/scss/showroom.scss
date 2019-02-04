@@ -25,6 +25,13 @@ $hauteurFooter : 170;
         background-color: $noir; 
         position:relative;
         border-bottom: 1px solid white;
+        & .btn {
+            font-weight: bold;
+            color: lightgray;            
+        }
+        & .btn:hover {
+            color: orange;            
+        }
     }
     #animation {
         position:absolute;
@@ -77,9 +84,9 @@ $hauteurFooter : 170;
         position: relative;
         min-height: 100%;  
         margin-bottom: unquote( '-' + $hauteurFooter + 'px ' );
-/*        & a {            
-            color: #45acf8;
-        }*/
+        /*        & a {            
+                    color: #45acf8;
+                }*/
     }
     #contenu:after {
         content: "";
@@ -131,8 +138,8 @@ $hauteurFooter : 170;
             color: $noir;
             opacity : 0.6;
         }
-    }
-    
+    }    
+
     @media screen and (max-width:649px) {
         #imgEnteteLg{
             display: none;
