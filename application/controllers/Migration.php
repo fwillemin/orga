@@ -56,6 +56,75 @@ class Migration extends My_Controller {
         echo 'Opération terminée avec succès. ';
     }
 
+    public function correctifDateCreationAffaire() {
+
+        foreach ($this->db->select('*')->from('affaires')->where(array('affaireCreation' => null, 'affaireDateSignature>' => 0))->get()->result() as $affaire):
+            $this->db->set('affaireCreation', $affaire->affaireDateSignature)->where('affaireId', $affaire->affaireId)->update('affaires');
+        endforeach;
+        $affaires = $this->managerAffaires->getAffaires(array('affaireCreation' => 0));
+        if (!empty($affaires)):
+            foreach ($affaires as $affaire):
+                $dateCreation = '';
+                $affaire->hydrateChantiers();
+                if (!empty($affaire->getAffaireChantiers())):
+                    foreach ($affaire->getAffaireChantiers() as $chantier):
+                        $chantier->hydrateAffectations();
+                        if (!empty($chantier->getChantierAffectations())):
+                            foreach ($chantier->getChantierAffectations() as $affectation):
+                                if (!$dateCreation || $dateCreation > $affectation->getAffectationDebutDate()):
+                                    $dateCreation = $affectation->getAffectationDebutDate();
+                                endif;
+                            endforeach;
+                        endif;
+                    endforeach;
+                endif;
+                log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . $dateCreation);
+                if ($dateCreation):
+                    $affaire->setAffaireCreation($dateCreation);
+                    $this->managerAffaires->editer($affaire);
+                endif;
+
+            endforeach;
+        endif;
+        $affaires = $this->managerAffaires->getAffairesCreationNull();
+        if (!empty($affaires)):
+            foreach ($affaires as $affaire):
+                unset($dateCreation);
+                $affaire->hydrateChantiers();
+                if (!empty($affaire->getAffaireChantiers())):
+                    foreach ($affaire->getAffaireChantiers() as $chantier):
+                        $chantier->hydrateAffectations();
+                        if (!empty($chantier->getChantierAffectations())):
+                            foreach ($chantier->getChantierAffectations() as $affectation):
+                                if (!$dateCreation || $dateCreation > $affectation->getAffectationDebutDate()):
+                                    $dateCreation = $affectation->getAffectationDebutDate();
+                                endif;
+                            endforeach;
+                        endif;
+                    endforeach;
+                endif;
+                if ($dateCreation):
+                    $affaire->setAffaireCreation($dateCreation);
+                    $this->managerAffaires->editer($affaire);
+                endif;
+            endforeach;
+        endif;
+
+        echo 'Opération terminée avec succès. ';
+    }
+
+    public function correctifDateClotureChantier() {
+
+        foreach ($this->db->select('*')->from('chantiers')->where(array('chantierEtat' => 2, 'chantierDateCloture' => 0))->get()->result() as $chantier):
+            $derniereHeure = $this->db->select('MAX(h.heureDate) AS max')->from('heures h')->join('affectations a', 'a.affectationId = h.heureAffectationId')->where('a.affectationChantierId', $chantier->chantierId)->get()->result();
+            if ($derniereHeure[0]->max > 0):
+                $this->db->set('chantierDateCloture', $derniereHeure[0]->max)->where('chantierId', $chantier->chantierId)->update('chantiers');
+            endif;
+        endforeach;
+
+        echo 'Opération terminée avec succès. ';
+    }
+
     /* Avant de lancer le script, il est imperatif de copier toutes les tables de la V1 (hors licences et transactions) avec le préfixe V1 dans la BDD de la V2
      * - Etre déconnecté !!!!!!!
      * - Vérifier que l'etablissement à un email valide avec un domaine qui lui est propre

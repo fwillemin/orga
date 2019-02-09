@@ -20,7 +20,7 @@
                 </div>
             </div>
             <br><br>
-            <h4>Derniers Articles</h4>
+            <h5>Derniers Articles</h5>
             <div class="row" style="border-top: 1px dashed steelblue; margin-bottom:9px;">
                 <div class="col-12 col-sm-3" style="padding:3px;">
                     <img src="<?= base_url('assets/img/organiser-ses-chantiers.jpg'); ?>" style="width:100%; border:1px solid grey;">
@@ -42,26 +42,31 @@
         </div>
         <div class="col-12 col-sm-7" style="padding:50px 20px 30px 40px;">
             <h1 style="font-weight: bold;">Nouveautés</h1>
-            <h4><i class="fas fa-chevron-circle-right"></i> Janvier 19 - Améliorations pour le module "Ouvriers de chantier"</h4>
+            <h4 style="color:#1cb3fa;"><i class="fas fa-chevron-circle-right"></i> Février 19</h4>
+            - A la clôture d'un chantier, la date de clôture est celle de la dernière heure saisie pour ce chantier.
+            <br>- Analyse des indisponibilités et des performances d'un ouvrier par année.
+            <br>
+            <br>
+            <h5><i class="fas fa-chevron-circle-right"></i> Janvier 19 - Améliorations pour le module "Ouvriers de chantier"</h5>
             Le personnel de chantier peut être classé en 3 catégories (Salarié, intérimaire ou apprenti)
             <br>La gestion des équipes devient plus visuelle avec un code couleur par équipe, visible sur le planning.
             <br>
             <br>
-            <h4><i class="fas fa-chevron-circle-right"></i> Planifications et de vos calculs d'avancement <strong style='color:orangered;'>à l'heure !</strong></h4>
-            <h4><i class="fas fa-chevron-circle-right"></i> Nouvelle gestion des utilisateurs administratifs</h4>
+            <h5><i class="fas fa-chevron-circle-right"></i> Planifications et de vos calculs d'avancement <strong style='color:orangered;'>à l'heure !</strong></h5>
+            <h5><i class="fas fa-chevron-circle-right"></i> Nouvelle gestion des utilisateurs administratifs</h5>
             Vous pouvez maintenant définir pour chaque utilisateur des accès spécifiques à chaque module d'Organibat (Heures, affaires, planning, ...)
             <br>
             <br>
-            <h4><i class="fas fa-chevron-circle-right"></i> Ouvriers et pointages</h4>
+            <h5><i class="fas fa-chevron-circle-right"></i> Ouvriers et pointages</h5>
             Créez des équipes et accelérer vos plannifications et vos saisies d'heures.
             <br>Vous pouvez pointez avec une tranche personnalisable (5, 10, 15, 20, 30, 60 minutes)
             <br>
             <br>
-            <h4><i class="fas fa-chevron-circle-right"></i> Gestion des clients</h4>
+            <h5><i class="fas fa-chevron-circle-right"></i> Gestion des clients</h5>
             Historiques des affaires et chantiers par client, ...
             <br>
             <br>
-            <h4><i class="fas fa-chevron-circle-right"></i> Nouvelles fonctionnalités de planning</h4>
+            <h5><i class="fas fa-chevron-circle-right"></i> Nouvelles fonctionnalités de planning</h5>
             Décallage de mutiples affectations
             <br>Insersion d'affectation sur plusieurs personnels
             <br>Glisser/Déposer des livraisons
@@ -69,7 +74,7 @@
             <br>Décallez toutes les affectations d'un ouvrier en une fois
             <br>
             <br>
-            <h4><i class="fas fa-chevron-circle-right"></i> Contacts entrants</h4>
+            <h5><i class="fas fa-chevron-circle-right"></i> Contacts entrants</h5>
             Nouvelle interface de gestion des contacts entrants
         </div>
     </div>

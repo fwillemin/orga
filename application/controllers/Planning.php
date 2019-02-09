@@ -114,7 +114,6 @@ class Planning extends My_Controller {
      * @param String $debut Format YYYY-MM-DD
      */
     public function base($debut = null) {
-//        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Start : ' . date('H:i:s'));
 
         /* Recherche du premier jour du planning en excluant le dossier divers */
         if ($debut):

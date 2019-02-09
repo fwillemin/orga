@@ -9,8 +9,13 @@
 class PerformanceChantierPersonnel {
 
     protected $performanceChantierId;
+    protected $performanceChantier;
+    protected $performanceChantierDateCloture;
+    protected $performanceClientNom;
     protected $performancePersonnelId;
     protected $performancePersonnel;
+    protected $performanceAffaireId;
+    protected $performanceAffaire;
     protected $performanceHeuresPointees;
     protected $performanceTauxParticipation;
     protected $performanceImpactHeures;
@@ -33,6 +38,19 @@ class PerformanceChantierPersonnel {
     public function hydratePersonnel() {
         $CI = & get_instance();
         $this->performancePersonnel = $CI->managerPersonnels->getPersonnelById($this->performancePersonnelId);
+    }
+
+    public function hydrateAffaire() {
+        $CI = & get_instance();
+        if (!$this->performanceChantier):
+            $this->hydrateChantier();
+        endif;
+        $this->performanceAffaire = $CI->managerAffaires->getAffaireById($this->performanceChantier->getChantierAffaireId());
+    }
+
+    public function hydrateChantier() {
+        $CI = & get_instance();
+        $this->performanceChantier = $CI->managerChantiers->getChantierById($this->performanceChantierId);
     }
 
     function getPerformanceChantierId() {
@@ -89,6 +107,46 @@ class PerformanceChantierPersonnel {
 
     function setPerformanceHeuresPointees($performanceHeuresPointees) {
         $this->performanceHeuresPointees = $performanceHeuresPointees;
+    }
+
+    function getPerformanceChantierDateCloture() {
+        return $this->performanceChantierDateCloture;
+    }
+
+    function setPerformanceChantierDateCloture($performanceChantierDateCloture) {
+        $this->performanceChantierDateCloture = $performanceChantierDateCloture;
+    }
+
+    function getPerformanceClientNom() {
+        return $this->performanceClientNom;
+    }
+
+    function setPerformanceClientNom($performanceClientNom) {
+        $this->performanceClientNom = $performanceClientNom;
+    }
+
+    function getPerformanceChantier() {
+        return $this->performanceChantier;
+    }
+
+    function getPerformanceAffaireId() {
+        return $this->performanceAffaireId;
+    }
+
+    function getPerformanceAffaire() {
+        return $this->performanceAffaire;
+    }
+
+    function setPerformanceChantier($performanceChantier) {
+        $this->performanceChantier = $performanceChantier;
+    }
+
+    function setPerformanceAffaireId($performanceAffaireId) {
+        $this->performanceAffaireId = $performanceAffaireId;
+    }
+
+    function setPerformanceAffaire($performanceAffaire) {
+        $this->performanceAffaire = $performanceAffaire;
     }
 
 }

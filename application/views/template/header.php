@@ -128,6 +128,14 @@
                             <?php endif; ?>
                         </div>
                         <div class="nav navbar-nav navbar-right">
+                            <?php if ($this->ion_auth->in_group(array(1))): ?>
+                                <div class="nav-item">
+                                    <a class="nav-link" href="<?= site_url('statistiques/'); ?>">
+                                        <i class="fas fa-chart-pie"></i> Stats
+                                    </a>
+                                </div>
+                                <div class="nav-divider"></div>
+                            <?php endif; ?>
                             <?php if ($this->ion_auth->in_group(array(61))): ?>
                                 <div class="nav-item">
                                     <a class="nav-link" href="<?= site_url('fournisseurs/listeFst'); ?>">

@@ -160,6 +160,19 @@ $(document).ready(function () {
             }
         }, 'json');
     });
+    
+    $('#changeAnalysePersonnelAnnee').on('change', function(){
+        $.post(chemin+'personnels/changeAnneeAnalyse', {annee:$(this).val()}, function(retour){
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    window.location.reload();
+                    break;
+            }
+        }, 'json');
+    });
 
     $('#btnDelTauxHoraire').confirm({
         title: 'On supprime ce taux horaire ?',
@@ -186,6 +199,106 @@ $(document).ready(function () {
             cancel: {
                 btnClass: 'btn-red',
                 text: 'Annuler'
+            }
+        }
+    });
+
+    var graphRepartitionIndispos = document.getElementById("graphRepartitionIndispos").getContext('2d');
+    new Chart(graphRepartitionIndispos, {
+        type: 'polarArea',
+        title: 'Indisponibilités (Hors congès, fériés et RTT)',
+        data: {
+            labels: $('#graphRepartitionIndispos').attr('js-labels').split(','),
+            datasets: [{
+                    label: "Jours",
+                    data: $('#graphRepartitionIndispos').attr('js-indispos').split(','),
+                    backgroundColor: chartBackgrounds,
+                }
+            ]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Indisponibilités (Hors congès, fériés et RTT)',
+                fontSize: 20,
+                padding: 20
+            },
+            layout: {
+                padding: {
+                    left: 20,
+                    right: 20,
+                    top: -20,
+                    bottom: 20
+                }
+            },
+            legend: {
+                display: true,
+                position: 'right'
+            }
+        }
+    });
+
+    var graphPerformances = document.getElementById("graphPerformances").getContext('2d');
+    new Chart(graphPerformances, {
+        type: 'bar',
+        title: 'Performances',
+        data: {
+            labels: $('#graphPerformances').attr('js-labels').split(','),
+            datasets: [{
+                    data: $('#graphPerformances').attr('js-performances').split(','),
+                    backgroundColor: ['#70db70','#85e085','#99e699','#adebad','#c2f0c2','#d6f5d6','#ffcccc','#ffb3b3','#ff9999','#ff8080','#ff6666','#ff4d4d'],
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Performances',
+                fontSize: 20,
+                padding: 20
+            },
+            layout: {
+                padding: {
+                    left: 20,
+                    right: 20,
+                    top: -20,
+                    bottom: 20
+                }
+            },
+            legend: {
+                display: false,
+                position: 'bottom'
+            },
+            scales: {
+                xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: '% performance'
+                        }
+                    }],
+                yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Nb chantiers'
+                        },
+                        ticks: {
+                            position: 0
+                        }
+                    }]
+            },
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += Math.round(tooltipItem.yLabel * 100) / 100;
+                        return label;
+                    }
+                }
             }
         }
     });

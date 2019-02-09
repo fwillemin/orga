@@ -30,19 +30,23 @@
                     </tr>
                     <tr>
                         <td>Accès - <i class="fas fa-user"></i> 10</td>
-                        <td class="text-right">54,00€</td>
+                        <td class="text-right">58,00€</td>
                     </tr>
                     <tr>
                         <td>Accès - <i class="fas fa-user"></i> 20</td>
-                        <td class="text-right">64,00€</td>
+                        <td class="text-right">68,00€</td>
                     </tr>
                     <tr>
                         <td>Accès - <i class="fas fa-user"></i> 30</td>
-                        <td class="text-right">79,00€</td>
+                        <td class="text-right">77,00€</td>
+                    </tr>
+                    <tr>
+                        <td>Accès - <i class="fas fa-user"></i> 40</td>
+                        <td class="text-right">85,00€</td>
                     </tr>
                     <tr>
                         <td>Accès - <i class="fas fa-user"></i> 50 et plus</td>
-                        <td class="text-right">99,00€</td>
+                        <td class="text-right">92,00€</td>
                     </tr>
                 </tbody>
             </table>

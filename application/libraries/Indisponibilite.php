@@ -59,6 +59,12 @@ class Indisponibilite {
         if (date('I', $premierJourPlanning) == 0 && date('I', $this->indispoDebutDate) == 1):
             $positionLeft += ($largeur * 2 + 2);
         endif;
+        if (date('I', $premierJourPlanning) == 1 && date('I', $this->indispoDebutDate) == 1):
+            $positionLeft += ($largeur * 2 + 2);
+        endif;
+//        if (date('I', $premierJourPlanning) == 0 && date('I', $this->indispoDebutDate) == 0):
+//            $positionLeft += ($largeur * 2 + 2);
+//        endif;
         //si on commence de l'aprem, on ajoute une 1/2 journée
         if ($this->indispoDebutMoment == 2) {
             $positionLeft += $largeur;

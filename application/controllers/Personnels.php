@@ -4,6 +4,9 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
+
 class Personnels extends My_Controller {
 
     public function __construct() {
@@ -17,6 +20,11 @@ class Personnels extends My_Controller {
 
     public function index() {
         redirect('personnels/liste');
+    }
+
+    public function changeAnneeAnalyse() {
+        $this->session->set_userdata('analysePersonnelsAnnee', $this->input->post('annee'));
+        echo json_encode(array('type' => 'success'));
     }
 
     /**
@@ -61,7 +69,6 @@ class Personnels extends My_Controller {
 
     public function fichePersonnel($personnelId = null, $tauxHoraireId = null) {
 
-
         if (!$this->ion_auth->in_group(21)):
             redirect('personnels/liste');
         endif;
@@ -80,8 +87,32 @@ class Personnels extends My_Controller {
             $tauxHoraire = '';
         endif;
 
+        $annee = $this->session->userdata('analysePersonnelsAnnee');
+
+        /* Graph des indisponibilités */
+        $motifs = $this->managerMotifs->getMotifs('motifGroupe, motifNom ASC', 'array');
+        foreach ($motifs as $motif):
+            $motif->nbJours = $this->managerIndisponibilites->getJoursIndisponibilites($personnel, $motif->motifId, $annee)[0]->nbJours ?: 0;
+        endforeach;
+
+        /* Graph des performances */
+        $performances['-100% et plus'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -99999, -100)) ? count($result) : 0;
+        $performances['-50% à -100%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -100, -50)) ? count($result) : 0;
+        $performances['-20% à -50%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -50, -20)) ? count($result) : 0;
+        $performances['-10% à -20%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -20, -10)) ? count($result) : 0;
+        $performances['-5% à -10%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -10, -5)) ? count($result) : 0;
+        $performances['-5% à 0%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -25, 0)) ? count($result) : 0;
+        $performances['0 à 5%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, 0, 5)) ? count($result) : 0;
+        $performances['5% à 10%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, 5, 10)) ? count($result) : 0;
+        $performances['10% à 20%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, 10, 20)) ? count($result) : 0;
+        $performances['20% à 50%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, 20, 50)) ? count($result) : 0;
+        $performances['50% à 100%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, 50, 100)) ? count($result) : 0;
+        $performances['100% et plus'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, 100, 99999)) ? count($result) : 0;
+
         $data = array(
             'personnel' => $personnel,
+            'indispos' => $motifs,
+            'performances' => $performances,
             'tauxHoraire' => $tauxHoraire,
             'equipes' => $this->managerEquipes->getEquipes(),
             'horaires' => $this->managerHoraires->getHoraires(),
@@ -391,6 +422,103 @@ class Personnels extends My_Controller {
             $indispo = $this->managerIndisponibilites->getIndisponibiliteById($this->input->post('indispoId'));
             $this->managerIndisponibilites->delete($indispo);
             echo json_encode(array('type' => 'success'));
+        endif;
+    }
+
+    public function exportPerformancesPersonnel($personnelId = null) {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $styleEntete = [
+            'font' => [
+                'bold' => true,
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                'wrapText' => true
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'color' => [
+                    'argb' => 'CCCCCCC',
+                ]
+            ]
+        ];
+
+        $styleAlignRight = [
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT,
+            ]
+        ];
+        $styleAlignCenter = [
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ]
+        ];
+
+        $sheet->getStyle('A1:I1')->applyFromArray($styleEntete);
+
+        if ($personnelId && $this->existPersonnel($personnelId)):
+
+            $personnel = $this->managerPersonnels->getPersonnelById($personnelId);
+
+            $performances = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnel($personnel, $this->session->userdata('analysePersonnelsAnnee'));
+            $sheet->getRowDimension('1')->setRowHeight(31);
+
+            $sheet->getColumnDimension('A')->setAutoSize(true);
+            $sheet->getColumnDimension('B')->setAutoSize(true);
+            $sheet->getColumnDimension('C')->setAutoSize(true);
+            $sheet->getColumnDimension('D')->setAutoSize(true);
+            $sheet->getColumnDimension('E')->setAutoSize(true);
+            $sheet->getColumnDimension('F')->setAutoSize(true);
+            $sheet->getColumnDimension('G')->setAutoSize(true);
+            $sheet->getColumnDimension('H')->setAutoSize(true);
+            $sheet->getColumnDimension('I')->setAutoSize(true);
+
+            $sheet->setCellValue('A1', 'Client')
+                    ->setCellValue('B1', 'Affaire')
+                    ->setCellValue('C1', 'Chantier')
+                    ->setCellValue('D1', 'Catégorie')
+                    ->setCellValue('E1', 'Date de clôture')
+                    ->setCellValue('F1', 'Delta Heures Chantier')
+                    ->setCellValue('G1', '% Participation')
+                    ->setCellValue('H1', 'Delta Heures ' . $personnel->getPersonnelPrenom())
+                    ->setCellValue('I1', '% Gain/Perte ' . $personnel->getPersonnelPrenom());
+
+            $row = 2;
+            foreach ($performances as $performance):
+                $performance->hydrateAffaire();
+                $sheet->getRowDimension($row)->setRowHeight(18);
+                $sheet->setCellValue('A' . $row, $performance->getPerformanceClientNom());
+                $sheet->setCellValue('B' . $row, $performance->getPerformanceAffaire()->getAffaireObjet());
+                $sheet->setCellValue('C' . $row, $performance->getPerformanceChantier()->getChantierObjet());
+                $sheet->setCellValue('D' . $row, $performance->getPerformanceChantier()->getChantierCategorie());
+                $sheet->setCellValue('E' . $row, $this->cal->dateFrancais($performance->getPerformanceChantier()->getChantierDateCloture(), 'DMa'));
+                $sheet->setCellValue('F' . $row, $performance->getPerformanceChantier()->getChantierDeltaHeures());
+                $sheet->setCellValue('G' . $row, $performance->getPerformanceTauxParticipation() . '%');
+                $sheet->setCellValue('H' . $row, $performance->getPerformanceImpactHeures());
+                $sheet->setCellValue('I' . $row, $performance->getPerformanceImpactTaux() . '%');
+
+                $row++;
+            endforeach;
+
+            $sheet->getRowDimension($row)->setRowHeight(18);
+            $sheet->setCellValue('H' . $row, '=SUM(H1:H' . ($row - 1) . ')');
+            $sheet->setCellValue('G' . $row, 'Total');
+            $sheet->getStyle('A' . $row . ':J' . $row)->applyFromArray(
+                    array(
+                        'font' => array('bold' => true)
+                    )
+            );
+            $sheet->getStyle('G2:G' . $row)->applyFromArray($styleAlignRight);
+            $sheet->getStyle('I2:I' . $row)->applyFromArray($styleAlignRight);
+            $sheet->getStyle('E2:E' . $row)->applyFromArray($styleAlignCenter);
+
+            $writer = new Xls($spreadsheet);
+            $fichier = 'Performances-' . $personnel->getPersonnelNom() . '-' . $personnel->getPersonnelPrenom() . '-' . $this->session->userdata('analysePersonnelsAnnee') . '.xls';
+            $writer->save($fichier);
+            force_download($fichier, NULL);
+
         endif;
     }
 

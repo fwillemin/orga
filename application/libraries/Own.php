@@ -27,7 +27,6 @@ class Own {
     }
 
     public function mktimeFromInputDate($input = null) {
-        date_default_timezone_set('Europe/Paris');
         if ($input == '' || !$input || $input == 0): return 0;
         else:
             $temp = explode('-', $input);

@@ -16,6 +16,8 @@ package-lock.json
 
 /assets/MegaNavbarBS4
 /assets/jqueryConfirm
+*.xls
+*.xml
 
 # IDE Files
 #-------------------------

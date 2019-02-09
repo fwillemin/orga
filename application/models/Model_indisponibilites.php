@@ -78,6 +78,30 @@ class Model_indisponibilites extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function repartitionIndisponibilites(Personnel $personnel, $annee, $type = 'array') {
+        $query = $this->db->select('ROUND(SUM(indispoNbdemi)/2,1) AS nbJours, m.motifId, m.motifNom AS motif, m.motifGroupe AS groupe')
+                ->from('indisponibilites i')
+                ->join('personnels p', 'p.personnelId = i.indispoPersonnelId')
+                ->join('motifs m', 'm.motifId = i.indispoMotifId')
+                ->where('p.personnelEtablissementId', $this->session->userdata('etablissementId'))
+                ->where(array("p.personnelId" => $personnel->getPersonnelId(), "FROM_UNIXTIME(indispoDebutDate, '%Y') =" => $annee))
+                ->group_by('i.indispoMotifId')
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
+    public function getJoursIndisponibilites(Personnel $personnel, $motifId, $annee, $type = 'array') {
+        return $this->db->select('ROUND(SUM(indispoNbdemi)/2,1) AS nbJours')
+                        ->from('indisponibilites i')
+                        ->join('personnels p', 'p.personnelId = i.indispoPersonnelId')
+                        ->join('motifs m', 'm.motifId = i.indispoMotifId')
+                        ->where('p.personnelEtablissementId', $this->session->userdata('etablissementId'))
+                        ->where(array("p.personnelId" => $personnel->getPersonnelId(), "FROM_UNIXTIME(indispoDebutDate, '%Y') =" => $annee, 'm.motifId' => $motifId))
+                        ->group_by('i.indispoMotifId')
+                        ->get()
+                        ->result();
+    }
+
     /**
      * Retourne un objet de la classe Indisponibilite correspondant à l'id
      * @param integer $indisponibiliteId ID de l'raisonSociale

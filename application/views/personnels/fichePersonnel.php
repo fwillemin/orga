@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-lg-8 offset-lg-2 fond">
+    <div class="col-12 col-xl-10 offset-xl-1 fond">
         <div class="row">
             <div class="col-12">
                 <br>
@@ -14,8 +14,8 @@
                 </h2>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12 col-sm-5">
+        <div class="row" style="margin-bottom:60px;">
+            <div class="col-12 col-md-5">
                 <div id="containerModPersonnel" class="inPageForm" style="display: none; padding: 10px; margin-bottom:10px;">
                     <?php include('formPersonnel.php'); ?>
                     <i class="formClose fas fa-times"></i>
@@ -85,8 +85,64 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-12 col-sm-6">
-
+            <div class="col-12 col-md-7" style=" padding:0px 30px 15px 30px;">
+                <div class="row" style="background-color: #f4f4fb; border:2px solid #293042;">
+                    <div class="col-12" style="background-color: #293042; color: white; padding-top:5px;">
+                        <div class="input-group">
+                            <label for="changeAnalysePersonnelAnnee" class="col-12 col-sm-7 text-right"><span style="font-size:20px; font-weight:bold;">Analyses de <?= $personnel->getPersonnelPrenom(); ?> pour l'année</span></label>
+                            <select class="form-control form-control-sm col-12 col-sm-2" id="changeAnalysePersonnelAnnee">
+                                <?php
+                                for ($i = date('Y'); $i >= '2013'; $i--):
+                                    echo '<option value="' . $i . '"' . ($this->session->userdata('analysePersonnelsAnnee') == $i ? 'selected' : '') . '>' . $i . '</option>';
+                                endfor;
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-3" style="">
+                        <table class="table table-sm table-bordered style1" style="font-size:10px; margin-top:5px; background-color: #FFF;">
+                            <thead>
+                                <tr><th>Motifs</th><th style="text-align: right;">Jours</th></tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $dataIndispo = $dataLabels = '';
+                                foreach ($indispos as $motif):
+                                    echo '<tr><td>' . $motif->motifNom . '</td><td align="right">' . $motif->nbJours . '</td></tr>';
+                                    if (in_array($motif->motifId, array(10, 11, 12, 4, 6, 9, 14, 1, 7, 8, 13))):
+                                        if ($dataIndispo != ''):
+                                            $dataIndispo .= ',';
+                                            $dataLabels .= ',';
+                                        endif;
+                                        $dataIndispo .= $motif->nbJours > 0 ? $motif->nbJours : 'NaN';
+                                        $dataLabels .= $motif->motifNom;
+                                    endif;
+                                endforeach;
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class = "col-8" style = "margin-top:15px;">
+                        <canvas id = "graphRepartitionIndispos" width = "400" height = "300" js-indispos = "<?= $dataIndispo; ?>" js-labels="<?= $dataLabels; ?>"></canvas>
+                    </div>
+                    <div class = "col-12" style = "margin-top:15px; border-top: 1px solid lightgray; padding-top:20px;">
+                        <?php
+                        $perfs = $perfsLabels = '';
+                        foreach ($performances as $key => $value):
+                            if ($perfs != ''):
+                                $perfs .= ',';
+                                $perfsLabels .= ',';
+                            endif;
+                            $perfsLabels .= $key;
+                            $perfs .= $value;
+                        endforeach;
+                        ?>
+                        <a href="<?= site_url('personnels/exportPerformancesPersonnel/' . $personnel->getPersonnelId()); ?>" target="_blank" class="btn btn-link btn-sm" style = "position: absolute; bottom:5px; right:5px;">
+                            <i class = "far fa-file-excel"></i> Exporter les données
+                        </a>
+                        <canvas id = "graphPerformances" width = "400" height = "170" js-labels = "<?= $perfsLabels; ?>" js-performances = "<?= $perfs; ?>"</canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

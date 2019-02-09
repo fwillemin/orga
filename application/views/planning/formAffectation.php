@@ -9,8 +9,10 @@
                 foreach ($affairesPlanning as $affaire):
                     if ($affaire && !empty($affaire->getAffaireChantiers())):
                         foreach ($affaire->getAffaireChantiers() as $chantier):
-                            echo '<option value="' . $chantier->getChantierId() . '"'
-                            . 'data-content="<span class=\'selectpickerClient\'>' . $affaire->getAffaireClient()->getClientNom() . '</span> <span class=\'selectpickerAnnotation\'>' . $affaire->getAffaireObjet() . ' > ' . $chantier->getChantierObjet() . '</span>">' . $affaire->getAffaireClient()->getClientNom() . ' ' . $chantier->getChantierObjet() . '</option>';
+                            if ($chantier->getChantierEtat() == 1):
+                                echo '<option value="' . $chantier->getChantierId() . '"'
+                                . 'data-content="<span class=\'selectpickerClient\'>' . $affaire->getAffaireClient()->getClientNom() . '</span> <span class=\'selectpickerAnnotation\'>' . $affaire->getAffaireObjet() . ' > ' . $chantier->getChantierObjet() . '</span>">' . $affaire->getAffaireClient()->getClientNom() . ' ' . $chantier->getChantierObjet() . '</option>';
+                            endif;
                         endforeach;
                     endif;
                 endforeach;

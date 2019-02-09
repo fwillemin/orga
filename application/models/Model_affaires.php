@@ -44,6 +44,7 @@ class Model_affaires extends MY_model {
     public function editer(Affaire $affaire) {
         $this->db
                 ->set('affaireClientId', $affaire->getAffaireClientId())
+                ->set('affaireCreation', $affaire->getAffaireCreation())
                 ->set('affaireCommercialId', $affaire->getAffaireCommercialId())
                 ->set('affaireCategorieId', $affaire->getAffaireCategorieId())
                 ->set('affairePlaceId', $affaire->getAffairePlaceId())
@@ -86,6 +87,12 @@ class Model_affaires extends MY_model {
                 ->where($where)
                 ->order_by($tri)
                 ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
+    public function getAffairesCreationNull($tri = 'affaireCreation ASC', $type = 'object') {
+        $query = $this->db->query("SELECT * FROM affaires WHERE affaireCreation IS NULL AND affaireEtablissementId = " . $this->session->userdata('etablissementId'));
+
         return $this->retourne($query, $type, self::classe);
     }
 

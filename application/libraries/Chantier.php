@@ -104,8 +104,29 @@ class Chantier {
         $this->chantierPerformancesPersonnels = $CI->managerPerformanceChantiersPersonnels->getPerformancesByChantierId($this);
     }
 
-    public function cloturer($dateCloture) {
-        $this->chantierEtat = 3;
+    public function cloture() {
+        $this->chantierEtat = 2;
+        if (!$this->chantierAffaire):
+            $this->hydrateAffaire();
+        endif;
+        /* On initialisa la date de cloture à la date de création de son affaire dans le cas ou aucune heure ne serait saisie */
+        $dateCloture = $this->chantierAffaire->getAffaireCreation();
+        if (!$this->chantierAffectations):
+            $this->hydrateAffectations();
+        endif;
+        if (!empty($this->chantierAffectations)):
+            foreach ($this->chantierAffectations as $affectation):
+                $affectation->hydrateHeures();
+                if (!empty($affectation->getAffectationHeures())):
+                    foreach ($affectation->getAffectationHeures() as $heure):
+                        if ($heure->getHeureDate() > $dateCloture):
+                            $dateCloture = $heure->getHeureDate();
+                        endif;
+                    endforeach;
+                endif;
+            endforeach;
+        endif;
+
         $this->chantierDateCloture = $dateCloture;
     }
 

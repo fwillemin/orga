@@ -19,9 +19,19 @@ class Chantiers extends My_Controller {
         $chantiers = $this->managerChantiers->getChantiers(array('chantierEtat' => 2));
         if (!empty($chantiers)):
             foreach ($chantiers as $chantier):
-                $this->calculPerformancesPersonnels($chantier);
+                if (empty($this->managerPerformanceChantiersPersonnels->getPerformancesByChantierId($chantier))):
+                    $this->calculPerformancesPersonnels($chantier);
+                endif;
             endforeach;
         endif;
+    }
+
+    public function majClotureChantiers() {
+        $chantiers = $this->managerChantiers->getChantiers(array('chantierEtat' => 2));
+        foreach ($chantiers as $chantier):
+            $chantier->cloture();
+            $this->managerChantiers->editer($chantier);
+        endforeach;
     }
 
     public function ficheChantier($chantierId = null, $action = null) {
@@ -161,6 +171,7 @@ class Chantiers extends My_Controller {
     private function calculPerformancesPersonnels(Chantier $chantier) {
 
         $chantier->hydrateAffectations();
+        $this->managerPerformanceChantiersPersonnels->deleteFromChantierId($chantier);
         $intervenants = array();
         if (!empty($chantier->getChantierAffectations())):
             foreach ($chantier->getChantierAffectations() as $affectation):
@@ -188,6 +199,7 @@ class Chantiers extends My_Controller {
                     'performanceImpactHeures' => $impactHeures,
                     'performanceImpactTaux' => round(($impactHeures * 100) / $chantier->getChantierHeuresPrevues(), 2)
                 );
+
                 $performance = new PerformanceChantierPersonnel($arrayPerformance);
                 $this->managerPerformanceChantiersPersonnels->ajouter($performance);
                 unset($performance);
@@ -205,8 +217,7 @@ class Chantiers extends My_Controller {
 
             /* Cloture du chantier */
             $chantier = $this->managerChantiers->getChantierById($this->input->post('chantierId'));
-            $chantier->setChantierEtat(2);
-            $chantier->setChantierDateCloture(time());
+            $chantier->cloture();
             $this->managerChantiers->editer($chantier);
 
             /* Calcul des performances su personnel sur ce chantier */

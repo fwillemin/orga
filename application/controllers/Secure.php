@@ -65,7 +65,8 @@ class Secure extends CI_Controller {
                             'affaireDiversId' => $etablissement->getEtablissementAffaireDiversId(),
                             'droits' => $groups,
                             'smsCredits' => 0,
-                            'rechAffaireEtat' => 2
+                            'rechAffaireEtat' => 2,
+                            'analysePersonnelsAnnee' => date('Y')
                         )
                 );
                 $this->session->set_userdata('parametres', (array) $this->managerParametres->getParametres('array'));
