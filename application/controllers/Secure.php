@@ -19,7 +19,9 @@ class Secure extends CI_Controller {
      */
     public function login() {
         $data = array(
-            'map_enable' => '',
+            'type' => 'website',
+            'url' => site_url('acces-client'),
+            'image' => '',
             'title' => 'Connexion à la console.',
             'description' => 'Saississez vos identifiants pour accèder à la console.',
             'content' => $this->viewFolder . '/' . __FUNCTION__
@@ -57,6 +59,8 @@ class Secure extends CI_Controller {
                             'moisFiscal' => $etablissement->getEtablissementRs()->getRsMoisFiscal(),
                             'debutFiscale' => $this->cal->debutFinExercice($etablissement->getEtablissementRs()->getRsMoisFiscal(), $annee, 'debut'),
                             'finFiscale' => $this->cal->debutFinExercice($etablissement->getEtablissementRs()->getRsMoisFiscal(), $annee, 'fin'),
+                            'debutFiscaleN' => $this->cal->debutFinExercice($etablissement->getEtablissementRs()->getRsMoisFiscal(), ($annee - 1), 'debut'),
+                            'finFiscaleN' => $this->cal->debutFinExercice($etablissement->getEtablissementRs()->getRsMoisFiscal(), ($annee - 1), 'fin'),
                             'etablissementId' => $user->getUserEtablissementId(),
                             'etablissementGPS' => $etablissement->getEtablissementGps(),
                             'etablissementTFG' => $etablissement->getEtablissementTauxFraisGeneraux(),
@@ -66,7 +70,8 @@ class Secure extends CI_Controller {
                             'droits' => $groups,
                             'smsCredits' => 0,
                             'rechAffaireEtat' => 2,
-                            'analysePersonnelsAnnee' => date('Y')
+                            'analysePersonnelsAnnee' => date('Y'),
+                            'analyseAnnee' => $annee
                         )
                 );
                 $this->session->set_userdata('parametres', (array) $this->managerParametres->getParametres('array'));

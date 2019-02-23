@@ -54,6 +54,10 @@ if ($this->uri->segment(1) === 'planning' || $this->uri->segment(1) === 'heures'
 <script defer type="text/javascript" src="<?= base_url('assets/js/organibat.js'); ?>"></script>
 <script defer type="text/javascript" src="<?= base_url('assets/js/' . $this->uri->segment(1) . '.js'); ?>"></script>
 
-
+<?php
+if ($this->uri->segment(1) === 'statistiques'):
+    ?>
+    <script defer type="text/javascript" src="<?= base_url('assets/js/statistiques/' . $this->uri->segment(2) . '.js'); ?>"></script>
+<?php endif; ?>
 </body>
 </html>

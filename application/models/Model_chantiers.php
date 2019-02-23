@@ -26,6 +26,7 @@ class Model_chantiers extends MY_model {
                 ->set('chantierEtat', $chantier->getChantierEtat())
                 ->set('chantierDateCloture', $chantier->getChantierDateCloture())
                 ->set('chantierHeuresPrevues', $chantier->getChantierHeuresPrevues())
+                ->set('chantierCoutMo', null)
                 ->set('chantierBudgetAchats', $chantier->getChantierBudgetAchats())
                 ->set('chantierFraisGeneraux', $chantier->getChantierFraisGeneraux())
                 ->set('chantierTauxHoraireMoyen', $chantier->getChantierTauxHoraireMoyen())
@@ -51,6 +52,7 @@ class Model_chantiers extends MY_model {
                 ->set('chantierEtat', $chantier->getChantierEtat())
                 ->set('chantierDateCloture', $chantier->getChantierDateCloture())
                 ->set('chantierHeuresPrevues', $chantier->getChantierHeuresPrevues())
+                ->set('chantierCoutMo', $chantier->getChantierCoutMo())
                 ->set('chantierBudgetAchats', $chantier->getChantierBudgetAchats())
                 ->set('chantierFraisGeneraux', $chantier->getChantierFraisGeneraux())
                 ->set('chantierTauxHoraireMoyen', $chantier->getChantierTauxHoraireMoyen())
@@ -132,6 +134,16 @@ class Model_chantiers extends MY_model {
                 ->where('chantierOriginId', $chantierId)
                 ->get();
         return $this->retourne($query, $type, self::classe, true);
+    }
+
+    public function getPerformancesGlobalesRangeTaux($debut, $fin, $min, $max, $type = 'object') {
+        $query = $this->db->select('c.*')
+                ->from($this->table . ' c')
+                ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
+                ->where('a.affaireId <>', $this->session->userdata('affaireDiversId'))
+                ->where(array("a.affaireEtablissementId" => $this->session->userdata('etablissementId'), "c.chantierDateCloture >=" => $debut, "c.chantierDateCloture <" => $fin, 'c.chantierPerformanceHeures >= ' => $min, 'c.chantierPerformanceHeures <' => $max))
+                ->get();
+        return $this->retourne($query, $type, self::classe);
     }
 
 }

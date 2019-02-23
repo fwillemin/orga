@@ -19,6 +19,21 @@ class Affaires extends My_Controller {
         redirect('affaires/liste');
     }
 
+    public function majAnalysesBDD() {
+        $affaires = $this->managerAffaires->getAffaires(array('affaireEtat' => 3, 'affaireCoutMo' => 0));
+        if (!empty($affaires)):
+            foreach ($affaires as $affaire):
+                $affaire->hydrateChantiers();
+                if (!empty($affaire->getAffaireChantiers())):
+                    $affaire->getAffaireChantiers()[0]->reouvrir();
+                    $this->managerChantiers->editer($affaire->getAffaireChantiers()[0]);
+                    $affaire->getAffaireChantiers()[0]->cloture();
+                    $this->managerChantiers->editer($affaire->getAffaireChantiers()[0]);
+                endif;
+            endforeach;
+        endif;
+    }
+
     private function analyseAffaire(Affaire $affaire) {
 
         /* Initialisation */

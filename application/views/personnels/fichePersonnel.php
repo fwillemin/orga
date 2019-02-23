@@ -140,7 +140,7 @@
                         <a href="<?= site_url('personnels/exportPerformancesPersonnel/' . $personnel->getPersonnelId()); ?>" target="_blank" class="btn btn-link btn-sm" style = "position: absolute; bottom:5px; right:5px;">
                             <i class = "far fa-file-excel"></i> Exporter les données
                         </a>
-                        <canvas id = "graphPerformances" width = "400" height = "170" js-labels = "<?= $perfsLabels; ?>" js-performances = "<?= $perfs; ?>"</canvas>
+                        <canvas id = "graphPerformances" width = "400" height = "170" js-labels = "<?= $perfsLabels; ?>" js-performances = "<?= $perfs; ?>"></canvas>
                     </div>
                 </div>
             </div>

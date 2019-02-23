@@ -92,7 +92,7 @@ class Personnels extends My_Controller {
         /* Graph des indisponibilités */
         $motifs = $this->managerMotifs->getMotifs('motifGroupe, motifNom ASC', 'array');
         foreach ($motifs as $motif):
-            $motif->nbJours = $this->managerIndisponibilites->getJoursIndisponibilites($personnel, $motif->motifId, $annee)[0]->nbJours ?: 0;
+            $motif->nbJours = $this->managerIndisponibilites->getJoursIndisponibilites($personnel, $motif->motifId, $annee) ? $this->managerIndisponibilites->getJoursIndisponibilites($personnel, $motif->motifId, $annee)[0]->nbJours : 0;
         endforeach;
 
         /* Graph des performances */
@@ -101,7 +101,7 @@ class Personnels extends My_Controller {
         $performances['-20% à -50%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -50, -20)) ? count($result) : 0;
         $performances['-10% à -20%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -20, -10)) ? count($result) : 0;
         $performances['-5% à -10%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -10, -5)) ? count($result) : 0;
-        $performances['-5% à 0%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -25, 0)) ? count($result) : 0;
+        $performances['-5% à 0%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, -5, 0)) ? count($result) : 0;
         $performances['0 à 5%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, 0, 5)) ? count($result) : 0;
         $performances['5% à 10%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, 5, 10)) ? count($result) : 0;
         $performances['10% à 20%'] = !empty($result = $this->managerPerformanceChantiersPersonnels->getPerformancesByPersonnelRangeTaux($personnel, $annee, 10, 20)) ? count($result) : 0;

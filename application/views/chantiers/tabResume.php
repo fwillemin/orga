@@ -51,9 +51,6 @@
                         </tbody>
                     </table>
                     <?php
-                else:
-
-
                 endif;
                 ?>
             </div>
@@ -62,27 +59,29 @@
     </div>
     <div class="col-12 col-sm-4">
         <?php
-        foreach ($chantier->getChantierPerformancesPersonnels() as $performance):
+        if (!empty($chantier->getChantierPerformancesPersonnels())):
+            foreach ($chantier->getChantierPerformancesPersonnels() as $performance):
 
-            if ($dataPersonnel):
-                $dataPersonnel .= ', ' . $performance->getPerformancePersonnel()->getPersonnelNom() . ' ' . substr($performance->getPerformancePersonnel()->getPersonnelPrenom(), 0, 1);
-            else:
-                $dataPersonnel = $performance->getPerformancePersonnel()->getPersonnelNom() . ' ' . substr($performance->getPerformancePersonnel()->getPersonnelPrenom(), 0, 1);
-            endif;
+                if (isset($dataPersonnel)):
+                    $dataPersonnel .= ', ' . $performance->getPerformancePersonnel()->getPersonnelNom() . ' ' . substr($performance->getPerformancePersonnel()->getPersonnelPrenom(), 0, 1);
+                else:
+                    $dataPersonnel = $performance->getPerformancePersonnel()->getPersonnelNom() . ' ' . substr($performance->getPerformancePersonnel()->getPersonnelPrenom(), 0, 1);
+                endif;
 
-            if ($dataParticipation):
-                $dataParticipation .= ', ' . $performance->getPerformanceHeuresPointees();
-            else:
-                $dataParticipation = $performance->getPerformanceHeuresPointees();
-            endif;
+                if (isset($dataParticipation)):
+                    $dataParticipation .= ', ' . $performance->getPerformanceHeuresPointees();
+                else:
+                    $dataParticipation = $performance->getPerformanceHeuresPointees();
+                endif;
 
-        endforeach;
-        ?>
-        <canvas id = "graphChantierParticipations" width ="300" height = "200"
-                js-datapersonnels = "<?= $dataPersonnel; ?>"
-                js-dataparticipation ="<?= $dataParticipation; ?>"
-                >
-        </canvas>
+            endforeach;
+            ?>
+            <canvas id = "graphChantierParticipations" width ="300" height = "200"
+                    js-datapersonnels = "<?= $dataPersonnel; ?>"
+                    js-dataparticipation ="<?= $dataParticipation; ?>"
+                    >
+            </canvas>
+        <?php endif; ?>
     </div>
     <div class="col-12 col-sm-4">
         <?php

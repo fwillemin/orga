@@ -50,6 +50,8 @@ class Model_performanceChantiersPersonnels extends MY_model {
         $query = $this->db->select('p.*')
                 ->from($this->table . ' p')
                 ->join('chantiers c', 'c.chantierId = p.performanceChantierId')
+                ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
+                ->where('a.affaireId <>', $this->session->userdata('affaireDiversId'))
                 ->where(array("p.performancePersonnelId" => $personnel->getPersonnelId(), "FROM_UNIXTIME(c.chantierDateCloture, '%Y') =" => $annee, 'p.performanceImpactTaux >= ' => $min, 'p.performanceImpactTaux <' => $max))
                 ->get();
         return $this->retourne($query, $type, self::classe);

@@ -7,7 +7,7 @@
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  */
 /*
-
+  ALTER TABLE `affaires` ADD `affaireHeuresPointees` DECIMAL(8,2) NOT NULL DEFAULT '0' AFTER `affaireRemarque`, ADD `affaireCoutMo` DECIMAL(10,2) NOT NULL DEFAULT '0' AFTER `affaireHeuresPointees`, ADD `affaireAchats` DECIMAL(10,2) NOT NULL DEFAULT '0' AFTER `affaireCoutMo`, ADD `affaireFraisGeneraux` DECIMAL(10,2) NOT NULL DEFAULT '0' AFTER `affaireAchats`, ADD `affaireMarge` DECIMAL(10,2) AS ((if(affaireEtat = 3 ,(((`affairePrix` - `affaireCoutMo`) - `affaireAchats`) - `affaireFraisGeneraux`),null))) STORED AFTER `affaireFraisGeneraux`, ADD `affaireMargeHoraire` DECIMAL(6,2) AS ((affaireMarge/NULLIF(affaireHeuresPointees,0))) STORED AFTER `affaireMarge`;
  */
 class Affaire {
 
@@ -35,6 +35,12 @@ class Affaire {
     protected $affaireRemarque;
     protected $affaireChantiers;
     protected $affairePrixNonAttribue; /* affairePrix - SOMME(chantierPrix) */
+    /* --TRIGGERS -- */
+    protected $affaireHeuresPointees;
+    protected $affaireCoutMo;
+    protected $affaireAchats;
+    protected $affaireFraisGeneraux;
+    protected $affaireMarge;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -289,6 +295,46 @@ class Affaire {
 
     function setAffaireChantiers($affaireChantiers) {
         $this->affaireChantiers = $affaireChantiers;
+    }
+
+    function getAffaireHeuresPointees() {
+        return $this->affaireHeuresPointees;
+    }
+
+    function getAffaireCoutMo() {
+        return $this->affaireCoutMo;
+    }
+
+    function getAffaireAchats() {
+        return $this->affaireAchats;
+    }
+
+    function getAffaireFraisGeneraux() {
+        return $this->affaireFraisGeneraux;
+    }
+
+    function getAffaireMarge() {
+        return $this->affaireMarge;
+    }
+
+    function setAffaireHeuresPointees($affaireHeuresPointees) {
+        $this->affaireHeuresPointees = $affaireHeuresPointees;
+    }
+
+    function setAffaireCoutMo($affaireCoutMo) {
+        $this->affaireCoutMo = $affaireCoutMo;
+    }
+
+    function setAffaireAchats($affaireAchats) {
+        $this->affaireAchats = $affaireAchats;
+    }
+
+    function setAffaireFraisGeneraux($affaireFraisGeneraux) {
+        $this->affaireFraisGeneraux = $affaireFraisGeneraux;
+    }
+
+    function setAffaireMarge($affaireMarge) {
+        $this->affaireMarge = $affaireMarge;
     }
 
 }

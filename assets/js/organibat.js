@@ -1,5 +1,5 @@
-//var path = 'http://192.168.0.1/ORGANIBAT/organibat2';
-var path = 'https://www.organibat.com';
+var path = 'http://192.168.0.1/ORGANIBAT/organibat2';
+//var path = 'https://www.organibat.com';
 var chemin = path + '/index.php/';
 var cheminJs = path + '/assets/js/';
 var chartBackgrounds = ['#c7b5e0','#d4d5d7', '#b5e0d9','#517390', '#dfe0b5', '#e76e9e','#b5bde0','#e0d4b5','#e0b5ca','#8fb6e7'];

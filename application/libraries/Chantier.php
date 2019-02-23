@@ -5,9 +5,9 @@
  * Manager : Model_Affaires
  *
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
- */
-/*
-  ALTER TABLE `chantiers` ADD `chantierDeltaHeures` DECIMAL(6,2) AS (chantierHeuresPointees - chantierHeuresPrevues) STORED COMMENT 'Heures pointées - heures prévues' AFTER `chantierBudgetPrevisionnel`, ADD `chantierPerformanceHeures` DECIMAL(10,1) AS (round((((`chantierHeuresPointees` - `chantierHeuresPrevues`) / `chantierHeuresPrevues`) * 100),1)) STORED COMMENT '% de gain/perte des heures pointées par rapport aux heures prévues' AFTER `chantierDeltaHeures`;
+
+  ALTER TABLE `chantiers` ADD `chantierCoutMo` DECIMAL(10,2) NULL DEFAULT NULL COMMENT 'Coût des heures pointées généré à la clôture du chantier' AFTER `chantierPerformanceHeures`;
+
  */
 class Chantier {
 
@@ -28,6 +28,7 @@ class Chantier {
     protected $chantierEtatHtml;
     protected $chantierDateCloture;
     protected $chantierHeuresPrevues;
+    protected $chantierCoutMo;
     protected $chantierBudgetAchats;
     protected $chantierFraisGeneraux;
     protected $chantierTauxHoraireMoyen;
@@ -42,8 +43,8 @@ class Chantier {
     protected $chantierheuresPointees; /* Somme des heures pointées */
     /* VIRTUAL */
     protected $chantierDeltaHeures; /* heures pointees - heures prévues */
-    protected $chantierPerfomanceHeures; /* % de gain/perte des heures pointées par rapport aux heures prévues */
-    protected $chantierPerformancesPersonnels; /* % de gain/perte des heures pointées par rapport aux heures prévues */
+    protected $chantierPerformanceHeures; /* % de gain/perte des heures pointées par rapport aux heures prévues */
+    protected $chantierPerformancesPersonnels;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -105,33 +106,46 @@ class Chantier {
     }
 
     public function cloture() {
+        $CI = & get_instance();
         $this->chantierEtat = 2;
         if (!$this->chantierAffaire):
             $this->hydrateAffaire();
         endif;
         /* On initialisa la date de cloture à la date de création de son affaire dans le cas ou aucune heure ne serait saisie */
         $dateCloture = $this->chantierAffaire->getAffaireCreation();
+        $coutMo = 0;
+
         if (!$this->chantierAffectations):
             $this->hydrateAffectations();
         endif;
         if (!empty($this->chantierAffectations)):
             foreach ($this->chantierAffectations as $affectation):
                 $affectation->hydrateHeures();
+
                 if (!empty($affectation->getAffectationHeures())):
                     foreach ($affectation->getAffectationHeures() as $heure):
+                        /* Date de cloture */
                         if ($heure->getHeureDate() > $dateCloture):
                             $dateCloture = $heure->getHeureDate();
                         endif;
+                        /* Cout Mo */
+                        $taux = $CI->managerTauxHoraires->getTauxHoraireCible($affectation->getAffectationPersonnelId(), $heure->getHeureDate());
+                        if (empty($taux)):
+                            $taux = $CI->session->userdata('etablissementTHM');
+                        endif;
+                        $coutMo += round($heure->getHeureDuree() * $taux / 60, 2);
                     endforeach;
                 endif;
+
             endforeach;
         endif;
-
         $this->chantierDateCloture = $dateCloture;
+        $this->chantierCoutMo = $coutMo;
     }
 
     public function reouvrir() {
         $this->chantierEtat = 2;
+        $this->chantierCoutMo = NULL;
     }
 
     function getChantierId() {
@@ -190,12 +204,20 @@ class Chantier {
         return $this->chantierEtat;
     }
 
+    function getChantierEtatHtml() {
+        return $this->chantierEtatHtml;
+    }
+
     function getChantierDateCloture() {
         return $this->chantierDateCloture;
     }
 
     function getChantierHeuresPrevues() {
         return $this->chantierHeuresPrevues;
+    }
+
+    function getChantierCoutMo() {
+        return $this->chantierCoutMo;
     }
 
     function getChantierBudgetAchats() {
@@ -216,6 +238,38 @@ class Chantier {
 
     function getChantierAchats() {
         return $this->chantierAchats;
+    }
+
+    function getChantierAffectations() {
+        return $this->chantierAffectations;
+    }
+
+    function getChantierBudgetPrevu() {
+        return $this->chantierBudgetPrevu;
+    }
+
+    function getChantierBudgetConsomme() {
+        return $this->chantierBudgetConsomme;
+    }
+
+    function getChantierheuresPlanifiees() {
+        return $this->chantierheuresPlanifiees;
+    }
+
+    function getChantierheuresPointees() {
+        return $this->chantierheuresPointees;
+    }
+
+    function getChantierDeltaHeures() {
+        return $this->chantierDeltaHeures;
+    }
+
+    function getChantierPerformanceHeures() {
+        return $this->chantierPerformanceHeures;
+    }
+
+    function getChantierPerformancesPersonnels() {
+        return $this->chantierPerformancesPersonnels;
     }
 
     function setChantierId($chantierId) {
@@ -274,12 +328,20 @@ class Chantier {
         $this->chantierEtat = $chantierEtat;
     }
 
+    function setChantierEtatHtml($chantierEtatHtml) {
+        $this->chantierEtatHtml = $chantierEtatHtml;
+    }
+
     function setChantierDateCloture($chantierDateCloture) {
         $this->chantierDateCloture = $chantierDateCloture;
     }
 
     function setChantierHeuresPrevues($chantierHeuresPrevues) {
         $this->chantierHeuresPrevues = $chantierHeuresPrevues;
+    }
+
+    function setChantierCoutMo($chantierCoutMo) {
+        $this->chantierCoutMo = $chantierCoutMo;
     }
 
     function setChantierBudgetAchats($chantierBudgetAchats) {
@@ -302,12 +364,8 @@ class Chantier {
         $this->chantierAchats = $chantierAchats;
     }
 
-    function getChantierBudgetPrevu() {
-        return $this->chantierBudgetPrevu;
-    }
-
-    function getChantierBudgetConsomme() {
-        return $this->chantierBudgetConsomme;
+    function setChantierAffectations($chantierAffectations) {
+        $this->chantierAffectations = $chantierAffectations;
     }
 
     function setChantierBudgetPrevu($chantierBudgetPrevu) {
@@ -318,68 +376,32 @@ class Chantier {
         $this->chantierBudgetConsomme = $chantierBudgetConsomme;
     }
 
-    function getChantierheuresPlanifiees() {
-        return $this->chantierheuresPlanifiees;
-    }
-
-    function getChantierheuresPointees() {
-        return $this->chantierheuresConsommees;
-    }
-
     function setChantierheuresPlanifiees($chantierheuresPlanifiees) {
         $this->chantierheuresPlanifiees = $chantierheuresPlanifiees;
     }
 
-    function setChantierheuresPointees($chantierheuresConsommees) {
-        $this->chantierheuresConsommees = $chantierheuresConsommees;
+    function setChantierheuresPointees($chantierheuresPointees) {
+        $this->chantierheuresPointees = $chantierheuresPointees;
     }
 
-    function getChantierLivraisons() {
-        return $this->chantierLivraisons;
+    function setChantierDeltaHeures($chantierDeltaHeures) {
+        if (substr($chantierDeltaHeures, 0, 1) == '-'):
+            $this->chantierDeltaHeures = $chantierDeltaHeures;
+        else:
+            $this->chantierDeltaHeures = '+' . $chantierDeltaHeures;
+        endif;
     }
 
-    function setChantierLivraisons($chantierLivraisons) {
-        $this->chantierLivraisons = $chantierLivraisons;
-    }
-
-    function getChantierAffectations() {
-        return $this->chantierAffectations;
-    }
-
-    function setChantierAffectations($chantierAffectations) {
-        $this->chantierAffectations = $chantierAffectations;
-    }
-
-    function getChantierEtatHtml() {
-        return $this->chantierEtatHtml;
-    }
-
-    function setChantierEtatHtml($chantierEtatHtml) {
-        $this->chantierEtatHtml = $chantierEtatHtml;
-    }
-
-    function getChantierDeltaHeures() {
-        return $this->chantierDeltaHeures;
-    }
-
-    function getChantierPerfomanceHeures() {
-        return $this->chantierPerfomanceHeures;
-    }
-
-    function getChantierPerformancesPersonnels() {
-        return $this->chantierPerformancesPersonnels;
+    function setChantierPerformanceHeures($chantierPerformanceHeures) {
+        if (substr($chantierPerformanceHeures, 0, 1) == '-'):
+            $this->chantierPerformanceHeures = $chantierPerformanceHeures;
+        else:
+            $this->chantierPerformanceHeures = '+' . $chantierPerformanceHeures;
+        endif;
     }
 
     function setChantierPerformancesPersonnels($chantierPerformancesPersonnels) {
         $this->chantierPerformancesPersonnels = $chantierPerformancesPersonnels;
-    }
-
-    function setChantierDeltaHeures($chantierDeltaHeures) {
-        $this->chantierDeltaHeures = $chantierDeltaHeures;
-    }
-
-    function setChantierPerfomanceHeures($chantierPerfomanceHeures) {
-        $this->chantierPerfomanceHeures = $chantierPerfomanceHeures;
     }
 
 }

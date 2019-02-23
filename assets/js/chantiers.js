@@ -499,7 +499,9 @@ $(document).ready(function () {
         data: {
             labels: $('#graphChantierParticipations').attr('js-datapersonnels').split(','),
             datasets: [{                    
-                    data: participations
+                    data: participations,
+                    backgroundColor: chartBackgrounds,
+                    label: '# heures'
                 }]
         },
         options: {

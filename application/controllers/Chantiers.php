@@ -27,10 +27,20 @@ class Chantiers extends My_Controller {
     }
 
     public function majClotureChantiers() {
-        $chantiers = $this->managerChantiers->getChantiers(array('chantierEtat' => 2));
+        $chantiers = $this->managerChantiers->getChantiers(array('chantierEtat' => 2, 'chantierCoutMo' => 0));
         foreach ($chantiers as $chantier):
             $chantier->cloture();
             $this->managerChantiers->editer($chantier);
+        endforeach;
+    }
+
+    public function majParametresChantiers() {
+        $chantiers = $this->managerChantiers->getChantiers();
+        foreach ($chantiers as $chantier):
+            if ($chantier->getChantierTauxHoraireMoyen() == 0):
+                $chantier->setChantierTauxHoraireMoyen($this->session->userdata('etablissementTHM'));
+                $this->managerChantiers->editer($chantier);
+            endif;
         endforeach;
     }
 
@@ -40,7 +50,6 @@ class Chantiers extends My_Controller {
         endif;
 
         if (!$chantierId || !$this->existChantier($chantierId)):
-            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Chantier introuvable');
             redirect('affaires/liste');
         endif;
 
@@ -176,7 +185,7 @@ class Chantiers extends My_Controller {
         if (!empty($chantier->getChantierAffectations())):
             foreach ($chantier->getChantierAffectations() as $affectation):
                 if ($affectation->getAffectationHeuresPointees() > 0):
-                    if (!$intervenants[$affectation->getAffectationPersonnelId()]):
+                    if (!isset($intervenants[$affectation->getAffectationPersonnelId()])):
                         $intervenants[$affectation->getAffectationPersonnelId()] = $affectation->getAffectationHeuresPointees();
                     else:
                         $intervenants[$affectation->getAffectationPersonnelId()] += $affectation->getAffectationHeuresPointees();

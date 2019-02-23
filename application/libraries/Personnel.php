@@ -56,7 +56,6 @@ class Personnel {
     public function getTauxHoraireADate($date) {
 
         if (!$this->personnelTauxHoraireHistorique):
-//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Pas de taux horaires pour ce personnel');
             return 0;
         else:
 

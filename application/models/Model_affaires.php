@@ -170,4 +170,20 @@ class Model_affaires extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    /* ----
+     * STATS
+      ---- */
+
+    public function getAffairesStats($where = array(), $type = 'array') {
+        $query = $this->db->select("FROM_UNIXTIME(affaireDateCloture,'%m') as mois, COUNT(*) as nbAffaires, SUM(affairePrix) as caAffaires, SUM(affaireMarge) as margeAffaires")
+                ->from($this->table)
+                ->where('affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('affaireId <>', $this->session->userdata('affaireDiversId'))
+                ->where($where)
+                ->group_by('mois')
+                ->order_by("mois ASC")
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
 }

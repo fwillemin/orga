@@ -80,4 +80,21 @@ class Model_tauxhoraires extends MY_model {
         return $this->retourne($query, $type, self::classe, true);
     }
 
+    public function getTauxHoraireCible($personnelId, $date) {
+        $query = $this->db->select('t.tauxHoraire')
+                ->from($this->table . ' t')
+                ->join('personnels p', 'p.personnelId = tauxHorairePersonnelId', 'left')
+                ->where('p.personnelEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('tauxHorairePersonnelId', $personnelId)
+                ->where('tauxHoraireDate <=', $date)
+                ->order_by('t.tauxHoraireDate DESC')
+                ->limit(1, 0)
+                ->get();
+        if ($query->num_rows() > 0):
+            return $query->result()[0]->tauxHoraire;
+        else:
+            return FALSE;
+        endif;
+    }
+
 }

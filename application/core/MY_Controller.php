@@ -390,7 +390,7 @@ class My_Controller extends CI_Controller {
         elseif ($analyse['marge']['ecartTempsReel'] < 0):
             $analyse['marge']['ecartTempsReelHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">' . $analyse['marge']['ecartTempsReel'] . '</span>';
         else:
-            $analyse['marge']['ecartTempsReelHtml'] = '<span class="badge-secondary"><0/span>';
+            $analyse['marge']['ecartTempsReelHtml'] = '<span class="badge-secondary"></span>';
         endif;
 
         $analyse['marge']['ecartFinChantier'] = round($analyse['marge']['finChantier'] - $analyse['marge']['commerciale'], 2);
@@ -399,9 +399,8 @@ class My_Controller extends CI_Controller {
         elseif ($analyse['marge']['ecartFinChantier'] < 0):
             $analyse['marge']['ecartFinChantierHtml'] = '<span class="badgeAnalyseChantier badge badge-warning">' . $analyse['marge']['ecartFinChantier'] . '</span>';
         else:
-            $analyse['marge']['ecartFinChantierHtml'] = '<span class="badge-secondary"><0/span>';
+            $analyse['marge']['ecartFinChantierHtml'] = '<span class="badge-secondary"></span>';
         endif;
-        //log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($analyse, true));
 
         return $analyse;
     }
