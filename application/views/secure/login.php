@@ -13,9 +13,11 @@
                     <div class="form-group">
                         <input type="password" name="pass" id="pass" value="" placeholder="Mot de passe" class="form-control">
                     </div>
-                    <button type="submit" class="btn btn-outline-primary">
+                    <button type="submit" class="btn btn-outline-primary" id="btnSubmitLogin">
                         <i class="fas fa-sign-in-alt"></i> Connexion
                     </button>
+                    <i class="fas fa-spinner fa-pulse" style="display:none;" id="loader"></i>
+
                     <?= form_close(); ?>
                 </div>
             </div>
