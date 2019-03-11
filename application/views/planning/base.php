@@ -186,11 +186,11 @@
                             <tr>
                                 <?php
                                 for ($i = 0; $i < $nbSemainesPlanning; $i++):
-                                    $jourEncours = $premierJourPlanning + (8 + $i * 7) * 86400;
+                                    $jourEncours = $premierJourPlanning + ($i * 7) * 86400;
                                     ?>
                                     <td class="cellSemaines" colspan="14" align="center" style="min-width: <?= 14 * ($this->largeur + 1.5); ?>px;">
-                                        <button class="btn btn-sm btn-outline-info btnListingLivraison" semaine="<?= date('W', $jourEncours); ?>" annee ="<?= date('Y', $jourEncours); ?>">Livraisons</button>
-                                        <?= $this->cal->dateFrancais($jourEncours, 'Ma') . ' | Semaine ' . date('W', $jourEncours) . ' ' . date('Y', $currentDate); ?>
+                                        <button class="btn btn-sm btn-link btnListingLivraison" data-startweek="<?= $jourEncours; ?>">Livraisons</button>
+                                        <?= $this->cal->dateFrancais($jourEncours, 'DMa') . ' | Semaine ' . date('W', $jourEncours) . ' ' . date('Y', $currentDate); ?>
                                     </td>
                                     <?php
                                 endfor;
@@ -534,6 +534,36 @@ if ($this->ion_auth->in_group(array(61))):
                         </div>
                     </div>
                     <?= form_close(); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suivi des livraisons -->
+    <div class="modal fade" id="modalSuiviLivraison">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="font-size:14px;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="headerModalLivraison">Suivi des livraisons</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-sm table-bordered style1" id="tableSuiviLivraisons">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th style="width: 120px;">Livraison</th>
+                                <th style="width: 250px;">Description</th>
+                                <th>Qte</th>
+                                <th style="width: 150px;">Etat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

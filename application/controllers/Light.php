@@ -111,7 +111,7 @@ class Light extends My_Controller {
 
         $premierJour = $this->own->mktimeFromInputDate($debut);
         $premierJourPlanning = $this->cal->premierJourSemaine($premierJour, 0);
-        $dernierJourPlanning = $premierJourPlanning + (13 * 86400);
+        $dernierJourPlanning = $premierJourPlanning + (27 * 86400);
 
         /* Récuperation des données */
         $personnelsActifs = $this->managerPersonnels->getPersonnels(array('personnelActif' => 1), 'personnelEquipeId DESC, personnelNom, personnelPrenom ASC');
@@ -213,7 +213,7 @@ class Light extends My_Controller {
         endif;
 
         /* le planning va s'afficher sur N semaines */
-        $n = 2;
+        $n = 4;
 
         $data = array(
             'section' => 'planning',

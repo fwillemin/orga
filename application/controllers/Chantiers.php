@@ -77,8 +77,6 @@ class Chantiers extends My_Controller {
             endforeach;
         endif;
 
-//        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($chantier->getChantierPerformancesPersonnels(), true));
-
         $affaire = $chantier->getChantierAffaire();
         $affaire->hydrateChantiers();
 
@@ -337,13 +335,58 @@ class Chantiers extends My_Controller {
         if (!$this->form_validation->run('getChantier')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         else:
-            $achats = $this->managerAchats->getAchats($this->input->post('chantierId'), array(), 'achatLivraisonDate DESC', 'array');
+            $achats = $this->managerAchats->getAchats(array('achatChantierId' => $this->input->post('chantierId')), 'achatLivraisonDate DESC', 'array');
             if (!empty($achats)):
                 foreach ($achats as $achat):
                     $achat->achatLivraisonDate = $this->cal->dateFrancais($achat->achatLivraisonDate);
                 endforeach;
             endif;
             echo json_encode(array('type' => 'success', 'achats' => $achats));
+        endif;
+    }
+
+    public function achatsSemaine() {
+        $start = $this->input->post('start');
+        $end = $start + 6 * 86400;
+        $retour = array();
+        $achats = $this->managerAchats->getAchats(array('achatLivraisonDate >=' => $start, 'achatLivraisonDate <=' => $end), 'achatLivraisonDate ASC');
+        if (!empty($achats)):
+            foreach ($achats as $achat):
+                $achat->hydrateFournisseur();
+                $achat->hydrateChantier();
+                if (empty($achat->getAchatChantier())):
+                    log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Impossible de trouver le chantier : ' . $achat->getAchatChantierId() . ' lié à l\'achat : ' . $achat->getAchatId());
+                else:
+                    $achat->getAchatChantier()->hydrateClient();
+                endif;
+                $retour[] = array(
+                    'client' => $achat->getAchatChantier()->getChantierClient()->getClientNom(),
+                    'clientId' => $achat->getAchatChantier()->getChantierClient()->getClientId(),
+                    'chantierObjet' => $achat->getAchatChantier()->getChantierObjet(),
+                    'chantierId' => $achat->getAchatChantierId(),
+                    'livraisonDate' => $this->cal->dateFrancais($achat->getAchatLivraisonDate(), 'jDM'),
+                    'fournisseur' => $achat->getAchatFournisseurId() ? $achat->getAchatFournisseur()->getFournisseurNom() : '<span class="small">Pas de Fst</small>',
+                    'fournisseurTel' => $achat->getAchatFournisseurId() ? $achat->getAchatFournisseur()->getFournisseurTelephone() : '',
+                    'description' => $achat->getAchatDescription(),
+                    'achatId' => $achat->getAchatId(),
+                    'qte' => $achat->getAchatQte(),
+                    'achatAvancement' => $achat->getAchatLivraisonAvancement(),
+                    'achatAvancementText' => $achat->getAchatLivraisonAvancementText()
+                );
+            endforeach;
+        endif;
+        echo json_encode(array('type' => 'success', 'achats' => $retour));
+    }
+
+    public function setAchatLivraisonAvancement() {
+        if (!$this->existAchat($this->input->post('achatId')) || !$this->input->post('achatId')):
+            redirect('organibat/noway');
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $achat = $this->managerAchats->getAchatById($this->input->post('achatId'));
+            $achat->setAchatLivraisonAvancement($this->input->post('avancement'));
+            $this->managerAchats->editer($achat);
+            echo json_encode(array('type' => 'success'));
         endif;
     }
 

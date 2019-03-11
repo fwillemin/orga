@@ -92,7 +92,7 @@ class Chantier {
 
     public function hydrateAchats() {
         $CI = & get_instance();
-        $this->chantierAchats = $CI->managerAchats->getAchats($this->chantierId);
+        $this->chantierAchats = $CI->managerAchats->getAchats(array('achatChantierId' => $this->chantierId));
     }
 
     public function hydrateAffectations() {
@@ -125,7 +125,7 @@ class Chantier {
                 if (!empty($affectation->getAffectationHeures())):
                     foreach ($affectation->getAffectationHeures() as $heure):
                         /* Date de cloture */
-                        if ($heure->getHeureDate() > $dateCloture):
+                        if ($affectation->getAffectationType() < 3 && $heure->getHeureDate() > $dateCloture):
                             $dateCloture = $heure->getHeureDate();
                         endif;
                         /* Cout Mo */

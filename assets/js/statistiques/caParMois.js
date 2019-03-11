@@ -14,7 +14,7 @@ $(document).ready(function () {
                     fill: true,
                     borderWidth: 3,
                     type: 'line',
-                    lineTension:0.5,
+                    lineTension:1,
                     label: 'Marge N'
                     
                 },
@@ -32,7 +32,7 @@ $(document).ready(function () {
                     fill: true,
                     borderWidth: 3,
                     type: 'line',
-                    lineTension:0.5,
+                    lineTension:1,
                     label: 'Marge N-1',
                     hidden: true
                     

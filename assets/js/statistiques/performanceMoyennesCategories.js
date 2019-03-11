@@ -1,32 +1,23 @@
 $(document).ready(function () {
 
-    var graphPerformances = document.getElementById("graphPerformances").getContext('2d');
+    var graphPerformances = document.getElementById("graphPerformancesCategories").getContext('2d');
     var graph = new Chart(graphPerformances, {
-        type: 'bar',
-        title: 'Performances globales',
+        type: 'horizontalBar',
+        title: 'Performances moyennes par catégories',
         data: {
-            labels: $('#graphPerformances').attr('chart-labels').split(','),
+            labels: $('#graphPerformancesCategories').attr('chart-labels').split(','),
             datasets: [{
-                    data: $('#graphPerformances').attr('chart-performances').split(','),
-                    backgroundColor: ['#009999', '#00b3b3', '#00cccc', '#00e6e6', '#00ffff', '#1affff', '#ffb3b3', '#ff9999', '#ff8080', '#ff6666', '#ff4d4d', '#ff3333'],
-//                    backgroundColor: ['#70db70', '#85e085', '#99e699', '#adebad', '#c2f0c2', '#d6f5d6', '#ffcccc', '#ffb3b3', '#ff9999', '#ff8080', '#ff6666', '#ff4d4d'],
+                    data: $('#graphPerformancesCategories').attr('chart-performances').split(','),
+                    backgroundColor: $('#graphPerformancesCategories').attr('chart-backgroundcolors').split(','),
                     borderWidth: 2,
-                    label: 'Année N'
-                },
-                {
-                    data: $('#graphPerformances').attr('chart-performancesN').split(','),
-                    backgroundColor: 'rgb(51, 51, 77,0.1)',
-                    borderColor: 'rgb(51, 51, 77,0.2)',
-                    borderWidth: 2,
-                    label: 'Année N-1',
-                    hidden: true
+                    label: 'Gain / Perte'
                 }
             ]
         },
         options: {
             title: {
                 display: true,
-                text: 'Performances globales',
+                text: 'Performances moyennes par catégories',
                 fontSize: 20,
                 padding: 25
             },
@@ -46,13 +37,13 @@ $(document).ready(function () {
                 xAxes: [{
                         scaleLabel: {
                             display: true,
-                            labelString: '% performance'
+                            labelString: '% Gain / Perte de temps'
                         }
                     }],
                 yAxes: [{
                         scaleLabel: {
                             display: true,
-                            labelString: 'Nb chantiers'
+                            labelString: 'Catégories'
                         },
                         ticks: {
                             position: 0
@@ -62,12 +53,12 @@ $(document).ready(function () {
             tooltips: {
                 callbacks: {
                     label: function (tooltipItem, data) {
-                        var label = data.datasets[tooltipItem.datasetIndex].label || '';
-
+                        var label = tooltipItem.yLabel;
+                        
                         if (label) {
                             label += ': ';
                         }
-                        label += Math.round(tooltipItem.yLabel * 100) / 100;
+                        label += tooltipItem.xLabel + '%';
                         return label;
                     }
                 }
@@ -75,7 +66,7 @@ $(document).ready(function () {
         }
     });
 
-    $('#graphPerformances').on('click', function (evt) {
+    $('#graphPerformancesCategories').on('click', function (evt) {
         var activePoints = graph.getElementsAtEvent(evt);
         if (activePoints[0]) {
             var chartData = activePoints[0]['_chart'].config.data;
@@ -84,7 +75,7 @@ $(document).ready(function () {
             var label = chartData.labels[idx];
             var value = chartData.datasets[0].data[idx];
 
-            $.post(chemin + 'statistiques/performancesGlobalesRangeDetails', {range: idx}, function (retour) {
+            $.post(chemin + 'statistiques/performancesMoyennesCategoriesDetails', {indexCategorie: idx}, function (retour) {
                 $('#tableDetailsPerfs tbody tr').remove();
                 for (i = 0; i < retour.chantiers.length; i++) {
                     $('#tableDetailsPerfs').append('<tr><td>'

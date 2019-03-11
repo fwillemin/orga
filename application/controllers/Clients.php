@@ -148,7 +148,7 @@ class Clients extends My_Controller {
             if ($result):
 
                 $volOiseau = $this->maps->distanceVolOiseau(explode(',', $this->session->userdata('etablissementGPS'))[0], explode(',', $this->session->userdata('etablissementGPS'))[1], $result['latitude'], $result['longitude']);
-                $zone = floor($volOiseau / 10000) + 1;
+                $zone = floor($result['distance'] / 10000) + 1;
                 if ($zone > 6):
                     $zone = 6;
                 endif;
@@ -165,10 +165,10 @@ class Clients extends My_Controller {
                 $place->setPlaceAdresse($result['adresse']);
                 $place->setPlaceVille($result['ville']);
                 $place->setPlaceGoogleId($result['placeGoogleId']);
-                $place->setPlacDistance($result['distance']);
-                $place->setPlacDistance($result['duree']);
-                $place->setPlacDistance($zone);
-                $place->setPlacDistance($volOiseau);
+                $place->setPlaceDistance($result['distance']);
+                $place->setPlaceDuree($result['duree']);
+                $place->setPlaceZone($zone);
+                $place->setPlaceVolOiseau($volOiseau);
 
                 $this->managerPlaces->editer($place);
 

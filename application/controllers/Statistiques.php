@@ -53,7 +53,7 @@ class Statistiques extends My_Controller {
 
     public function caParMois() {
 
-        $ca = $marge = $nbChantiers = $caN = $margeN = $nbChantiersN = $this->grilleMensuelle;
+        $ca = $marge = $caN = $margeN = $this->grilleMensuelle;
 
         $dataAffaires = $this->managerAffaires->getAffairesStats(array('affaireEtat' => 3, 'affaireDateCloture >=' => $this->debutAnalyse, 'affaireDateCloture <=' => $this->finAnalyse));
         if (!empty($dataAffaires)):
@@ -61,7 +61,6 @@ class Statistiques extends My_Controller {
                 $mois = $data->mois;
                 $ca[$mois] = $data->caAffaires;
                 $marge[$mois] = $data->margeAffaires;
-                $nbChantiers[$mois] = $data->nbAffaires;
             endforeach;
         endif;
         $dataAffairesN = $this->managerAffaires->getAffairesStats(array('affaireEtat' => 3, 'affaireDateCloture >=' => $this->debutAnalyseN, 'affaireDateCloture <=' => $this->finAnalyseN));
@@ -70,18 +69,15 @@ class Statistiques extends My_Controller {
                 $mois = $dataN->mois;
                 $caN[$mois] = $dataN->caAffaires;
                 $margeN[$mois] = $dataN->margeAffaires;
-                $nbChantiersN[$mois] = $dataN->nbAffaires;
             endforeach;
         endif;
 
         $data = array(
             'mois' => $this->labelsMois,
-            'ca' => implode(",", $ca),
-            'marge' => implode(",", $marge),
-            'nbChantiers' => implode(",", $nbChantiers),
-            'caN' => implode(",", $caN),
-            'margeN' => implode(",", $margeN),
-            'nbChantiersN' => implode(",", $nbChantiersN),
+            'ca' => $ca,
+            'marge' => $marge,
+            'caN' => $caN,
+            'margeN' => $margeN,
             'title' => 'Evolution du CA',
             'description' => 'Chiffre d\'affaires et marges par mois sur l\'année fiscale en cous',
             'content' => $this->viewFolder . '/' . __FUNCTION__
@@ -95,7 +91,6 @@ class Statistiques extends My_Controller {
         $caTemp = $margeTemp = $caTempN = $margeTempN = 0;
 
         $dataAffaires = $this->managerAffaires->getAffairesStats(array('affaireEtat' => 3, 'affaireDateCloture >=' => $this->debutAnalyse, 'affaireDateCloture <=' => $this->finAnalyse));
-        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($dataAffaires, true));
         if (!empty($dataAffaires)):
 
             foreach ($caCumul as $mois => $value):
@@ -172,7 +167,7 @@ class Statistiques extends My_Controller {
             'performances' => $performances,
             'performancesN' => $performancesN,
             'title' => 'Performances chantiers',
-            'description' => 'Chiffre d\'affaires et marges cumulés sur l\'année fiscale en cous',
+            'description' => 'Performances globales en heures sur la réalisation des chantiers',
             'content' => $this->viewFolder . '/' . __FUNCTION__
         );
         $this->load->view('template/content', $data);
@@ -249,6 +244,103 @@ class Statistiques extends My_Controller {
             endforeach;
         endif;
         echo json_encode(array('type' => 'success', 'chantiers' => $details));
+    }
+
+    public function performanceMoyennesCategories() {
+
+        $perfsMoyennes = $this->managerChantiers->getPerformancesMoyennesCategories($this->debutAnalyse, $this->finAnalyse);
+
+        $data = array(
+            'perfsMoyennes' => $perfsMoyennes,
+            'title' => 'Performances moyennes par catégories de chantier',
+            'description' => 'Performances heures moyennes par catégories de chantiers',
+            'content' => $this->viewFolder . '/' . __FUNCTION__
+        );
+        $this->load->view('template/content', $data);
+    }
+
+    public function performancesMoyennesCategoriesDetails() {
+
+        $categorieId = $this->managerChantiers->getPerformancesMoyennesCategories($this->debutAnalyse, $this->finAnalyse)[$this->input->post('indexCategorie')]->categorieId;
+        $details = array();
+        $chantiers = $this->managerChantiers->getChantiers(array('chantierCategorieId' => $categorieId, 'chantierDateCloture >= ' => $this->debutAnalyse, 'chantierDateCloture <' => $this->finAnalyse));
+        if (!empty($chantiers)):
+            foreach ($chantiers as $chantier):
+                $chantier->hydrateClient();
+                $details[] = array(
+                    'chantierId' => $chantier->getChantierId(),
+                    'affaireId' => $chantier->getChantierAffaire()->getAffaireId(),
+                    'client' => $chantier->getChantierClient()->getClientNom() . ' - ' . $chantier->getChantierClient()->getClientVille(),
+                    'affaireObjet' => $chantier->getChantierAffaire()->getAffaireObjet(),
+                    'chantierObjet' => $chantier->getChantierObjet(),
+                    'chantierCategorie' => $chantier->getChantierCategorie(),
+                    'chantierDeltaHeures' => $chantier->getChantierDeltaHeures(),
+                    'chantierPerformanceHeures' => $chantier->getChantierPerformanceHeures() . '%'
+                );
+            endforeach;
+        endif;
+        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($details, true));
+        echo json_encode(array('type' => 'success', 'chantiers' => $details));
+    }
+
+    public function affaires() {
+
+        $nbAffaires = $nbAffairesN = $cumulAffaires = $cumulAffairesN = $this->grilleMensuelle;
+        $cumulTemp = $cumulTempN = 0;
+
+        $dataAffaires = $this->managerAffaires->getAffairesStats(array('affaireEtat' => 3, 'affaireDateCloture >=' => $this->debutAnalyse, 'affaireDateCloture <=' => $this->finAnalyse));
+        if (!empty($dataAffaires)):
+
+            foreach ($dataAffaires as $data):
+                $mois = $data->mois;
+                $nbAffaires[$mois] = $data->nbAffaires;
+            endforeach;
+
+            foreach ($cumulAffaires as $mois => $value):
+                foreach ($dataAffaires as $data):
+                    if ($data->mois == $mois):
+                        $cumulTemp += $data->nbAffaires;
+                        $cumulAffaires[$mois] = $cumulTemp;
+                        continue;
+                    endif;
+                    if ($cumulAffaires[$mois] == 0):
+                        $cumulAffaires[$mois] = $cumulTemp;
+                    endif;
+                endforeach;
+            endforeach;
+
+        endif;
+
+        $dataAffairesN = $this->managerAffaires->getAffairesStats(array('affaireEtat' => 3, 'affaireDateCloture >=' => $this->debutAnalyseN, 'affaireDateCloture <=' => $this->finAnalyseN));
+        if (!empty($dataAffairesN)):
+            foreach ($dataAffairesN as $dataN):
+                $mois = $dataN->mois;
+                $nbAffairesN[$mois] = $dataN->nbAffaires;
+            endforeach;
+            foreach ($cumulAffairesN as $mois => $value):
+                foreach ($dataAffairesN as $dataN):
+                    if ($dataN->mois == $mois):
+                        $cumulTempN += $dataN->nbAffaires;
+                        $cumulAffairesN[$mois] = $cumulTempN;
+                        continue;
+                    endif;
+                endforeach;
+            endforeach;
+        endif;
+
+        $data = array(
+            'mois' => $this->labelsMois,
+            'repartitionsAffaires' => $nbAffaires,
+            'repartitionsAffairesN' => $nbAffairesN,
+            'nbAffaires' => implode(",", $nbAffaires),
+            'nbAffairesN' => implode(",", $nbAffairesN),
+            'cumulAffaires' => implode(",", $cumulAffaires),
+            'cumulAffairesN' => implode(",", $cumulAffairesN),
+            'title' => 'Nombre d\'affaires',
+            'description' => 'Nombre d\'affaires enregistrées mois par mois',
+            'content' => $this->viewFolder . '/' . __FUNCTION__
+        );
+        $this->load->view('template/content', $data);
     }
 
 }

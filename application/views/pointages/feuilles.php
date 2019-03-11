@@ -163,21 +163,21 @@ $totalZ5 = 0;
                                         $totalMois += $h->getHeureDuree(); /* en minutes */
                                     endif;
                                     /* calcul de la zone */
-                                    if ($h->getHeureAffectation()->getAffectationPlace() && $h->getHeureAffectation()->getAffectationPlace()->getPlaceVolOiseau() > $distanceVolOiseauMax):
-                                        $distanceVolOiseauMax = $h->getHeureAffectation()->getAffectationPlace()->getPlaceVolOiseau();
+                                    if ($h->getHeureAffectation()->getAffectationPlace() && $h->getHeureAffectation()->getAffectationPlace()->getPlaceDistance() > $distanceVolOiseauMax):
+                                        $distanceMax = $h->getHeureAffectation()->getAffectationPlace()->getPlaceDistance();
                                     endif;
                                 endif;
                             endforeach;
                         endif;
                         /* on recherche la zone de déplacement de cette journée */
-                        if ($distanceVolOiseauMax > 0):
-                            if (floor($distanceVolOiseauMax / 1000) >= 40): $totalZ5++;
+                        if ($distanceMax > 0):
+                            if (floor($distanceMax / 1000) >= 40): $totalZ5++;
                                 $zone = 5;
-                            elseif (floor($distanceVolOiseauMax / 1000) >= 30): $totalZ4++;
+                            elseif (floor($distanceMax / 1000) >= 30): $totalZ4++;
                                 $zone = 4;
-                            elseif (floor($distanceVolOiseauMax / 1000) >= 20): $totalZ3++;
+                            elseif (floor($distanceMax / 1000) >= 20): $totalZ3++;
                                 $zone = 3;
-                            elseif (floor($distanceVolOiseauMax / 1000) >= 10): $totalZ2++;
+                            elseif (floor($distanceMax / 1000) >= 10): $totalZ2++;
                                 $zone = 2;
                             else: $totalZ1++;
                                 $zone = 1;

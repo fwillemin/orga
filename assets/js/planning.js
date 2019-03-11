@@ -543,10 +543,10 @@ $(document).ready(function () {
             }
         }, 'json');
     });
-    
-    $('.colorAffectationsChantier').on('click', function () {        
+
+    $('.colorAffectationsChantier').on('click', function () {
         $('#masquePlanning').fadeIn(300);
-        $('.affectation, .livraison').css('z-index', 2);        
+        $('.affectation, .livraison').css('z-index', 2);
         /* Surbrillance des affectations contraintes */
         console.log($(this).attr('data-affectations'));
         var affectations = $(this).attr('data-affectations').split(",");
@@ -893,6 +893,45 @@ $(document).ready(function () {
 
     $('#btnSMS').on('click', function () {
         $('#modalSMS').modal('show');
+    });
+
+    $('.btnListingLivraison').on('click', function () {
+        $.post(chemin + 'chantiers/achatsSemaine', {start: $(this).attr('data-startweek')}, function (retour) {
+            $('#tableSuiviLivraisons tbody tr').remove();
+            for (i = 0; i < retour.achats.length; i++) {
+
+                if (retour.achats[i].achatAvancement == '1') {
+                    select = "<option value='1' selected data-content='" + retour.achats[i].achatAvancementText + "'>En attente</option><option value='2'>Confirmée</option><option value='3'>Réceptionnée</option>";
+                } else {
+                    if (retour.achats[i].achatAvancement == '2') {
+                        select = "<option value='1'>En attente</option><option value='2' selected data-content='" + retour.achats[i].achatAvancementText + "'>Confirmée</option><option value='3'>Réceptionnée</option>";
+                    } else {
+                        select = "<option value='1'>En attente</option><option value='2'>Confirmée</option><option value='3' selected data-content='" + retour.achats[i].achatAvancementText + "'>Réceptionnée</option>";
+                    }
+                }
+                $('#tableSuiviLivraisons tbody').append('<tr data-achatid="' + retour.achats[i].achatId + '"><td>'
+                        + retour.achats[i].client + '<br><a href="' + chemin + '/chantiers/ficheChantier/' + retour.achats[i].chantierId + '/a' + retour.achats[i].achatId + '">' + retour.achats[i].chantierObjet + '</a>' + '</td><td>' + retour.achats[i].livraisonDate
+                        + '<br>' + retour.achats[i].fournisseur + '<br><span class="small" style="color:grey;">' + retour.achats[i].fournisseurTel + '</span></td><td>' + retour.achats[i].description + '</td><td>' + retour.achats[i].qte + '</td><td>'
+                        + '<select class="selectpicker changeAchatAvancement" data-width="100%">' + select + '</select></td></tr>');
+            }
+            $('#tableSuiviLivraisons .selectpicker').selectpicker('refresh');
+            $('#modalSuiviLivraison').modal('show');
+        }, 'json')
+    });
+    
+    $('#tableSuiviLivraisons').on('changed.bs.select','.changeAchatAvancement', function(e){
+        e.stopPropagation();
+        var element = $(this);  
+        $.post(chemin + 'chantiers/setAchatLivraisonAvancement', {achatId: $(this).closest('tr').attr('data-achatid'), avancement: $(this).val()}, function(retour){
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    $.toaster({priority: 'success', title: '<strong><i class="fas fa-check"></i> OK</strong>', message: '<br>Avancement confirmé'});
+                    break;
+            }
+        }, 'json');
     });
 
     $('.connectPersonnel').on('click', function () {

@@ -28,7 +28,7 @@
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/organibat.css'); ?>" >
 
 
-        <!-- reload gulp --><script src="//localhost:35729/livereload.js"></script>
+        <!-- reload gulp -->
     </head>
 
     <body>

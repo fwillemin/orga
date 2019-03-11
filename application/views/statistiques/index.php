@@ -24,7 +24,7 @@
                         </span>
                         <p>
                             <br><a href="<?= site_url('statistiques/performanceGlobale'); ?>">Performance globale</a>
-                            <br><a href="<?= site_url(''); ?>">Comparaison des performances pour les catégories</a>
+                            <br><a href="<?= site_url('statistiques/performanceMoyennesCategories'); ?>">Comparaison des performances pour les catégories</a>
                         </p>
                     </div>
                 </div>
@@ -34,11 +34,11 @@
                     <div class="cadre">
                         <h3>Affaires</h3>
                         <span class="description">
-                            Analyse des affaires <b>terminées</b> par année fiscale.
+                            Analyse des affaires créées par année fiscale.
                         </span>
                         <p>
-                            <br><a href="<?= site_url(''); ?>">Affaires signées</a>
-                            <br><a href="<?= site_url(''); ?>">Affaires signées par catégories</a>
+                            <br><a href="<?= site_url('statistiques/affaires'); ?>">Affaires</a>
+                            <br><a href="<?= site_url('statistiques/'); ?>">Affaires par catégories</a>
                         </p>
                     </div>
                 </div>
@@ -49,8 +49,8 @@
                             Analyse des chantiers <b>terminés</b> par année fiscale
                         </span>
                         <p>
-                            <br><a href="<?= site_url(''); ?>">Répartition des chantiers par catégories</a>
-                            <br><a href="<?= site_url(''); ?>">Performances par catégories de chantier</a>
+                            <br><a href="<?= site_url('statistiques/'); ?>">Répartition des chantiers par catégories</a>
+                            <br><a href="<?= site_url('statistiques/'); ?>">Performances par catégories de chantier</a>
                         </p>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                             Vos rapports et analyses personnalisés
                         </span>
                         <p>
-                            <br><a href="<?= site_url(''); ?>">Nous contacter</a>
+                            <br><a href="<?= site_url('statistiques/'); ?>">Nous contacter</a>
                         </p>
                     </div>
                 </div>

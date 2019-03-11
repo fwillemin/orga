@@ -146,4 +146,17 @@ class Model_chantiers extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function getPerformancesMoyennesCategories($debut, $fin, $type = 'array') {
+        $query = $this->db->select('cat.categorieNom AS categorie, ROUND(AVG(c.chantierPerformanceHeures),2) AS perfMoyenne, cat.categorieId AS categorieId')
+                ->from($this->table . ' c')
+                ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
+                ->join('categories cat', 'cat.categorieId = c.chantierCategorieId')
+                ->where('a.affaireId <>', $this->session->userdata('affaireDiversId'))
+                ->where(array("a.affaireEtablissementId" => $this->session->userdata('etablissementId'), "c.chantierDateCloture >=" => $debut, "c.chantierDateCloture <" => $fin))
+                ->group_by('c.chantierCategorieId')
+                ->order_by('perfMoyenne ASC')
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
 }

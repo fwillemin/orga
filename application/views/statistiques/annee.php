@@ -1,5 +1,5 @@
 <div class="row" style="margin-bottom:5px;">
-    <div class="col-8 offset-2 col-sm-4 offset-sm-4 col-md-2 offset-md-5 text-center" id="statsAnneeSelector">
+    <div class="col-8 offset-2 col-md-4 offset-md-4 col-lg-2 offset-lg-5 text-center" id="statsAnneeSelector">
         <select class="selectpicker" id="changeAnalyseAnnee" data-width="100%">
             <?php
             if ($this->session->userdata('moisFiscal') > 1 && date('m') < $this->session->userdata('moisFiscal')):

@@ -71,10 +71,12 @@ class Model_achats extends MY_model {
      * @param array $tri Critères de tri des raisonSociales
      * @return array Liste d'objets de la classe Achat
      */
-    public function getAchats($chantierId = null, $where = array(), $tri = 'achatDate ASC', $type = 'object') {
-        $query = $this->db->select('*')
-                ->from($this->table)
-                ->where('achatChantierId', $chantierId)
+    public function getAchats($where = array(), $tri = 'achatDate ASC', $type = 'object') {
+        $query = $this->db->select('a.*')
+                ->from('achats a')
+                ->join('chantiers c', 'c.chantierId = a.achatChantierId')
+                ->join('affaires af', 'af.affaireId = c.chantierAffaireId')
+                ->where('af.affaireEtablissementId', $this->session->userdata('etablissementId'))
                 ->where($where)
                 ->order_by($tri)
                 ->get();
