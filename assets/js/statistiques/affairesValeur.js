@@ -1,14 +1,14 @@
 $(document).ready(function () {
 
-    var graphAffairesParMois = document.getElementById("graphAffairesParMois").getContext('2d');
+    var graphAffairesParMois = document.getElementById("graphValeurAffairesParMois").getContext('2d');
     new Chart(graphAffairesParMois, {
         type: 'bar',
         title: 'Analyse des affaires lancées par mois',
         data: {
-            labels: $('#graphAffairesParMois').attr('chart-labels').split(','),
+            labels: $('#graphValeurAffairesParMois').attr('chart-labels').split(','),
             datasets: [
                 {
-                    data: $('#graphAffairesParMois').attr('chart-affaires').split(','),
+                    data: $('#graphValeurAffairesParMois').attr('chart-affaires').split(','),
                     backgroundColor: 'rgb(77, 166, 255,0.5)',
                     borderColor: 'rgb(77, 166, 255,0.5)',
                     fill: true,
@@ -17,7 +17,7 @@ $(document).ready(function () {
                     yAxisID: 'A'
                 },
                 {
-                    data: $('#graphAffairesParMois').attr('chart-affairesN').split(','),
+                    data: $('#graphValeurAffairesParMois').attr('chart-affairesN').split(','),
                     backgroundColor: 'rgb(51, 51, 77,0.1)',
                     borderColor: 'rgb(51, 51, 77,0.2)',
                     fill: true,
@@ -27,7 +27,7 @@ $(document).ready(function () {
                     yAxisID: 'A'
                 },
                 {
-                    data: $('#graphAffairesParMois').attr('chart-cumul').split(','),
+                    data: $('#graphValeurAffairesParMois').attr('chart-cumul').split(','),
                     backgroundColor: 'rgb(51, 51, 77,0.1)',
                     borderColor: 'rgb(51, 51, 153,0.8)',
                     fill: false,
@@ -38,7 +38,7 @@ $(document).ready(function () {
                     yAxisID: 'B'
                 },
                 {
-                    data: $('#graphAffairesParMois').attr('chart-cumulN').split(','),
+                    data: $('#graphValeurAffairesParMois').attr('chart-cumulN').split(','),
                     backgroundColor: 'rgb(51, 51, 77,0.1)',
                     borderColor: 'rgb(51, 51, 77,0.2)',
                     fill: false,
@@ -83,10 +83,10 @@ $(document).ready(function () {
                         type: 'linear',
                         position: 'left',
                         display: true,
-                        labelString: 'Nb Affaires',
+                        labelString: 'CA Affaires K€',
                         scaleLabel: {
                             display: true,
-                            labelString: 'nb affaires'
+                            labelString: 'CA affaires K€'
                         }
                     },
                     {
@@ -94,10 +94,10 @@ $(document).ready(function () {
                         type: 'linear',
                         position: 'right',
                         display: true,
-                        labelString: 'Cumulées',
+                        labelString: 'CA cumulé K€',
                         scaleLabel: {
                             display: true,
-                            labelString: 'Cumulées'
+                            labelString: 'CA cumulé K€'
                         }
                     }
                 ]

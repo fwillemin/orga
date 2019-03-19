@@ -524,6 +524,10 @@ and open the template in the editor.
         position: relative;
         top:-10px;
     }
+    
+    .hsOK, .hsIgnored {
+        margin-top:5px;        
+    }
 }
 
 @media print {

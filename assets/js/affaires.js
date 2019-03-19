@@ -320,6 +320,42 @@ $(document).ready(function () {
             }
         }, 'json');
     });
+    
+    var graphAnalyseAffaire = document.getElementById("graphAnalyseAffaire").getContext('2d');
+    new Chart(graphAnalyseAffaire, {
+        type: 'doughnut',
+        title: 'Analyse de l\'affaire',
+        data: {
+            labels: $('#graphAnalyseAffaire').attr('chart-labels').split(','),
+            datasets: [
+                {
+                    data: $('#graphAnalyseAffaire').attr('chart-repartition').split(','),
+                    backgroundColor: chartBackgrounds,
+                    borderColor: chartBackgrounds
+                }
+            ]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Analyse de l\'affaire',
+                fontSize: 20,
+                padding: 25
+            },
+            layout: {
+                padding: {
+                    left: 20,
+                    right: 20,
+                    top: -20,
+                    bottom: 50
+                }
+            },
+            legend: {
+                display: true,
+                position: 'right'
+            }
+        }
+    });
 
 });
 

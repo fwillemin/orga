@@ -9,7 +9,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-12 col-xl-9">
+            <div class="col-12">
                 Les modifications des paramètres ne sont pas rétroactives.
                 <table class="table table-bordered table-sm style1" id="tableHoraires">
                     <thead>
@@ -131,13 +131,28 @@
                         <tr>
                             <td>
                                 <strong>Générer les paniers dans les feuilles de pointages</strong>
-                                <br>Calcul du déclenchement des paniers. Si la valeur est à "NON", les cases "PANIER" resteront vides lors de la génération des feuilles de pointage.
+                                <br>Calcul du déclenchement des paniers.<br>Si la valeur est à "NON", les cases "PANIER" resteront vides lors de la génération des feuilles de pointage.
                             </td>
                             <td>
                                 <select name="genererPaniers" id="genererPaniers" class="form-control form-control-sm" style="text-align: right;">
                                     <option value="1" <?= $this->session->userdata('parametres')['genererPaniers'] == 1 ? 'selected' : ''; ?> >Oui</option>
                                     <option value="0" <?= $this->session->userdata('parametres')['genererPaniers'] == 0 ? 'selected' : ''; ?> >Non</option>
                                 </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Heures supplémentaires</strong>
+                                <br>Défini la limite d'heures par semaine au delà de laquelle les heures supplémentaires sont comptabilisées
+                                <br>Les heures supplémentaires se gérent dans le module <a href="<?= site_url('pointages/heuresSupplementaires'); ?>">Pointages</a>
+                            </td>
+                            <td>
+                                <div class="input-group input-group-sm">
+                                    <input style="text-align: right;" type="text" class="form-control form-control-sm" name="HeuresSupp" value="<?= $this->session->userdata('parametres')['limiteHeuresSupp']; ?>">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">heures</span>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>

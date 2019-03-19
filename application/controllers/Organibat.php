@@ -75,6 +75,7 @@ class Organibat extends My_Controller {
             $parametre->setTranchePointage($this->input->post('tranchePointage'));
             $parametre->setTailleAffectations($this->input->post('tailleAffectations'));
             $parametre->setGenererPaniers($this->input->post('genererPaniers'));
+            $parametre->setLimiteHeuresSupp($this->input->post('HeuresSupp'));
             $this->managerParametres->editer($parametre);
 
             $etablissement = $this->managerEtablissements->getEtablissementById($this->session->userdata('etablissementId'));

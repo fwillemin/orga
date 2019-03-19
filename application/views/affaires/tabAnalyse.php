@@ -179,5 +179,12 @@ else:
                 </tbody>
             </table>
         </div>
+        <div class="col-12 col-sm-5">
+            <?php
+            $datas = $analyse['marge']['tempsReel'] . ',' . $analyse['achats']['tempsReel'] . ',' . ($analyse['mainO']['tempsReel'] ?: '0') . ',' . ($analyse['fraisGeneraux'] ?: '0');
+            //echo $datas;
+            ?>
+            <canvas style="" id="graphAnalyseAffaire" width="300" height="150" chart-labels="Marge,Achats,Main d'oeuvre,Frais généraux" chart-repartition="<?= $datas; ?>"></canvas>
+        </div>
     </div>
 <?php endif; ?>

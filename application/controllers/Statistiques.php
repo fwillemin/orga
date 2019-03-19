@@ -279,7 +279,6 @@ class Statistiques extends My_Controller {
                 );
             endforeach;
         endif;
-        log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($details, true));
         echo json_encode(array('type' => 'success', 'chantiers' => $details));
     }
 
@@ -288,7 +287,7 @@ class Statistiques extends My_Controller {
         $nbAffaires = $nbAffairesN = $cumulAffaires = $cumulAffairesN = $this->grilleMensuelle;
         $cumulTemp = $cumulTempN = 0;
 
-        $dataAffaires = $this->managerAffaires->getAffairesStats(array('affaireEtat' => 3, 'affaireDateCloture >=' => $this->debutAnalyse, 'affaireDateCloture <=' => $this->finAnalyse));
+        $dataAffaires = $this->managerAffaires->getAffairesStatsCreation(array('affaireCreation >=' => $this->debutAnalyse, 'affaireCreation <=' => $this->finAnalyse));
         if (!empty($dataAffaires)):
 
             foreach ($dataAffaires as $data):
@@ -311,7 +310,7 @@ class Statistiques extends My_Controller {
 
         endif;
 
-        $dataAffairesN = $this->managerAffaires->getAffairesStats(array('affaireEtat' => 3, 'affaireDateCloture >=' => $this->debutAnalyseN, 'affaireDateCloture <=' => $this->finAnalyseN));
+        $dataAffairesN = $this->managerAffaires->getAffairesStatsCreation(array('affaireCreation >=' => $this->debutAnalyseN, 'affaireCreation <=' => $this->finAnalyseN));
         if (!empty($dataAffairesN)):
             foreach ($dataAffairesN as $dataN):
                 $mois = $dataN->mois;
@@ -341,6 +340,237 @@ class Statistiques extends My_Controller {
             'content' => $this->viewFolder . '/' . __FUNCTION__
         );
         $this->load->view('template/content', $data);
+    }
+
+    public function affairesValeur() {
+
+        $valeurAffaires = $valeurAffairesN = $cumulAffaires = $cumulAffairesN = $this->grilleMensuelle;
+        $cumulTemp = $cumulTempN = 0;
+
+        $dataAffaires = $this->managerAffaires->getAffairesStatsCreation(array('affaireCreation >=' => $this->debutAnalyse, 'affaireCreation <=' => $this->finAnalyse));
+        if (!empty($dataAffaires)):
+
+            foreach ($dataAffaires as $data):
+                $mois = $data->mois;
+                $valeurAffaires[$mois] = $data->caAffaires;
+            endforeach;
+
+            foreach ($cumulAffaires as $mois => $value):
+                foreach ($dataAffaires as $data):
+                    if ($data->mois == $mois):
+                        $cumulTemp += $data->caAffaires;
+                        $cumulAffaires[$mois] = $cumulTemp;
+                        continue;
+                    endif;
+                    if ($cumulAffaires[$mois] == 0):
+                        $cumulAffaires[$mois] = $cumulTemp;
+                    endif;
+                endforeach;
+            endforeach;
+
+        endif;
+
+        $dataAffairesN = $this->managerAffaires->getAffairesStatsCreation(array('affaireCreation >=' => $this->debutAnalyseN, 'affaireCreation <=' => $this->finAnalyseN));
+        if (!empty($dataAffairesN)):
+            foreach ($dataAffairesN as $dataN):
+                $mois = $dataN->mois;
+                $valeurAffairesN[$mois] = $dataN->caAffaires;
+            endforeach;
+            foreach ($cumulAffairesN as $mois => $value):
+                foreach ($dataAffairesN as $dataN):
+                    if ($dataN->mois == $mois):
+                        $cumulTempN += $dataN->caAffaires;
+                        $cumulAffairesN[$mois] = $cumulTempN;
+                        continue;
+                    endif;
+                endforeach;
+            endforeach;
+        endif;
+
+        $data = array(
+            'mois' => $this->labelsMois,
+            'repartitionsAffaires' => $valeurAffaires,
+            'repartitionsAffairesN' => $valeurAffairesN,
+            'valeursAffaires' => implode(",", $valeurAffaires),
+            'valeursAffairesN' => implode(",", $valeurAffairesN),
+            'cumulAffaires' => implode(",", $cumulAffaires),
+            'cumulAffairesN' => implode(",", $cumulAffairesN),
+            'title' => 'CA Affaires lancées',
+            'description' => 'CA enregistrés mois par mois',
+            'content' => $this->viewFolder . '/' . __FUNCTION__
+        );
+        $this->load->view('template/content', $data);
+    }
+
+    public function affairesCategories() {
+
+        $labels = $valeurs = '';
+
+        $repartition = $this->managerAffaires->getRepartitionCategories($this->debutAnalyse, $this->finAnalyse);
+        if (!empty($repartition)):
+            foreach ($repartition as $categorie):
+                if ($labels != ''):
+                    $labels .= ',';
+                    $valeurs .= ',';
+                endif;
+                $labels .= $categorie->categorie;
+                $valeurs .= $categorie->nbAffaires;
+            endforeach;
+        endif;
+
+        $data = array(
+            'repartition' => $repartition,
+            'labels' => $labels,
+            'valeurs' => $valeurs,
+            'title' => 'Affaires par catégories',
+            'description' => 'Répartition des affaires par catégories',
+            'content' => $this->viewFolder . '/' . __FUNCTION__
+        );
+        $this->load->view('template/content', $data);
+    }
+
+    public function chantiersCategories() {
+
+        $labels = $valeurs = '';
+
+        $repartition = $this->managerChantiers->getRepartitionCategories($this->debutAnalyse, $this->finAnalyse);
+        if (!empty($repartition)):
+            foreach ($repartition as $categorie):
+                if ($labels != ''):
+                    $labels .= ',';
+                    $valeurs .= ',';
+                endif;
+                $labels .= $categorie->categorie;
+                $valeurs .= $categorie->nbChantiers;
+            endforeach;
+        endif;
+
+        $data = array(
+            'repartition' => $repartition,
+            'labels' => $labels,
+            'valeurs' => $valeurs,
+            'title' => 'Chantiers par catégories',
+            'description' => 'Répartition des chantiers par catégories',
+            'content' => $this->viewFolder . '/' . __FUNCTION__
+        );
+        $this->load->view('template/content', $data);
+    }
+
+    public function performanceChantiersCategories($categorieId = null) {
+        if (!$categorieId || !$this->existCategorie($categorieId)):
+            $performances = $performancesN = array();
+            $categorie = '';
+        else:
+            $categorie = $this->managerCategories->getCategorieById($categorieId);
+            $performances['-100% et plus'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, -99999, -100)) ? count($result) : 0;
+            $performances['-50% à -100%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, -100, -50)) ? count($result) : 0;
+            $performances['-20% à -50%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, -50, -20)) ? count($result) : 0;
+            $performances['-10% à -20%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, -20, -10)) ? count($result) : 0;
+            $performances['-5% à -10%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, -10, -5)) ? count($result) : 0;
+            $performances['-5% à 0%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, -5, 0)) ? count($result) : 0;
+            $performances['0 à 5%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, 0, 5)) ? count($result) : 0;
+            $performances['5% à 10%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, 5, 10)) ? count($result) : 0;
+            $performances['10% à 20%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, 10, 20)) ? count($result) : 0;
+            $performances['20% à 50%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, 20, 50)) ? count($result) : 0;
+            $performances['50% à 100%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, 50, 100)) ? count($result) : 0;
+            $performances['100% et plus'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyse, $this->finAnalyse, 100, 99999)) ? count($result) : 0;
+
+            $performancesN['-100% et plus'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, -99999, -100)) ? count($result) : 0;
+            $performancesN['-50% à -100%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, -100, -50)) ? count($result) : 0;
+            $performancesN['-20% à -50%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, -50, -20)) ? count($result) : 0;
+            $performancesN['-10% à -20%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, -20, -10)) ? count($result) : 0;
+            $performancesN['-5% à -10%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, -10, -5)) ? count($result) : 0;
+            $performancesN['-5% à 0%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, -5, 0)) ? count($result) : 0;
+            $performancesN['0 à 5%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, 0, 5)) ? count($result) : 0;
+            $performancesN['5% à 10%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, 5, 10)) ? count($result) : 0;
+            $performancesN['10% à 20%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, 10, 20)) ? count($result) : 0;
+            $performancesN['20% à 50%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, 20, 50)) ? count($result) : 0;
+            $performancesN['50% à 100%'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, 50, 100)) ? count($result) : 0;
+            $performancesN['100% et plus'] = !empty($result = $this->managerChantiers->getPerformancesCategoriesRangeTaux($categorieId, $this->debutAnalyseN, $this->finAnalyseN, 100, 99999)) ? count($result) : 0;
+        endif;
+        $data = array(
+            'categorieAnalyse' => $categorie,
+            'categories' => $this->managerCategories->getCategories(),
+            'performances' => $performances,
+            'performancesN' => $performancesN,
+            'title' => 'Performances chantiers par catégories',
+            'description' => 'Performances des chantiers par catégories',
+            'content' => $this->viewFolder . '/' . __FUNCTION__
+        );
+        $this->load->view('template/content', $data);
+    }
+
+    public function performancesChantiersCategoriesRangeDetails() {
+
+        switch ($this->input->post('range')):
+            case 0:
+                $min = -99999;
+                $max = -100;
+                break;
+            case 1:
+                $min = -100;
+                $max = -50;
+                break;
+            case 2:
+                $min = -50;
+                $max = -20;
+                break;
+            case 3:
+                $min = -20;
+                $max = -10;
+                break;
+            case 4:
+                $min = -10;
+                $max = -5;
+                break;
+            case 5:
+                $min = -5;
+                $max = 0;
+                break;
+            case 6:
+                $min = 0;
+                $max = 5;
+                break;
+            case 7:
+                $min = 5;
+                $max = 10;
+                break;
+            case 8:
+                $min = 10;
+                $max = 20;
+                break;
+            case 9:
+                $min = 20;
+                $max = 50;
+                break;
+            case 10:
+                $min = 50;
+                $max = 100;
+                break;
+            case 11:
+                $min = 100;
+                $max = 99999;
+                break;
+        endswitch;
+
+        $details = array();
+        $chantiers = $this->managerChantiers->getPerformancesCategoriesRangeTaux($this->input->post('categorieId'), $this->debutAnalyse, $this->finAnalyse, $min, $max);
+        if (!empty($chantiers)):
+            foreach ($chantiers as $chantier):
+                $chantier->hydrateClient();
+                $details[] = array(
+                    'chantierId' => $chantier->getChantierId(),
+                    'affaireId' => $chantier->getChantierAffaire()->getAffaireId(),
+                    'client' => $chantier->getChantierClient()->getClientNom() . ' - ' . $chantier->getChantierClient()->getClientVille(),
+                    'affaireObjet' => $chantier->getChantierAffaire()->getAffaireObjet(),
+                    'chantierObjet' => $chantier->getChantierObjet(),
+                    'chantierCategorie' => $chantier->getChantierCategorie(),
+                    'chantierDeltaHeures' => $chantier->getChantierDeltaHeures(),
+                    'chantierPerformanceHeures' => $chantier->getChantierPerformanceHeures() . '%'
+                );
+            endforeach;
+        endif;
+        echo json_encode(array('type' => 'success', 'chantiers' => $details));
     }
 
 }

@@ -14,11 +14,12 @@ $(document).ready(function () {
     });
 
     $('#datepicker-container div').on('changeDate', function () {
+        var page = $(this).attr('data-cible');
         $.post(chemin + 'pointages/getSemaineAnnee/', {dateFormattee: $(this).datepicker('getFormattedDate')}, function (retour) {
-            window.location.assign(chemin + 'pointages/heures/' + retour.semaine + '/' + retour.annee);
+            window.location.assign(chemin + 'pointages/' + page + '/' + retour.semaine + '/' + retour.annee);
         }, 'json');
     });
-
+    
     $('.heureSelect').on('change', function () {
         info = $(this).closest('div');
         trou = info.siblings('.trou');

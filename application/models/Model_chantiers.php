@@ -146,15 +146,39 @@ class Model_chantiers extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function getPerformancesCategoriesRangeTaux($categorieId, $debut, $fin, $min, $max, $type = 'object') {
+        $query = $this->db->select('c.*')
+                ->from($this->table . ' c')
+                ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
+                ->where('a.affaireId <>', $this->session->userdata('affaireDiversId'))
+                ->where(array("a.affaireEtablissementId" => $this->session->userdata('etablissementId'), "c.chantierDateCloture >=" => $debut, "c.chantierDateCloture <" => $fin, 'c.chantierPerformanceHeures >= ' => $min, 'c.chantierPerformanceHeures <' => $max, 'chantierEtat' => 2, 'chantierCategorieId' => $categorieId))
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
     public function getPerformancesMoyennesCategories($debut, $fin, $type = 'array') {
         $query = $this->db->select('cat.categorieNom AS categorie, ROUND(AVG(c.chantierPerformanceHeures),2) AS perfMoyenne, cat.categorieId AS categorieId')
                 ->from($this->table . ' c')
                 ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
                 ->join('categories cat', 'cat.categorieId = c.chantierCategorieId')
                 ->where('a.affaireId <>', $this->session->userdata('affaireDiversId'))
-                ->where(array("a.affaireEtablissementId" => $this->session->userdata('etablissementId'), "c.chantierDateCloture >=" => $debut, "c.chantierDateCloture <" => $fin))
+                ->where(array("a.affaireEtablissementId" => $this->session->userdata('etablissementId'), "c.chantierDateCloture >=" => $debut, "c.chantierDateCloture <" => $fin, 'chantierEtat' => 2))
                 ->group_by('c.chantierCategorieId')
                 ->order_by('perfMoyenne ASC')
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
+    public function getRepartitionCategories($debut, $fin, $type = 'array') {
+        $query = $this->db->select("COUNT(*) as nbChantiers, cat.categorieNom as categorie")
+                ->from($this->table . ' c')
+                ->join('affaires a', 'a.affaireId = c.chantierAffaireId')
+                ->join('categories cat', 'cat.categorieId = c.chantierCategorieId')
+                ->where('a.affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('a.affaireId <>', $this->session->userdata('affaireDiversId'))
+                ->where(array("c.chantierDateCloture >=" => $debut, "c.chantierDateCloture <" => $fin, 'chantierEtat' => 2))
+                ->group_by('c.chantierCategorieId')
+                ->order_by("nbChantiers DESC")
                 ->get();
         return $this->retourne($query, $type, self::classe);
     }

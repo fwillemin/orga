@@ -33,7 +33,7 @@
             </div>
             <br>
             <div class="col-12" id="datepicker-container" data-date="<?= date('Y-m-d', $premierJourSemaine); ?>" style="display: block; margin-top:5px;">
-                <div data-date="<?= date('Y-m-d', $premierJourSemaine); ?>"></div>
+                <div data-cible="heures" data-date="<?= date('Y-m-d', $premierJourSemaine); ?>"></div>
             </div>
         </div>
     </div>

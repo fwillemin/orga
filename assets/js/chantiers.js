@@ -491,31 +491,70 @@ $(document).ready(function () {
         }
     });
 
-    var graphChantierParticipation = document.getElementById("graphChantierParticipations").getContext('2d');
-    var participations = $('#graphChantierParticipations').attr('js-dataparticipation').split(',');
 
-    new Chart(graphChantierParticipation, {
-        type: 'pie',
+    var graphChantierParticipation = document.getElementById("graphChantierParticipations");
+    if (graphChantierParticipation != null) {
+        var participations = $('#graphChantierParticipations').attr('js-dataparticipation').split(',');
+
+        new Chart(graphChantierParticipation.getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: $('#graphChantierParticipations').attr('js-datapersonnels').split(','),
+                datasets: [{
+                        data: participations,
+                        backgroundColor: chartBackgrounds,
+                        label: '# heures'
+                    }]
+            },
+            options: {
+                legend: {
+                    display: true,
+                    position: 'left',
+                },
+                layout: {
+                    padding: {
+                        left: 20,
+                        right: 20,
+                        top: 20,
+                        bottom: 20
+                    }
+                }
+            }
+        });
+    }
+
+    var graphAnalyseChantier = document.getElementById("graphAnalyseChantier").getContext('2d');
+    new Chart(graphAnalyseChantier, {
+        type: 'doughnut',
+        title: 'Analyse du chantier',
         data: {
-            labels: $('#graphChantierParticipations').attr('js-datapersonnels').split(','),
-            datasets: [{                    
-                    data: participations,
+            labels: $('#graphAnalyseChantier').attr('chart-labels').split(','),
+            datasets: [
+                {
+                    data: $('#graphAnalyseChantier').attr('chart-repartition').split(','),
                     backgroundColor: chartBackgrounds,
-                    label: '# heures'
-                }]
+                    borderColor: chartBackgrounds
+                }
+            ]
         },
         options: {
-            legend: {
+            title: {
                 display: true,
-                position: 'left',
+                text: 'Analyse du chantier',
+                fontSize: 20,
+                padding: 25
             },
             layout: {
                 padding: {
                     left: 20,
                     right: 20,
-                    top: 20,
-                    bottom: 20
+                    top: -20,
+                    bottom: 50
                 }
+            },
+            legend: {
+                display: true,
+                position: 'right'
             }
         }
     });

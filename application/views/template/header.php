@@ -16,7 +16,8 @@
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-select.min.css'); ?>" >
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/bootstrap-datepicker3.min.css'); ?>" >
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
 
         <link rel="stylesheet" href="<?= base_url('assets/MegaNavbarBS4/assets/css/MegaNavbarBS4.css'); ?>">
         <link rel="stylesheet" href="<?= base_url('assets/MegaNavbarBS4/assets/css/skins/navbar-dark.css'); ?>">
@@ -28,7 +29,7 @@
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/organibat.css'); ?>" >
 
 
-        <!-- reload gulp -->
+        <!-- reload gulp --><script src="//localhost:35729/livereload.js"></script>
     </head>
 
     <body>
@@ -121,6 +122,11 @@
                                         <div class="dropdown-item">
                                             <a href="<?= site_url('pointages/feuilles'); ?>">
                                                 <i class="fas fa-file-invoice"></i> Feuilles
+                                            </a>
+                                        </div>
+                                        <div class="dropdown-item">
+                                            <a href="<?= site_url('pointages/heuresSupp'); ?>">
+                                                <i class="fas fa-stopwatch"></i> Heures supplémentaires
                                             </a>
                                         </div>
                                     </div>

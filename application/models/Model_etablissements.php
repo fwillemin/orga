@@ -30,7 +30,7 @@ class Model_etablissements extends MY_model {
                 ->set('etablissementMessage', $etablissement->getEtablissementMessage())
                 ->set('etablissementTauxFraisGeneraux', $etablissement->getEtablissementTauxFraisGeneraux())
                 ->set('etablissementTauxHoraireMoyen', $etablissement->getEtablissementTauxHoraireMoyen())
-                ->set('etablissementBaseHebdomadaire', $etablissement->getEtablissementBaseHebdomadaire())
+                ->set('etablissementHeuresSupp', $etablissement->getEtablissementHeuresSupp())
                 ->set('etablissementExpiration', $etablissement->getEtablissementExpiration())
                 ->set('etablissementLimiteActifs', $etablissement->getEtablissementLimiteActifs())
                 ->insert($this->table);

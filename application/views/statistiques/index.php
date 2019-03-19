@@ -37,8 +37,9 @@
                             Analyse des affaires créées par année fiscale.
                         </span>
                         <p>
-                            <br><a href="<?= site_url('statistiques/affaires'); ?>">Affaires</a>
-                            <br><a href="<?= site_url('statistiques/'); ?>">Affaires par catégories</a>
+                            <br><a href="<?= site_url('statistiques/affaires'); ?>">Affaires signées en nombre</a>
+                            <br><a href="<?= site_url('statistiques/affairesValeur'); ?>">Affaires signées en valeur</a>
+                            <br><a href="<?= site_url('statistiques/affairesCategories'); ?>">Affaires par catégories</a>
                         </p>
                     </div>
                 </div>
@@ -49,8 +50,8 @@
                             Analyse des chantiers <b>terminés</b> par année fiscale
                         </span>
                         <p>
-                            <br><a href="<?= site_url('statistiques/'); ?>">Répartition des chantiers par catégories</a>
-                            <br><a href="<?= site_url('statistiques/'); ?>">Performances par catégories de chantier</a>
+                            <br><a href="<?= site_url('statistiques/chantiersCategories'); ?>">Répartition des chantiers par catégories</a>
+                            <br><a href="<?= site_url('statistiques/performanceChantiersCategories'); ?>">Performances par catégories de chantier</a>
                         </p>
                     </div>
                 </div>

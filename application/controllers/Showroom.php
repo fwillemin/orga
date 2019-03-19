@@ -107,7 +107,8 @@ class showroom extends My_Controller {
             'nbSemainesApres' => 6,
             'tailleAffectations' => 2,
             'genererPaniers' => 1,
-            'messageEtablissement' => 'Bienvenue chez Organibat'
+            'messageEtablissement' => 'Bienvenue chez Organibat',
+            'limiteHeuresSupp' => 35
         );
         $parametre = new Parametre($dataParam);
         $this->managerParametres->ajouter($parametre);

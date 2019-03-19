@@ -66,7 +66,7 @@ $autoload['libraries'] = array('session', 'database', 'form_validation', 'email'
     'raisonSociale', 'etablissement', 'Utilisateur', 'Horaire', 'Personnel', 'Equipe', 'TauxHoraire', 'Client', 'Maps', 'Place',
     'Affaire', 'Categorie', 'Chantier', 'Achat', 'Parametre', 'Affectation', 'Cal', 'Heure', 'Fournisseur'
     , 'Livraison', 'Indisponibilite', 'Motif', 'Pointage', 'Contact', 'Mail',
-    'PerformanceChantierPersonnel'
+    'PerformanceChantierPersonnel', 'heureSupp'
 );
 
 
@@ -168,5 +168,6 @@ $autoload['model'] = array(
     'Model_pointages' => 'managerPointages',
     'Model_contacts' => 'managerContacts',
     'Model_livraisons' => 'managerLivraisons',
-    'Model_performanceChantiersPersonnels' => 'managerPerformanceChantiersPersonnels'
+    'Model_performanceChantiersPersonnels' => 'managerPerformanceChantiersPersonnels',
+    'Model_heuresSupp' => 'managerHeuresSupp'
 );

@@ -186,4 +186,29 @@ class Model_affaires extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function getAffairesStatsCreation($where = array(), $type = 'array') {
+        $query = $this->db->select("FROM_UNIXTIME(affaireCreation,'%m') as mois, COUNT(*) as nbAffaires, SUM(affairePrix) as caAffaires, SUM(affaireMarge) as margeAffaires")
+                ->from($this->table)
+                ->where('affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('affaireId <>', $this->session->userdata('affaireDiversId'))
+                ->where($where)
+                ->group_by('mois')
+                ->order_by("mois ASC")
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
+    public function getRepartitionCategories($debut, $fin, $type = 'array') {
+        $query = $this->db->select("COUNT(*) as nbAffaires, c.categorieNom as categorie")
+                ->from($this->table . ' a')
+                ->join('categories c', 'c.categorieId = a.affaireCategorieId')
+                ->where('affaireEtablissementId', $this->session->userdata('etablissementId'))
+                ->where('affaireId <>', $this->session->userdata('affaireDiversId'))
+                ->where(array('affaireCreation >=' => $debut, 'affaireCreation <' => $fin))
+                ->group_by('affaireCategorieId')
+                ->order_by("nbAffaires DESC")
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
 }

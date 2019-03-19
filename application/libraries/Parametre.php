@@ -17,6 +17,7 @@ class Parametre {
     protected $tailleAffectations;
     protected $tranchePointage;
     protected $genererPaniers;
+    protected $limiteHeuresSupp;
     protected $messageEtablissement;
 
     public function __construct(array $valeurs = []) {
@@ -87,6 +88,14 @@ class Parametre {
 
     function setMessageEtablissement($messageEtablissement) {
         $this->messageEtablissement = $messageEtablissement;
+    }
+
+    function getLimiteHeuresSupp() {
+        return $this->limiteHeuresSupp;
+    }
+
+    function setLimiteHeuresSupp($limiteHeuresSupp) {
+        $this->limiteHeuresSupp = $limiteHeuresSupp;
     }
 
 }

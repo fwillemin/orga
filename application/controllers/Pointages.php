@@ -14,69 +14,70 @@ class Pointages extends My_Controller {
         endif;
     }
 
-    public function heuresOLD($semaine = null, $annee = null) {
-        if (!$this->ion_auth->in_group(array(80, 81, 82))) :
-            redirect('organibat/board');
-        endif;
-
-        if (!$annee):
-            $annee = date('Y', time());
-        endif;
-        if (!$semaine):
-            $semaine = date('W', time());
-        endif;
-
-        $premierJourSemaine = $this->cal->premierJourFromNumSemaine($semaine, $annee);
-
-        $heures = $this->managerHeures->getHeures(array('WEEK(FROM_UNIXTIME(h.heureDate,"%Y-%m-%d"),1)' => $semaine, 'YEAR(FROM_UNIXTIME(h.heureDate,"%Y-%m-%d"))' => $annee));
-        if (!empty($heures)):
-            foreach ($heures as $heure):
-                $heure->hydrateAffectation();
-            endforeach;
-        endif;
-        $affectations = $this->managerAffectations->getAffectations(array('affectationDebutDate <' => ($premierJourSemaine + 7 * 86400), 'affectationFinDate >=' => $premierJourSemaine));
-
-        $indisponibilites = $this->managerIndisponibilites->getIndisponibilites(array('indispoDebutDate <' => ($premierJourSemaine + 7 * 86400), 'indispoFinDate >=' => $premierJourSemaine));
-
-        /* liste du personnel */
-        $listePersonnelId = array();
-        if (!empty($affectations)):
-            foreach ($affectations AS $affectation):
-                if (!in_array($affectation->getAffectationPersonnelId(), $listePersonnelId)):
-                    $listePersonnelId[] = $affectation->getAffectationPersonnelId();
-                endif;
-            endforeach;
-        endif;
-
-
-        if (!empty($indisponibilites)):
-            foreach ($indisponibilites AS $indispo):
-                if (!in_array($indispo->getIndispoPersonnelId(), $listePersonnelId)):
-                    $listePersonnelId[] = $indispo->getIndispoPersonnelId();
-                endif;
-            endforeach;
-        endif;
-
-        if (!empty($listePersonnelId)):
-            $personnels = $this->managerPersonnels->getPersonnelsFromListeIds($listePersonnelId);
-        else:
-            $personnels = array();
-        endif;
-
-        $data = array(
-            'premierJourSemaine' => $premierJourSemaine,
-            'affectations' => $affectations,
-            'heures' => $heures,
-            'indisponibilites' => $indisponibilites,
-            'semaine' => $semaine,
-            'annee' => $annee,
-            'personnels' => $personnels,
-            'title' => 'Gestion des heures',
-            'description' => 'Gestion des heures du personnel, validation, réaffectation client, préparation salaires',
-            'content' => $this->viewFolder . __FUNCTION__
-        );
-        $this->load->view('template/content', $data);
-    }
+//
+//    public function heuresOLD($semaine = null, $annee = null) {
+//        if (!$this->ion_auth->in_group(array(80, 81, 82))) :
+//            redirect('organibat/board');
+//        endif;
+//
+//        if (!$annee):
+//            $annee = date('Y', time());
+//        endif;
+//        if (!$semaine):
+//            $semaine = date('W', time());
+//        endif;
+//
+//        $premierJourSemaine = $this->cal->premierJourFromNumSemaine($semaine, $annee);
+//
+//        $heures = $this->managerHeures->getHeures(array('WEEK(FROM_UNIXTIME(h.heureDate,"%Y-%m-%d"),1)' => $semaine, 'YEAR(FROM_UNIXTIME(h.heureDate,"%Y-%m-%d"))' => $annee));
+//        if (!empty($heures)):
+//            foreach ($heures as $heure):
+//                $heure->hydrateAffectation();
+//            endforeach;
+//        endif;
+//        $affectations = $this->managerAffectations->getAffectations(array('affectationDebutDate <' => ($premierJourSemaine + 7 * 86400), 'affectationFinDate >=' => $premierJourSemaine));
+//
+//        $indisponibilites = $this->managerIndisponibilites->getIndisponibilites(array('indispoDebutDate <' => ($premierJourSemaine + 7 * 86400), 'indispoFinDate >=' => $premierJourSemaine));
+//
+//        /* liste du personnel */
+//        $listePersonnelId = array();
+//        if (!empty($affectations)):
+//            foreach ($affectations AS $affectation):
+//                if (!in_array($affectation->getAffectationPersonnelId(), $listePersonnelId)):
+//                    $listePersonnelId[] = $affectation->getAffectationPersonnelId();
+//                endif;
+//            endforeach;
+//        endif;
+//
+//
+//        if (!empty($indisponibilites)):
+//            foreach ($indisponibilites AS $indispo):
+//                if (!in_array($indispo->getIndispoPersonnelId(), $listePersonnelId)):
+//                    $listePersonnelId[] = $indispo->getIndispoPersonnelId();
+//                endif;
+//            endforeach;
+//        endif;
+//
+//        if (!empty($listePersonnelId)):
+//            $personnels = $this->managerPersonnels->getPersonnelsFromListeIds($listePersonnelId);
+//        else:
+//            $personnels = array();
+//        endif;
+//
+//        $data = array(
+//            'premierJourSemaine' => $premierJourSemaine,
+//            'affectations' => $affectations,
+//            'heures' => $heures,
+//            'indisponibilites' => $indisponibilites,
+//            'semaine' => $semaine,
+//            'annee' => $annee,
+//            'personnels' => $personnels,
+//            'title' => 'Gestion des heures',
+//            'description' => 'Gestion des heures du personnel, validation, réaffectation client, préparation salaires',
+//            'content' => $this->viewFolder . __FUNCTION__
+//        );
+//        $this->load->view('template/content', $data);
+//    }
 
     public function index() {
         redirect('pointages/heures');
@@ -119,6 +120,55 @@ class Pointages extends My_Controller {
                     endforeach;
                 endif;
                 $results[$personnel->getPersonnelId()]['indisponibilites'] = $this->managerIndisponibilites->getIndisponibilites(array('indispoDebutDate <' => ($premierJourSemaine + 7 * 86400), 'indispoFinDate >=' => $premierJourSemaine, 'indispoPersonnelId' => $personnel->getPersonnelId()));
+            endforeach;
+
+        else:
+            $personnels = array();
+        endif;
+
+        $data = array(
+            'premierJourSemaine' => $premierJourSemaine,
+            'results' => $results,
+            'semaine' => $semaine,
+            'annee' => $annee,
+            'personnels' => $personnels,
+            'title' => 'Gestion des heures',
+            'description' => 'Gestion des heures du personnel, validation, réaffectation client, préparation salaires',
+            'content' => $this->viewFolder . __FUNCTION__
+        );
+        $this->load->view('template/content', $data);
+    }
+
+    public function heuresSupp($semaine = null, $annee = null) {
+        if (!$this->ion_auth->in_group(array(80, 81, 82))) :
+            redirect('organibat/board');
+        endif;
+
+        if (!$annee):
+            $annee = date('Y', time());
+        endif;
+        if (!$semaine):
+            $semaine = date('W', time());
+        endif;
+
+        $premierJourSemaine = $this->cal->premierJourFromNumSemaine($semaine, $annee);
+        $results = array();
+        $affectations = $this->managerAffectations->getAffectations(array('affectationDebutDate <' => ($premierJourSemaine + 7 * 86400), 'affectationFinDate >=' => $premierJourSemaine));
+
+        /* liste du personnel */
+        $listePersonnelId = array();
+        if (!empty($affectations)):
+            foreach ($affectations AS $affectation):
+                if (!in_array($affectation->getAffectationPersonnelId(), $listePersonnelId)):
+                    $listePersonnelId[] = $affectation->getAffectationPersonnelId();
+                endif;
+            endforeach;
+        endif;
+        if (!empty($listePersonnelId)):
+            $personnels = $this->managerPersonnels->getPersonnelsFromListeIds($listePersonnelId);
+            foreach ($personnels as $personnel):
+                $results[$personnel->getPersonnelId()]['rtt'] = $this->managerIndisponibilites->getNbHeuresRTTPeriodeByPersonnelId($personnel->getPersonnelId(), $premierJourSemaine, ($premierJourSemaine + 7 * 86400))[0]->nbHeuresRTT;
+                $results[$personnel->getPersonnelId()]['nbHeuresPointees'] = $this->managerHeures->getHeuresPeriodeByPersonnelId($personnel->getPersonnelId(), $premierJourSemaine, ($premierJourSemaine + 7 * 86400))[0]->nbHeuresPointees;
             endforeach;
 
         else:
