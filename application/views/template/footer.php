@@ -43,6 +43,9 @@
     <script defer type="text/javascript" src="<?= base_url('assets/js/chartjs.bundle.min.js'); ?>"></script>
     <script defer type="text/javascript" src="<?= base_url('assets/js/chartjs-plugin-annotation.min.js'); ?>"></script>
     <!--Gestion des affichages de cartes (A importer même si pas de carte, il gère seul-->
+    <script defer src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+    crossorigin=""></script>
     <script defer type="text/javascript" src="<?= base_url('assets/js/map.js'); ?>"></script>
     <?php
 endif;

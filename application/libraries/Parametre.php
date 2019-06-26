@@ -7,6 +7,7 @@
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  */
 /*
+  ALTER TABLE `parametres` ADD `distanceZI` TINYINT NOT NULL DEFAULT '2' COMMENT '1=Vol oiseau, 2=reelle' AFTER `limiteHeuresSupp`;
 
  */
 class Parametre {
@@ -18,6 +19,7 @@ class Parametre {
     protected $tranchePointage;
     protected $genererPaniers;
     protected $limiteHeuresSupp;
+    protected $distanceZI; /* 1=vol oiseau, 2=réelle */
     protected $messageEtablissement;
 
     public function __construct(array $valeurs = []) {
@@ -96,6 +98,14 @@ class Parametre {
 
     function setLimiteHeuresSupp($limiteHeuresSupp) {
         $this->limiteHeuresSupp = $limiteHeuresSupp;
+    }
+
+    function getDistanceZI() {
+        return $this->distanceZI;
+    }
+
+    function setDistanceZI($distanceZI) {
+        $this->distanceZI = $distanceZI;
     }
 
 }

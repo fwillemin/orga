@@ -19,7 +19,7 @@ $(document).ready(function () {
             window.location.assign(chemin + 'pointages/' + page + '/' + retour.semaine + '/' + retour.annee);
         }, 'json');
     });
-    
+
     $('.heureSelect').on('change', function () {
         info = $(this).closest('div');
         trou = info.siblings('.trou');
@@ -93,7 +93,7 @@ $(document).ready(function () {
             }
         }
     });
-    
+
     /* Validation rapide des heures saisies par les ouvriers en un click */
     $('.trou.unchecked').on('click', function () {
         var trou = $(this);
@@ -102,8 +102,33 @@ $(document).ready(function () {
         $.post(chemin + 'pointages/quickValide/', {heureId: elem.attr('data-heureid')}, function (retour) {
             if (retour.type == 'success') {
 //                $.toaster({priority: 'success', title: '<strong><i class="fas fa-check"></i> OK</strong>', message: '<br>' + 'Heures validées'});
-                trou.attr('class', 'trou valide');                
+                trou.attr('class', 'trou valide');
             }
         }, 'json');
+    });
+
+    $('.hsOK').on('click', function () {
+        $.post(chemin + '/pointages/valideHS', {personnelId: $(this).closest('tr').attr('data-personnelid'), annee: $('#tableHeuresSupp').attr('data-annee'), semaine: $('#tableHeuresSupp').attr('data-semaine'), heuresSupp: $(this).closest('tr').children('td').eq(3).find('input').val()}, function (retour) {
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    window.location.reload();
+                    break;
+            }
+        }, 'json')
+    });
+    $('.hsIgnored').on('click', function () {
+        $.post(chemin + '/pointages/deleteHS', {personnelId: $(this).closest('tr').attr('data-personnelid'), annee: $('#tableHeuresSupp').attr('data-annee'), semaine: $('#tableHeuresSupp').attr('data-semaine')}, function (retour) {
+            switch (retour.type) {
+                case 'error':
+                    $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
+                    break;
+                case 'success':
+                    window.location.reload();
+                    break;
+            }
+        }, 'json')
     });
 });

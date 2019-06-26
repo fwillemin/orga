@@ -144,7 +144,7 @@
                             <td>
                                 <strong>Heures supplémentaires</strong>
                                 <br>Défini la limite d'heures par semaine au delà de laquelle les heures supplémentaires sont comptabilisées
-                                <br>Les heures supplémentaires se gérent dans le module <a href="<?= site_url('pointages/heuresSupplementaires'); ?>">Pointages</a>
+                                <br>Les heures supplémentaires se gérent dans le module <a href="<?= site_url('pointages/heuresSupp'); ?>">Pointages</a>
                             </td>
                             <td>
                                 <div class="input-group input-group-sm">
@@ -153,6 +153,20 @@
                                         <span class="input-group-text">heures</span>
                                     </div>
                                 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Distance pour le calcul des indémnités de déplacements</strong>
+                                <br>Distance entre la société et le client.
+                                <br>Le type de calcul est noramlement en <b>distance réélle</b> depuis 2019 mais certains comptables informent que cette réforme est suspendue.
+                                <br><span style="color: orangered;">Vous êtes responsable de votre choix et des informations transmises à votre comptable.</span>
+                            </td>
+                            <td>
+                                <select name="distanceZI" id="distanceZI" class="form-control form-control-sm" style="text-align: right;">
+                                    <option value="1" <?= $this->session->userdata('parametres')['distanceZI'] == 1 ? 'selected' : ''; ?> >Vol d'oiseau</option>
+                                    <option value="2" <?= $this->session->userdata('parametres')['distanceZI'] == 2 ? 'selected' : ''; ?> >Réelle</option>
+                                </select>
                             </td>
                         </tr>
                         <tr>

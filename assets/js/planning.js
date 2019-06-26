@@ -452,7 +452,7 @@ $(document).ready(function () {
                     }
 
                     $('#headerModalAffectation').html('Consultation d\'une affectation');
-                    $('#textAffectationClient').html('<a href="' + chemin + 'clients/ficheClient/' + retour.client.clientId + '">' + retour.client.clientNom + '</a>');
+                    $('#textAffectationClient').html('<a href="' + chemin + 'clients/ficheClient/' + retour.client.clientId + '">' + retour.client.clientNom + '</a> <span style="font-size:12px;">' + retour.client.clientFixe + ', ' + retour.client.clientPortable );
                     $('#textAffectationAffaire').html('<a href="' + chemin + 'affaires/ficheAffaire/' + retour.affaire.affaireId + '">' + retour.affaire.affaireObjet + '</a>');
                     $('#textAffectationPersonnel').html('<a href="' + chemin + 'personnels/fichePersonnel/' + retour.personnel.personnelId + '">' + retour.personnel.personnelNom + '</a>');
                     $('#textAffectationChantier').html('<a href="' + chemin + 'chantiers/ficheChantier/' + retour.chantier.chantierId + '">' + retour.chantier.chantierObjet + '</a>');

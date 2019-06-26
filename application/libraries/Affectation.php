@@ -189,12 +189,7 @@ class Affectation {
         if (date('I', $premierJourPlanning) == 0 && date('I', $this->affectationDebutDate) == 1):
             $positionLeft += ($largeur * 2 + 2);
         endif;
-        if (date('I', $premierJourPlanning) == 1 && date('I', $this->affectationDebutDate) == 1):
-            $positionLeft += ($largeur * 2 + 2);
-        endif;
-//        if (date('I', $premierJourPlanning) == 0 && date('I', $this->affectationDebutDate) == 0):
-//            $positionLeft += ($largeur * 2 + 2);
-//        endif;
+
         //si on commence de l'aprem, on ajoute une 1/2 journée
         if ($this->affectationDebutMoment == 2) {
             $positionLeft += $largeur;

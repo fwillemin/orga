@@ -53,6 +53,12 @@ class Model_utilisateurs extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function delete(Utilisateur $user) {
+        $this->db->where('id', $user->getId())
+                ->delete($this->table);
+        return $this->db->affected_rows();
+    }
+
     /**
      * Retourne un objet de la classe Utilisateur correspondant à l'id
      * @param integer $utilisateurId ID de l'raisonSociale

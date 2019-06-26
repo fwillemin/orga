@@ -3,7 +3,7 @@
         <div class="col-12 col-sm-5" style="padding: 50px 30px;">
             <div class="row" style="border:1px solid grey; border-radius:10px; border: 2px solid #293042; text-align: center; background-color: #FFF;">
                 <div class="col-12" style="background-color: #293042; color: lightgrey; padding:5px; font-weight: bold;">
-                    ACCES CLIENT
+                    Compte de Démonstration
                 </div>
                 <div class="col-12" style="padding:20px">
                     <?= form_open('secure/tryLogin', array('class' => 'form-horizontal', 'id' => 'formLogin')); ?>
@@ -11,7 +11,7 @@
                         <input type="text" name="login" id="login" value="" placeholder="Identifiant" class="form-control">
                     </div>
                     <div class="form-group">
-                        <input type="password" name="pass" id="pass" value="" placeholder="Mot de passe" class="form-control">
+                        <input type="password" name="pass" id="pass" value="" placeholder="Mot de passe" class="form-control" autocomplete="off">
                     </div>
                     <button type="submit" class="btn btn-outline-primary" id="btnSubmitLogin">
                         <i class="fas fa-sign-in-alt"></i> Connexion
@@ -21,30 +21,23 @@
                     <?= form_close(); ?>
                 </div>
             </div>
-            <br><br>
-            <h5>Derniers Articles</h5>
-            <div class="row" style="border-top: 1px dashed steelblue; margin-bottom:9px;">
-                <div class="col-12 col-sm-3" style="padding:3px;">
-                    <img src="<?= base_url('assets/img/organiser-ses-chantiers.jpg'); ?>" style="width:100%; border:1px solid grey;">
-                </div>
-                <div class="col-12 col-sm-9" style="font-size:14px;">
-                    <a href="<?= site_url('planifier-ses-chantier-un-petit-effort-organisation-pour-une-meilleure-visibilite'); ?>"><h7>Planifier ses chantiers, un petit effort d'organisation pour une meilleure visibilité.</h7></a>
-                    <br><small>Rédigé le 16 décembre 2018 - François W.</small>
-                </div>
-            </div>
-            <div class="row" style="border-top: 1px dashed steelblue; margin-bottom:9px;">
-                <div class="col-12 col-sm-3" style="padding:3px;">
-                    <img src="<?= base_url('assets/img/cloud-vs-local.png'); ?>" style="width:100%; border:1px solid grey;">
-                </div>
-                <div class="col-12 col-sm-9" style="font-size:14px;">
-                    <a href="<?= site_url('logiciel-de-gestion-de-chantier-en-local-ou-en-ligne'); ?>"><h7>Logiciel traditionnel ou en ligne ? Quelles différences pour quels impacts ?</h7></a>
-                    <br><small>Rédigé le 21 janvier 2019 - François W.</small>
-                </div>
+            <br>
+            <div class="alert alert-info">
+                <h5>Comment se connecter à la démo</h5>
+                <em>identifiant :</em><b> demo.demo@organibat.com</b>
+                <br><em>Mot de passe :</em><b> demonstration2019</b>
+                <hr>
+                Vous pouvez aussi <a href="<?= site_url('essai-gratuit-logiciel-gestion-chantier'); ?>">créer un compte gratuitement</a>, <b>sans carte bancaire</b> et tester Organibat pendant 1 mois. Toutes vos données seront conservées au moment de vous abonner.
             </div>
         </div>
+
         <div class="col-12 col-sm-7" style="padding:50px 20px 30px 40px;">
             <h1 style="font-weight: bold;">Nouveautés</h1>
-            <h4 style="color:#1cb3fa;"><i class="fas fa-chevron-circle-right"></i> Février 19</h4>
+            <h4 style="color:#1cb3fa;"><i class="fas fa-chevron-circle-right"></i> Mai 19 - Gestion des heures supplémentaires</h4>
+            Nouveau module de gestion des heures supplémentaires avec compteur individuel et interface de gestion.
+            <br>
+            <br>
+            <h5><i class="fas fa-chevron-circle-right"></i> Février 19</h5>
             - A la clôture d'un chantier, la date de clôture est celle de la dernière heure saisie pour ce chantier.
             <br>- Analyse des indisponibilités et des performances d'un ouvrier par année.
             <br>

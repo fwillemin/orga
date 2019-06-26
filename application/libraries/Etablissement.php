@@ -6,11 +6,6 @@
  *
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  *
-  ALTER TABLE `etablissements` ADD `etablissementExpiration` INT NOT NULL COMMENT 'expiration de la licence' AFTER `etablissementBaseHebdomadaire`;
-  ALTER TABLE `etablissements` ADD `etablissementLimiteActifs` SMALLINT NOT NULL DEFAULT '5' AFTER `etablissementExpiration`;
-
-  /*
-
  */
 class Etablissement {
 
@@ -31,7 +26,7 @@ class Etablissement {
     protected $etablissementMessage;
     protected $etablissementTauxFraisGeneraux;
     protected $etablissementTauxHoraireMoyen;
-    protected $etablissementBaseHebdomadaire;
+    protected $etablissementBaseHebdomadaire; /* Total des heures des salariés actifs sur une semaine */
     protected $etablissementExpiration;
     protected $etablissementLimiteActifs;
 
@@ -64,6 +59,10 @@ class Etablissement {
 
     function getEtablissementRsId() {
         return $this->etablissementRsId;
+    }
+
+    function getEtablissementRs() {
+        return $this->etablissementRs;
     }
 
     function getEtablissementNom() {
@@ -118,6 +117,18 @@ class Etablissement {
         return $this->etablissementTauxHoraireMoyen;
     }
 
+    function getEtablissementBaseHebdomadaire() {
+        return $this->etablissementBaseHebdomadaire;
+    }
+
+    function getEtablissementExpiration() {
+        return $this->etablissementExpiration;
+    }
+
+    function getEtablissementLimiteActifs() {
+        return $this->etablissementLimiteActifs;
+    }
+
     function setEtablissementId($etablissementId) {
         $this->etablissementId = $etablissementId;
     }
@@ -128,6 +139,10 @@ class Etablissement {
 
     function setEtablissementRsId($etablissementRsId) {
         $this->etablissementRsId = $etablissementRsId;
+    }
+
+    function setEtablissementRs($etablissementRs) {
+        $this->etablissementRs = $etablissementRs;
     }
 
     function setEtablissementNom($etablissementNom) {
@@ -182,32 +197,12 @@ class Etablissement {
         $this->etablissementTauxHoraireMoyen = $etablissementTauxHoraireMoyen;
     }
 
-    function getEtablissementRs() {
-        return $this->etablissementRs;
-    }
-
-    function setEtablissementRs($etablissementRs) {
-        $this->etablissementRs = $etablissementRs;
-    }
-
-    function getEtablissementBaseHebdomadaire() {
-        return $this->etablissementBaseHebdomadaire;
-    }
-
     function setEtablissementBaseHebdomadaire($etablissementBaseHebdomadaire) {
         $this->etablissementBaseHebdomadaire = $etablissementBaseHebdomadaire;
     }
 
-    function getEtablissementExpiration() {
-        return $this->etablissementExpiration;
-    }
-
     function setEtablissementExpiration($etablissementExpiration) {
         $this->etablissementExpiration = $etablissementExpiration;
-    }
-
-    function getEtablissementLimiteActifs() {
-        return $this->etablissementLimiteActifs;
     }
 
     function setEtablissementLimiteActifs($etablissementLimiteActifs) {

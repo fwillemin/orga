@@ -39,7 +39,39 @@
                 <br><span style="font-size:14px;">Horaire d'entreprise : <?= $personnel->getPersonnelHoraireId() ? $personnel->getPersonnelHoraire()->getHoraireNom() : 'Aucun horaire appliqué'; ?>
                     <br>Feuilles de pointages : <?= $personnel->getPersonnelPointages() == 1 ? 'Au réél des heures pointées' : 'Selon l\'horaire attribué'; ?>
                     <br>Portable : <?= $personnel->getPersonnelPortable(); ?></span>
-                <br>
+                <br><br>
+                <h5>Heures supplémentaires</h5>
+                <table class="table table-sm table-bordered style1">
+                    <thead>
+                        <tr>
+                            <th>Solde (heures)</th>
+                            <th>Générer un rapport</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center" style="font-size:20px; font-weight:bold; color:steelblue;"> <?= ($personnel->getPersonnelSoldeRTT() ?: 0); ?></td>
+                            <td>
+                                <div class="input-group">
+<!--                                    <select name="pointageMois" id="rttReportMois" class="form-control form-control-sm">
+                                    <?php for ($i = 1; $i <= 12; $i++): ?>
+                                                    <option value="<?= $i; ?>" <?php if ($i == date('m')) echo 'selected'; ?> ><?= $i; ?></option>
+                                    <?php endfor; ?>
+                                    </select>-->
+                                    <select name="pointageAnnee" id="rttReportAnnee" class="form-control form-control-sm">
+                                        <?php for ($i = date('Y'); $i >= 2018; $i--): ?>
+                                            <option value="<?= $i; ?>" <?php if ($i == date('Y')) echo 'selected'; ?> ><?= $i; ?></option>
+                                        <?php endfor; ?>
+                                    </select>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-danger btn-sm" type="button" id="btnGenereRTTReport"><i class="far fa-file-pdf"></i></button>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
                 <br>
                 <h5>Taux horaires</h5>
                 <?= form_open('personnels/addTauxHoraire', array('id' => 'formAddTauxHoraire')); ?>

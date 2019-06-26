@@ -18,11 +18,6 @@ class Clients extends My_Controller {
     public function liste() {
 
         $clients = $this->managerClients->getClients();
-        foreach ($clients as $client):
-            $client->hydrateAffaires();
-            $client->hydratePlaces();
-        endforeach;
-
 
         $data = array(
             'clients' => $clients,

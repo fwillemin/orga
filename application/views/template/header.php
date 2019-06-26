@@ -29,7 +29,7 @@
         <link rel="stylesheet" type="text/css" href="<?= base_url('assets/styles/css/organibat.css'); ?>" >
 
 
-        <!-- reload gulp --><script src="//localhost:35729/livereload.js"></script>
+        <!-- reload gulp -->
     </head>
 
     <body>
@@ -126,7 +126,7 @@
                                         </div>
                                         <div class="dropdown-item">
                                             <a href="<?= site_url('pointages/heuresSupp'); ?>">
-                                                <i class="fas fa-stopwatch"></i> Heures supplémentaires
+                                                <i class="fas fa-stopwatch"></i> RTT
                                             </a>
                                         </div>
                                     </div>
@@ -207,6 +207,12 @@
                                                             </a>
                                                         </div>
                                                     <?php endif; ?>
+                                                    <!--                                                    <div class="col-12">
+                                                                                                            <a href="<?= site_url('demo/initDemo'); ?>" style="color: lightgrey;">
+                                                                                                                <div style="width:25px; float: left;"><i class="fas fa-fire-extinguisher"></i></div> Réinitialiser
+                                                                                                            </a>
+                                                                                                            <hr style="border-color: white;">
+                                                                                                        </div>-->
                                                     <div class="col-12">
                                                         <a href="<?= site_url('organibat/deconnexion'); ?>" style="color: orangered;">
                                                             <div style="width:25px; float: left;"><i class="fas fa-sign-out-alt"></i></div> Quitter

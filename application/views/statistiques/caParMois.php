@@ -47,7 +47,7 @@
                                 $progMarge = '<span style="color: #ff6666;">' . $progMarge . '%</span>';
                             endif;
                         else:
-                            $prog = '-';
+                            $progMarge = '-';
                         endif;
 
                         echo '<td class="text-right">' . number_format($marge[$key], 0, ',', ' ') . '</td><td class="text-right">' . number_format($margeN[$key], 0, ',', ' ') . '</td><td class="text-center" style="border-right:2px solid lightgrey;">' . $progMarge . '</td></tr>';

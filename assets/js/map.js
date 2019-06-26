@@ -13,31 +13,23 @@ $(document).ready(function () {
 
         async load(element) {
 
-            return new Promise((resolve, reject) => {
+            this.map = L.map(element)
+            L.tileLayer('//api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZndpbGxlbWluIiwiYSI6ImNqamdzeGgwbjAzeDIzcnBzZDZzMjZrYzkifQ.cpsDBZY0JEEIAvitXX-UtQ', {
+                attribution: '&copy; Xanthellis compagny',
+                maxZoom: 13,
+                id: 'mapbox.streets',
+                accessToken: 'pk.eyJ1IjoiZndpbGxlbWluIiwiYSI6ImNqamdzeGgwbjAzeDIzcnBzZDZzMjZrYzkifQ.cpsDBZY0JEEIAvitXX-UtQ',
+                zoomSnap: 0.1
+            }).addTo(this.map)
 
-                $script('https://unpkg.com/leaflet@1.3.1/dist/leaflet.js', () => {
-
-                    this.map = L.map(element)
-                    L.tileLayer('//api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZndpbGxlbWluIiwiYSI6ImNqamdzeGgwbjAzeDIzcnBzZDZzMjZrYzkifQ.cpsDBZY0JEEIAvitXX-UtQ', {
-                        attribution: '&copy; Xanthellis compagny',
-                        maxZoom: 13,
-                        id: 'mapbox.streets',
-                        accessToken: 'pk.eyJ1IjoiZndpbGxlbWluIiwiYSI6ImNqamdzeGgwbjAzeDIzcnBzZDZzMjZrYzkifQ.cpsDBZY0JEEIAvitXX-UtQ',
-                        zoomSnap: 0.1
-                    }).addTo(this.map)
-
-                    this.homeIcon = L.icon({
-                        iconUrl: path + '/assets/leaflet/images/marker-icon-red.png',
-                        iconSize: [25, 41],                        
-                        popupAnchor: [-3, 10],
-                        shadowUrl: 'my-icon-shadow.png',
-                        shadowSize: [25, 41]                        
-                    })
-
-                    resolve()
-                })
-
+            this.homeIcon = L.icon({
+                iconUrl: path + '/assets/leaflet/images/marker-icon-red.png',
+                iconSize: [25, 41],
+                popupAnchor: [-3, 10],
+                shadowUrl: 'my-icon-shadow.png',
+                shadowSize: [25, 41]
             })
+
 
         }
 
@@ -53,7 +45,6 @@ $(document).ready(function () {
 
             L.marker(point, {icon: this.homeIcon}).addTo(this.map)
         }
-        
 
         center() {
             this.map.fitBounds(this.bounds, {
@@ -69,12 +60,12 @@ $(document).ready(function () {
         await map.load($map)
 
         Array.from($('.js-marker')).forEach((item) => {
-            if(item.dataset.text == 'BASE'){
-            map.addBase(item.dataset.latitude, item.dataset.longitude, item.dataset.text);
-        }else{
-            map.addMarker(item.dataset.latitude, item.dataset.longitude, item.dataset.text);
-        }
-    })
+            if (item.dataset.text == 'BASE') {
+                map.addBase(item.dataset.latitude, item.dataset.longitude, item.dataset.text);
+            } else {
+                map.addMarker(item.dataset.latitude, item.dataset.longitude, item.dataset.text);
+            }
+        })
 
         map.center()
 

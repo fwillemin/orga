@@ -62,7 +62,8 @@ class Light extends My_Controller {
                 'clientId' => $affectation->getAffectationClient()->getClientId(),
                 'clientNom' => $affectation->getAffectationClient()->getClientNom(),
                 'clientVille' => $affectation->getAffectationClient()->getClientVille(),
-                'clientPortable' => $affectation->getAffectationClient()->getClientPortable()
+                'clientPortable' => $affectation->getAffectationClient()->getClientPortable() ?: '-',
+                'clientFixe' => $affectation->getAffectationClient()->getClientFixe() ?: '-'
             );
 
             if ($affectation->getAffectationDebutDate() == $affectation->getAffectationFinDate() && $affectation->getAffectationDebutMoment() == $affectation->getAffectationFinMoment()):

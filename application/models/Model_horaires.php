@@ -92,6 +92,12 @@ class Model_horaires extends MY_model {
         return $this->db->affected_rows();
     }
 
+    public function delete(Horaire $horaire) {
+        $this->db->where('horaireId', $horaire->getHoraireId())
+                ->delete($this->table);
+        return $this->db->affected_rows();
+    }
+
     /**
      * Retourne un array avec des Horaires correspondant aux critères du paramètre $where
      * @param array $where Critères de selection des raisonSociales

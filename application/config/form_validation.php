@@ -958,6 +958,25 @@ $config = array(
             'label' => 'ID du chantier',
             'rules' => 'required|callback_existChantier'
         )
+    ),
+    'valideHS' => array(
+        array(
+            'field' => 'personnelId',
+            'label' => 'ID du personnel',
+            'rules' => 'required|callback_existPersonnel'
+        ),
+        array(
+            'field' => 'heuresSupp',
+            'label' => 'Nb heures supp.',
+            'rules' => 'required|is_numeric'
+        )
+    ),
+    'deleteHS' => array(
+        array(
+            'field' => 'personnelId',
+            'label' => 'ID du personnel',
+            'rules' => 'required|callback_existPersonnel'
+        )
     )
 );
 ?>

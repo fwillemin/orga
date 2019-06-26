@@ -133,9 +133,9 @@ class Model_indisponibilites extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
-    public function getNbHeuresRTTPeriodeByPersonnelId($personnelId, $premierJour, $dernierJour, $type = 'array') {
+    public function getRTTPeriodeByPersonnelId($personnelId, $premierJour, $dernierJour, $type = 'object') {
 
-        $query = $this->db->select('SUM(i.indispoNbDemi)*3.5 AS nbHeuresRTT')
+        $query = $this->db->select('*')
                 ->from('indisponibilites i')
                 ->join('personnels p', 'p.personnelId = i.indispoPersonnelId')
                 ->where('p.personnelEtablissementId', $this->session->userdata('etablissementId'))

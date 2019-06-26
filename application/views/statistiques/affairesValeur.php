@@ -19,7 +19,6 @@
                         </thead>
                         <tbody>
                             <?php
-                            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($repartitionsAffaires, true));
                             foreach ($repartitionsAffaires as $key => $value):
 
                                 if ($repartitionsAffairesN[$key] > 0):

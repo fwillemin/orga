@@ -24,6 +24,8 @@ class Client {
     protected $clientPlaces;
     protected $clientLastAffaire;
     protected $clientAffaires;
+    protected $clientNbAffaires;
+    protected $clientAffaireEnCours; /* BOOL : le client a t til une affaire en cours... */
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -37,6 +39,9 @@ class Client {
             if (method_exists($this, $method))
                 $this->$method($value);
         endforeach;
+        $CI = & get_instance();
+        $this->clientNbAffaires = $CI->managerAffaires->count(array('affaireClientId' => $this->clientId));
+        $this->clientAffaireEnCours = $CI->managerAffaires->count(array('affaireClientId' => $this->clientId, 'affaireEtat' => 2)) > 0 ? 1 : 0;
     }
 
     public function hydratePlaces() {
@@ -156,6 +161,22 @@ class Client {
 
     function setClientPlaces($clientPlaces) {
         $this->clientPlaces = $clientPlaces;
+    }
+
+    function getClientNbAffaires() {
+        return $this->clientNbAffaires;
+    }
+
+    function setClientNbAffaires($clientNbAffaires) {
+        $this->clientNbAffaires = $clientNbAffaires;
+    }
+
+    function getClientAffaireEnCours() {
+        return $this->clientAffaireEnCours;
+    }
+
+    function setClientAffaireEnCours($clientAffaireEnCours) {
+        $this->clientAffaireEnCours = $clientAffaireEnCours;
     }
 
 }

@@ -205,8 +205,6 @@ class Planning extends My_Controller {
                 $dernierJourPlanning += $premierJourPlanning + (1 + $this->nbSemainesAvant + $this->nbSemainesApres) * 604800;
             endif;
 
-//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Fin du traitement des affectations : ' . date('H:i:s'));
-
             $this->session->set_userdata('planningPersonnelsIds', $listePersonnel);
 
             /* Affaires du planning (toutes les non cloturées et les cloturées ayant une affectation sur le planning généré) */
@@ -218,8 +216,6 @@ class Planning extends My_Controller {
                 endforeach;
             endif;
 
-//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Fin de la récupération des affaires : ' . date('H:i:s'));
-
             /* recherche des indisponibilités pour cette periode */
             $indisponibilitesPlanning = $this->managerIndisponibilites->getIndisponibilitesPlanning($premierJourPlanning, $dernierJourPlanning);
             if (!empty($indisponibilitesPlanning)):
@@ -229,7 +225,6 @@ class Planning extends My_Controller {
                     endif;
                 endforeach;
             endif;
-//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Fin de la récupération des Indispo : ' . date('H:i:s'));
 
             /* Personnels du planning (Actifs et les inactifs associés à une affectation du planning généré) */
             $personnelsPlanning = $this->managerPersonnels->getPersonnelsPlanning($listePersonnel);
@@ -239,16 +234,12 @@ class Planning extends My_Controller {
                 endforeach;
             endif;
 
-//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Fin de la récupération du personnel de planning : ' . date('H:i:s'));
-
             if ($affectations):
                 foreach ($affectations as $affectation):
                     $affectation->getHTML($premierJourPlanning, $personnelsPlanning, null, $this->hauteur, $this->largeur);
                 endforeach;
                 unset($affectation);
             endif;
-
-//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Génaration des HTML affectations ' . date('H:i:s'));
 
             /* Passage du premier jour du planning en variable de session */
             $this->session->set_userdata('premierJourPlanning', $premierJourPlanning);
@@ -260,19 +251,6 @@ class Planning extends My_Controller {
                     $indispo->genereHTML($premierJourPlanning, $personnelsPlanning, null, $this->hauteur, $this->largeur);
                 endforeach;
             endif;
-
-//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Génaration des HTML Indispo ' . date('H:i:s'));
-
-            /* les chantiers */
-//            $chantiers = $this->managerChantiers->getChantiers(array('chantierEtat' => 1));
-//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => On a les chantiers !! : ' . date('H:i:s'));
-//            if (!empty($chantiers)):
-//                foreach ($chantiers as $chantier):
-//                    $chantier->hydrateClient();
-//                endforeach;
-//                unset($chantier);
-//            endif;
-//            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => Recupération des chantier ' . date('H:i:s'));
 
             /* le planning va s'afficher sur N semaines */
             $n = ceil(($dernierJourPlanning - $premierJourPlanning) / 604800);
@@ -479,7 +457,8 @@ class Planning extends My_Controller {
                 'clientId' => $affectation->getAffectationClient()->getClientId(),
                 'clientNom' => $affectation->getAffectationClient()->getClientNom(),
                 'clientVille' => $affectation->getAffectationClient()->getClientVille(),
-                'clientPortable' => $affectation->getAffectationClient()->getClientPortable()
+                'clientPortable' => $affectation->getAffectationClient()->getClientPortable() ?: '-',
+                'clientFixe' => $affectation->getAffectationClient()->getClientFixe() ?: '-'
             );
 
             if ($affectation->getAffectationDebutDate() == $affectation->getAffectationFinDate() && $affectation->getAffectationDebutMoment() == $affectation->getAffectationFinMoment()):

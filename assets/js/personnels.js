@@ -302,6 +302,10 @@ $(document).ready(function () {
             }
         }
     });
+    
+    $('#btnGenereRTTReport').on('click', function(){
+        window.open(chemin + 'personnels/rttReport/' + $('#addPersonnelId').val() + '/' + $('#rttReportAnnee').val(), '_blank');
+    });
 
 });
 

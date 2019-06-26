@@ -108,7 +108,7 @@ checkOrientation();
                     }
 
                     $('#headerModalAffectation').html('Consultation d\'une affectation');
-                    $('#textAffectationClient').html(retour.client.clientNom);
+                    $('#textAffectationClient').html('<a href="' + chemin + 'clients/ficheClient/' + retour.client.clientId + '">' + retour.client.clientNom + '</a> <span style="font-size:12px;">' + retour.client.clientFixe + ', ' + retour.client.clientPortable );
                     $('#textAffectationAffaire').html(retour.affaire.affaireObjet);
                     $('#textAffectationPersonnel').html(retour.personnel.personnelNom);
                     $('#textAffectationChantier').html(retour.chantier.chantierObjet);

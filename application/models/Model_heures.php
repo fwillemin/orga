@@ -124,7 +124,7 @@ class Model_heures extends MY_model {
     }
 
     public function getHeuresPeriodeByPersonnelId($personnelId, $debut, $fin, $type = 'array') {
-        $query = $this->db->select('SUM(h.heureDuree)/60 as nbHeuresPointees')
+        $query = $this->db->select('ROUND(SUM(h.heureDuree)/60,2) as nbHeuresPointees, h.heureDate')
                 ->from('heures h')
                 ->join('affectations a', 'a.affectationId = h.heureAffectationId', 'left')
                 ->join('personnels p', 'p.personnelId = a.affectationPersonnelId', 'left')
@@ -133,6 +133,8 @@ class Model_heures extends MY_model {
                 ->where('f.affaireEtablissementId', $this->session->userdata('etablissementId'))
                 ->where('affectationPersonnelId', $personnelId)
                 ->where(array('h.heureDate >=' => $debut, 'heureDate <' => $fin, 'heureValide' => 1))
+                ->group_by('h.heureDate')
+                ->order_by('h.heureDate ASC')
                 ->get();
         return $this->retourne($query, $type, self::classe);
     }

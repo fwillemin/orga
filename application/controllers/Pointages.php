@@ -14,71 +14,6 @@ class Pointages extends My_Controller {
         endif;
     }
 
-//
-//    public function heuresOLD($semaine = null, $annee = null) {
-//        if (!$this->ion_auth->in_group(array(80, 81, 82))) :
-//            redirect('organibat/board');
-//        endif;
-//
-//        if (!$annee):
-//            $annee = date('Y', time());
-//        endif;
-//        if (!$semaine):
-//            $semaine = date('W', time());
-//        endif;
-//
-//        $premierJourSemaine = $this->cal->premierJourFromNumSemaine($semaine, $annee);
-//
-//        $heures = $this->managerHeures->getHeures(array('WEEK(FROM_UNIXTIME(h.heureDate,"%Y-%m-%d"),1)' => $semaine, 'YEAR(FROM_UNIXTIME(h.heureDate,"%Y-%m-%d"))' => $annee));
-//        if (!empty($heures)):
-//            foreach ($heures as $heure):
-//                $heure->hydrateAffectation();
-//            endforeach;
-//        endif;
-//        $affectations = $this->managerAffectations->getAffectations(array('affectationDebutDate <' => ($premierJourSemaine + 7 * 86400), 'affectationFinDate >=' => $premierJourSemaine));
-//
-//        $indisponibilites = $this->managerIndisponibilites->getIndisponibilites(array('indispoDebutDate <' => ($premierJourSemaine + 7 * 86400), 'indispoFinDate >=' => $premierJourSemaine));
-//
-//        /* liste du personnel */
-//        $listePersonnelId = array();
-//        if (!empty($affectations)):
-//            foreach ($affectations AS $affectation):
-//                if (!in_array($affectation->getAffectationPersonnelId(), $listePersonnelId)):
-//                    $listePersonnelId[] = $affectation->getAffectationPersonnelId();
-//                endif;
-//            endforeach;
-//        endif;
-//
-//
-//        if (!empty($indisponibilites)):
-//            foreach ($indisponibilites AS $indispo):
-//                if (!in_array($indispo->getIndispoPersonnelId(), $listePersonnelId)):
-//                    $listePersonnelId[] = $indispo->getIndispoPersonnelId();
-//                endif;
-//            endforeach;
-//        endif;
-//
-//        if (!empty($listePersonnelId)):
-//            $personnels = $this->managerPersonnels->getPersonnelsFromListeIds($listePersonnelId);
-//        else:
-//            $personnels = array();
-//        endif;
-//
-//        $data = array(
-//            'premierJourSemaine' => $premierJourSemaine,
-//            'affectations' => $affectations,
-//            'heures' => $heures,
-//            'indisponibilites' => $indisponibilites,
-//            'semaine' => $semaine,
-//            'annee' => $annee,
-//            'personnels' => $personnels,
-//            'title' => 'Gestion des heures',
-//            'description' => 'Gestion des heures du personnel, validation, réaffectation client, préparation salaires',
-//            'content' => $this->viewFolder . __FUNCTION__
-//        );
-//        $this->load->view('template/content', $data);
-//    }
-
     public function index() {
         redirect('pointages/heures');
     }
@@ -132,8 +67,8 @@ class Pointages extends My_Controller {
             'semaine' => $semaine,
             'annee' => $annee,
             'personnels' => $personnels,
-            'title' => 'Gestion des heures',
-            'description' => 'Gestion des heures du personnel, validation, réaffectation client, préparation salaires',
+            'title' => 'Pointages',
+            'description' => 'Gestion des pointages',
             'content' => $this->viewFolder . __FUNCTION__
         );
         $this->load->view('template/content', $data);
@@ -167,8 +102,30 @@ class Pointages extends My_Controller {
         if (!empty($listePersonnelId)):
             $personnels = $this->managerPersonnels->getPersonnelsFromListeIds($listePersonnelId);
             foreach ($personnels as $personnel):
-                $results[$personnel->getPersonnelId()]['rtt'] = $this->managerIndisponibilites->getNbHeuresRTTPeriodeByPersonnelId($personnel->getPersonnelId(), $premierJourSemaine, ($premierJourSemaine + 7 * 86400))[0]->nbHeuresRTT;
-                $results[$personnel->getPersonnelId()]['nbHeuresPointees'] = $this->managerHeures->getHeuresPeriodeByPersonnelId($personnel->getPersonnelId(), $premierJourSemaine, ($premierJourSemaine + 7 * 86400))[0]->nbHeuresPointees;
+                $nbJoursRTT = 0;
+                $personnel->hydrateHoraire();
+                $rtts = $this->managerIndisponibilites->getRTTPeriodeByPersonnelId($personnel->getPersonnelId(), $premierJourSemaine, ($premierJourSemaine + 7 * 86400));
+                if (!empty($rtts)):
+                    foreach ($rtts as $rtt):
+                        $nbJoursRTT += $this->own->nbHeuresIndispo($rtt);
+                    endforeach;
+                endif;
+                $results[$personnel->getPersonnelId()]['rtt'] = $nbJoursRTT;
+
+                $heuresPointeesJours = array('0' => 0, '1' => 0, '2' => 0, '3' => 0, '4' => 0, '5' => 0, '6' => 0, '7' => 0); /* 7 = somme de la semaine */
+                $heuresPointees = $this->managerHeures->getHeuresPeriodeByPersonnelId($personnel->getPersonnelId(), $premierJourSemaine, ($premierJourSemaine + 7 * 86400));
+                if (!empty($heuresPointees)):
+                    foreach ($heuresPointees as $pointage):
+                        $heuresPointeesJours[date('w', $pointage->heureDate)] = $pointage->nbHeuresPointees;
+                        $heuresPointeesJours['7'] += $pointage->nbHeuresPointees;
+                    endforeach;
+                endif;
+
+                $results[$personnel->getPersonnelId()]['nbHeuresPointeesJours'] = $heuresPointeesJours;
+
+                /* Heures supp exitantes */
+                $exist = $this->managerHeuresSupp->getHeuresSupp(array('hsPersonnelId' => $personnel->getPersonnelId(), 'hsAnnee' => $annee, 'hsSemaine' => $semaine))[0];
+                $results[$personnel->getPersonnelId()]['heuresSuppSaved'] = $exist;
             endforeach;
 
         else:
@@ -181,7 +138,7 @@ class Pointages extends My_Controller {
             'semaine' => $semaine,
             'annee' => $annee,
             'personnels' => $personnels,
-            'title' => 'Gestion des heures',
+            'title' => 'Heures supplémentaires',
             'description' => 'Gestion des heures du personnel, validation, réaffectation client, préparation salaires',
             'content' => $this->viewFolder . __FUNCTION__
         );
@@ -629,6 +586,55 @@ class Pointages extends My_Controller {
             echo json_encode(array('type' => 'success'));
         else:
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        endif;
+    }
+
+    public function valideHS() {
+
+        if (!$this->form_validation->run('valideHS')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            /* on recherche une heure supplementaire deja saisie */
+            $exist = $this->managerHeuresSupp->getHeuresSupp(array('hsSemaine' => $this->input->post('semaine'), 'hsAnnee' => $this->input->post('annee'), 'hsPersonnelId' => $this->input->post('personnelId')));
+            if (empty($exist)):
+                if ($this->input->post('heuresSupp') == 0):
+                    echo json_encode(array('type' => 'error', 'message' => 'On ne peut pas enregistrer des heures supplémentaires à 0'));
+                else:
+                    $newData = array(
+                        'hsSemaine' => $this->input->post('semaine'),
+                        'hsAnnee' => $this->input->post('annee'),
+                        'hsPersonnelId' => $this->input->post('personnelId'),
+                        'hsNbHeuresSupp' => $this->input->post('heuresSupp')
+                    );
+                    $new = new HeureSupp($newData);
+                    $this->managerHeuresSupp->ajouter($new);
+                    echo json_encode(array('type' => 'success'));
+                endif;
+            else:
+                if ($this->input->post('heuresSupp') == 0):
+                    $this->managerHeuresSupp->delete($exist[0]);
+                else:
+                    $exist[0]->setHsNbHeuresSupp($this->input->post('heuresSupp'));
+                    $this->managerHeuresSupp->editer($exist[0]);
+                endif;
+                echo json_encode(array('type' => 'success'));
+            endif;
+
+        endif;
+    }
+
+    public function deleteHS() {
+
+        if (!$this->form_validation->run('deleteHS')):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+            $exist = $this->managerHeuresSupp->getHeuresSupp(array('hsSemaine' => $this->input->post('semaine'), 'hsAnnee' => $this->input->post('annee'), 'hsPersonnelId' => $this->input->post('personnelId')))[0];
+            if (empty($exist)):
+                echo json_encode(array('type' => 'error', 'message' => 'Heures supplémentaires invalides - Suppression impossible'));
+            else:
+                $this->managerHeuresSupp->delete($exist);
+            endif;
+            echo json_encode(array('type' => 'success'));
         endif;
     }
 

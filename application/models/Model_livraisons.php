@@ -64,7 +64,7 @@ class Model_livraisons extends MY_model {
      * @param array $tri Critères de tri des raisonSociales
      * @return array Liste d'objets de la classe Livraison
      */
-    public function getLivraisons($where = array(), $tri = 'livraisonNom DESC', $type = 'object') {
+    public function getLivraisons($where = array(), $tri = 'livraisonDate DESC', $type = 'object') {
         $query = $this->db->select('*')
                 ->from('livraisons l')
                 ->join('chantiers c', 'c.chantierId = l.livraisonChantierId')

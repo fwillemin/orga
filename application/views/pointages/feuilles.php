@@ -125,6 +125,7 @@ $totalZ5 = 0;
 
                     $nbJourDansLeMois = date('t', mktime(0, 0, 0, $mois, 1, $annee));
                     for ($i = 1; $i <= $nbJourDansLeMois; $i++):
+                        $distanceMax = 0;
                         /* Initialisation Var Jour */
                         $timeJour = mktime(0, 0, 0, $mois, $i, $annee);
                         //$timeIndispo = mktime(0, 0, 0, $mois, $i, $annee);
@@ -141,7 +142,7 @@ $totalZ5 = 0;
                         $chantiersJour = '';
                         $nbChantiersJour = 0;
                         $zone = '';
-                        $distanceVolOiseauMax = 0;
+                        //$distanceVolOiseauMax = 0;
                         /* Analyse des donnees */
                         /* Si l'on fonctionne à la grille horaire */
                         if ($personnel->getPersonnelPointages() == 2):
@@ -163,8 +164,13 @@ $totalZ5 = 0;
                                         $totalMois += $h->getHeureDuree(); /* en minutes */
                                     endif;
                                     /* calcul de la zone */
-                                    if ($h->getHeureAffectation()->getAffectationPlace() && $h->getHeureAffectation()->getAffectationPlace()->getPlaceDistance() > $distanceVolOiseauMax):
-                                        $distanceMax = $h->getHeureAffectation()->getAffectationPlace()->getPlaceDistance();
+                                    if ($this->session->userdata('parametres')['distanceZI'] == 1):
+                                        $distance = $h->getHeureAffectation()->getAffectationPlace()->getPlaceVolOiseau();
+                                    else:
+                                        $distance = $h->getHeureAffectation()->getAffectationPlace()->getPlaceDistance();
+                                    endif;
+                                    if ($h->getHeureAffectation()->getAffectationPlace() && $distance > $distanceMax):
+                                        $distanceMax = $distance;
                                     endif;
                                 endif;
                             endforeach;

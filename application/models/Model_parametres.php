@@ -22,6 +22,7 @@ class Model_parametres extends MY_model {
                 ->set('tailleAffectations', $parametre->getTailleAffectations())
                 ->set('genererPaniers', $parametre->getGenererPaniers())
                 ->set('limiteHeuresSupp', $parametre->getLimiteHeuresSupp())
+                ->set('distanceZI', $parametre->getDistanceZI())
                 ->set('messageEtablissement', '')
                 ->insert($this->table);
     }
@@ -40,6 +41,7 @@ class Model_parametres extends MY_model {
                 ->set('genererPaniers', $parametre->getGenererPaniers())
                 ->set('messageEtablissement', $parametre->getMessageEtablissement())
                 ->set('limiteHeuresSupp', $parametre->getLimiteHeuresSupp())
+                ->set('distanceZI', $parametre->getDistanceZI())
                 ->where('parametreEtablissementId', $parametre->getParametreEtablissementId())
                 ->update($this->table);
         return $this->db->affected_rows();

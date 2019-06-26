@@ -7,6 +7,7 @@
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  */
 /*
+  ALTER TABLE `personnels` ADD `personnelSoldeRTT` DECIMAL(6,2) NULL COMMENT 'Trigger - solde du compteur RTT' AFTER `personnelEquipeId`
 
  */
 class Personnel {
@@ -29,6 +30,7 @@ class Personnel {
     protected $personnelPointages; /* On génère les feuilles de pointages : 1= Au réél des heures saisies, 2 = en suivant l'horaire attribué */
     protected $personnelTauxHoraire;
     protected $personnelTauxHoraireHistorique;
+    protected $personnelSoldeRTT;
 
     public function __construct(array $valeurs = []) {
         /* Si on passe des valeurs, on hydrate l'objet */
@@ -71,11 +73,6 @@ class Personnel {
 
         endif;
     }
-
-//    public function hydrateTauxHoraires() {
-//        $CI = & get_instance();
-//        $this->personnelTauxHoraireHistorique = $CI->managerTauxHoraires->getTauxHoraires(array('tauxHorairePersonnelId' => $this->personnelId));
-//    }
 
     public function hydrateHoraire() {
         $CI = & get_instance();
@@ -124,6 +121,9 @@ class Personnel {
     }
 
     function getPersonnelHoraire() {
+        if (empty($this->personnelHoraire)):
+            $this->hydrateHoraire();
+        endif;
         return $this->personnelHoraire;
     }
 
@@ -229,6 +229,14 @@ class Personnel {
 
     function setPersonnelType($personnelType) {
         $this->personnelType = $personnelType;
+    }
+
+    function getPersonnelSoldeRTT() {
+        return $this->personnelSoldeRTT;
+    }
+
+    function setPersonnelSoldeRTT($personnelSoldeRTT) {
+        $this->personnelSoldeRTT = $personnelSoldeRTT;
     }
 
 }

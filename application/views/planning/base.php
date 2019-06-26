@@ -44,7 +44,9 @@
                             <?php endforeach; ?>
                             <tr height="50">
                                 <td align="right">
-                                    Livraisons
+                                    <span class="badge-light">
+                                        LIVRAISONS <i class="fas fa-play" style=""></i>
+                                    </span>
                                 </td>
                             </tr>
                         </table>
@@ -95,7 +97,7 @@
                                 $heureEte = date('I', $premierJourPlanning); /* indique si le premier jour du planning est été ou hiver */
                                 for ($i = 0; $i < $nbSemainesPlanning * 7; $i++):
                                     $currentDate += 86400;
-                                    $listeDate[$i] = $currentDate;
+                                    //$listeDate[$i] = $currentDate;
                                     /* Gestion des passages en heure été et heure hiver */
                                     if (date('I', $currentDate) != $heureEte):
                                         if ($heureEte == 1):
@@ -107,6 +109,7 @@
                                         endif;
                                         $heureEte = date('I', $currentDate);
                                     endif;
+                                    $listeDate[$i] = $currentDate;
                                     echo '<td class="' . (date('dmy', $currentDate) == date('dmy') ? 'cellAujourdhui' : 'cellJours') . '" data-jour="' . date('Y-m-d', $currentDate) . '" colspan="2" style="width:' . (2 * ($this->largeur + 1.5)) . 'px;">' . date('d', $currentDate) . '</td>';
                                 endfor;
                                 ?>

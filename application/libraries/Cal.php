@@ -8,8 +8,11 @@ class Cal {
      * @return int Timestamp du lundi de la semaine
      */
     public function premierJourSemaine($debut, $nbSemainesAvant = 0) {
+        $eteDebut = date('I', $debut);
         $jour = $debut - ($nbSemainesAvant * 7 * 86400);
-        return $jour - (mdate('%N', $jour) - 1) * 86400;
+        $premierJour = $jour - (mdate('%N', $jour) - 1) * 86400;
+
+        return mktime(0, 0, 0, date('m', $premierJour), date('d', $premierJour), date('Y', $premierJour));
     }
 
     public function dernierJourSemaine($debut) {

@@ -522,4 +522,75 @@ class Personnels extends My_Controller {
         endif;
     }
 
+    public function rttReport($personnelId = null, $annee = null) {
+        if (!$personnelId || !$this->existPersonnel($personnelId)):
+            echo json_encode(array('type' => 'error', 'message' => validation_errors()));
+        else:
+
+            $personnel = $this->managerPersonnels->getPersonnelById($personnelId);
+
+            $soldeBefore = $this->managerHeuresSupp->getSoldeBefore($personnel->getpersonnelId(), $annee);
+            $soldeAfter = $this->managerHeuresSupp->getSoldeBefore($personnel->getpersonnelId(), ($annee + 1));
+            $heuresSupp = $this->managerHeuresSupp->getHeuresSupp(array('hsPersonnelId' => $personnel->getPersonnelId(), 'hsAnnee' => $annee), 'hsAnnee, hsSemaine ASC', 'object');
+
+            require_once('application/libraries/tcpdf/tcpdf.php');
+            $this->load->library('tcpdf/MYPDF');
+
+            $this->piedPage1 = '';
+            $this->piedPage2 = 'Généré par Organibat.com - Le ' . $this->cal->dateFrancais(time(), 'JDMA');
+
+            /* --- Génération du HEADER ---- */
+            $etablissement = $this->managerEtablissements->getEtablissementById($this->session->userdata('etablissementId'));
+            $header = '<table>
+    <tr style="font-size:12px;">
+        <td style="text-align: left; width:150px;">
+<span style="font-size:11px; font-weight: bold;">'
+                    . $etablissement->getEtablissementNom() . '</span>
+                        <span style="font-size:9px;">
+                            <br>' . $etablissement->getEtablissementAdresse() . ', ' . $etablissement->getEtablissementCp() . ' ' . $etablissement->getEtablissementVille() . '<br>Tel : ' . $etablissement->getEtablissementTelephone() . ' - Email : ' . $etablissement->getEtablissementEmail()
+                    . '</span>
+        </td>
+        <td style="text-align: center; width:240px; font-size:19px;">
+            Relevé RTT ' . $annee . '
+        </td>
+        <td style="text-align: right; width:140px; font-size:12px;">'
+                    . $personnel->getPersonnelPrenom() . ' ' . $personnel->getPersonnelNom() . '<br>' . $personnel->getPersonnelQualif() .
+                    '</td>
+    </tr>
+</table>';
+
+            $title = 'Relevé RTT - ' . $annee . ' - ' . $personnel->getPersonnelNom() . ' ' . $personnel->getPersonnelPrenom();
+            $data = array(
+                'heuresSupp' => $heuresSupp,
+                'annee' => $annee,
+                'soldeBefore' => $soldeBefore,
+                'soldeAfter' => $soldeAfter,
+                'title' => $title,
+                'description' => '',
+                'keywords' => '',
+                'content' => $this->viewFolder . '/' . __FUNCTION__
+            );
+            $this->load->view('template/contentDocuments', $data);
+
+            // Extend the TCPDF class to create custom Header and Footer
+            $html = $this->output->get_output();
+
+            // create new PDF document
+            $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false, false, $this->piedPage1, $this->piedPage2);
+            $pdf->SetCreator(PDF_CREATOR);
+            $pdf->SetAuthor('Organibat');
+            $pdf->SetTitle($title);
+            $pdf->SetSubject($title);
+
+            $pdf->SetMargins(14, 35, 5);
+            // set auto page breaks
+            $pdf->SetAutoPageBreak(true, 15);
+            $pdf->AddPage('', '', FALSE, FALSE, $header);
+
+            $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+            ob_clean();
+            $pdf->Output($title . '.pdf', 'FI');
+        endif;
+    }
+
 }

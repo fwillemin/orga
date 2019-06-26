@@ -6,14 +6,13 @@
                 <i class="fas fa-plus-square"></i> Ajouter
             </button>
         </h2>
-        <small><?= sizeof($clients); ?> clients</small>
+        <small><?= !empty($clients) ? sizeof($clients) : '0'; ?> clients</small>
         <table class="table table-bordered table-sm style1" id="tableClients" style="font-size:13px;">
             <thead>
                 <tr>
 
                     <td>Nom</td>
                     <td>Adresse</td>
-                    <td>Derniere</td>
                     <td style="text-align: center;">Fixe</td>
                     <td style="text-align: center;">Portable</td>
                     <td style="text-align: center; width:55px;">
@@ -28,10 +27,9 @@
                         echo '<tr class="ligneClikable" data-clientid="' . $client->getClientId() . '">'
                         . '<td>' . $client->getClientNom() . '</td>'
                         . '<td>' . $client->getClientVille() . '</td>'
-                        . '<td style="text-align:center;">' . ($client->getClientAffaires() ? $this->cal->dateFrancais($client->getClientAffaires()[0]->getAffaireCreation(), 'Am') : 'NC') . '</td>'
                         . '<td>' . $client->getClientFixe() . '</td>'
                         . '<td>' . $client->getClientPortable() . '</td>'
-                        . '<td style="text-align: center;">' . (!empty($client->getClientAffaires()) ? sizeof($client->getClientAffaires()) . ' | ' . $client->getClientAffaires()[0]->getAffaireEtatHtml() : '0') . '</td>'
+                        . '<td style="text-align: center;">' . $client->getClientNbAffaires() . ' | ' . ($client->getClientAffaireEnCours() ? '<span class="badge badge-success">En cours</span>' : '<span class="badge badge-secondary">Clôturée</span>') . '</td>'
                         . '</tr>';
                     endforeach;
                     unset($client);

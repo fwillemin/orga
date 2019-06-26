@@ -528,6 +528,10 @@ and open the template in the editor.
     .hsOK, .hsIgnored {
         margin-top:5px;        
     }
+    .quadrillageHeures div {
+        padding:1px;
+        border:1px solid grey;
+    }
 }
 
 @media print {

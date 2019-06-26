@@ -157,6 +157,49 @@ class Own {
         return $nbHeures;
     }
 
+    public function nbHeuresIndispo(Indisponibilite $indispo) {
+        $CI = & get_instance();
+        $horaire = $indispo->getIndispoPersonnel()->getPersonnelHoraire();
+        $nbHeures = 0;
+
+        for ($i = $indispo->getIndispoDebutDate(); $i <= $indispo->getIndispoFinDate(); $i += 86400):
+
+            $jour = trim($CI->cal->dateFrancais($i, 'j'));
+            // Premier jour
+            if ($i == $indispo->getIndispoDebutDate() && date('N', $i) < 6):
+                if ($indispo->getIndispoDebutMoment() == 1):
+                    /* On ajoute les heures complètes du jour dans l'horaire */
+                    $nbHeures += ($horaire ? $horaire->{'getHoraire' . $jour}() : 7);
+                else:
+                    /* On ajoute les heures de l'aprem dans l'horaire */
+                    $nbHeures += ($horaire ? $horaire->{'getHoraire' . $jour . 'PM'}() : 3.5);
+                endif;
+
+            endif;
+
+            // Dernier jour
+            if ($i == $indispo->getIndispoFinDate() && $indispo->getIndispoFinDate() != $indispo->getIndispoDebutDate() && date('N', $i) < 6):
+                if ($indispo->getIndispoFinMoment() == 2):
+                    /* On ajoute les heures complètes du jour dans l'horaire */
+                    $nbHeures += ($horaire ? $horaire->{'getHoraire' . $jour}() : 7);
+                else:
+                    /* On ajoute les heures de l'aprem dans l'horaire */
+                    $nbHeures += ($horaire ? $horaire->{'getHoraire' . $jour . 'AM'}() : 3.5);
+                endif;
+            elseif ($i == $indispo->getIndispoFinDate() && $indispo->getIndispoFinDate() == $indispo->getIndispoDebutDate() && $indispo->getIndispoFinMoment() == 1):
+                $nbHeures -= ($horaire ? $horaire->{'getHoraire' . $jour . 'PM'}() : 3.5);
+            endif;
+
+            // Autres jours
+            if ($i != $indispo->getIndispoDebutDate() && $i != $indispo->getIndispoFinDate() && date('N', $i) < 6):
+                /* On ajoute les heures complètes du jour dans l'horaire */
+                $nbHeures += ($horaire ? $horaire->{'getHoraire' . $jour}() : 7);
+            endif;
+
+        endfor;
+        return $nbHeures;
+    }
+
     public function finAffectationWithNbHeures(Horaire $horaire = null, $debutDate, $debutMoment, $nbHeures) {
 
         $CI = & get_instance();
