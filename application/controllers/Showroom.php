@@ -5,6 +5,9 @@ if (!defined('BASEPATH')) {
 }
 
 class showroom extends My_Controller {
+    /* Clé Google Maps API */
+
+    const googleApiKey = "";
 
     public function __construct() {
         parent::__construct();
@@ -71,7 +74,7 @@ class showroom extends My_Controller {
         $this->managerRaisonsSociales->ajouter($rs);
 
         $adresse = $this->input->post('inscriptionAdresse') . ' ' . $this->input->post('inscriptionCp') . ' ' . $this->input->post('inscriptionVille');
-        $url = "https://maps.googleapis.com/maps/api/geocode/json?address=" . urlencode($adresse) . "&key=AIzaSyD9enk0o_2Un6M2hp0_RsNM_Z5SabbsdCk";
+        $url = "https://maps.googleapis.com/maps/api/geocode/json?address=" . urlencode($adresse) . "&key=" . self::googleApiKey;
         $response = json_decode(file_get_contents($url));
 
         if ($response->status == 'OK'):

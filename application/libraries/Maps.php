@@ -1,8 +1,9 @@
 <?php
 
 class Maps {
+    /* Clé Google Maps API */
 
-    CONST key = 'AIzaSyD9enk0o_2Un6M2hp0_RsNM_Z5SabbsdCk';
+    CONST key = "";
 
     public function __construct() {
 
