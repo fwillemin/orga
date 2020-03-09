@@ -33,7 +33,13 @@
 
         <div class="col-12 col-sm-7" style="padding:50px 20px 30px 40px;">
             <h1 style="font-weight: bold;">Nouveautés</h1>
-            <h4 style="color:#1cb3fa;"><i class="fas fa-chevron-circle-right"></i> Mai 19 - Gestion des heures supplémentaires</h4>
+            <h4 style="color:#1cb3fa;"><i class="fas fa-chevron-circle-right"></i> Mars 20</h4>
+            - Ajout de la charge totale (incluant les heures non plannifiées) dans les stats
+            <br>- Ajout de la liste des livraisons fournisseurs dans le détail d'une affectation sur le planning
+            <br>- Correctifs divers
+            <br>
+            <br>
+            <h5><i class="fas fa-chevron-circle-right"></i> Mai 19 - Gestion des heures supplémentaires</h5>
             Nouveau module de gestion des heures supplémentaires avec compteur individuel et interface de gestion.
             <br>
             <br>
