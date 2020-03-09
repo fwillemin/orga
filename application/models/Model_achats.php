@@ -126,4 +126,15 @@ class Model_achats extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
+    public function getAchatsByAffectationId($affectId, $where = array(), $tri = 'achatDate ASC', $type = 'object') {
+        $query = $this->db->select('*')
+                ->from('achats a')
+                ->join('achats_affectations aa', 'aa.achatId = a.achatId', 'LEFT')
+                ->where('aa.affectationId', $affectId)
+                ->where($where)
+                ->order_by($tri)
+                ->get();
+        return $this->retourne($query, $type, self::classe);
+    }
+
 }

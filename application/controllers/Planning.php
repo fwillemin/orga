@@ -498,7 +498,16 @@ class Planning extends My_Controller {
                 $heures = array();
             endif;
 
-            echo json_encode(array('type' => 'success', 'affectation' => $affect, 'affaire' => $affaire, 'chantier' => $chantier, 'client' => $client, 'personnel' => $personnel, 'heures' => $heures));
+            $affectation->hydrateAchats();
+            if (!empty($affectation->getAffectationAchats())):
+                foreach ($affectation->getAffectationAchats() as $achat):
+                    $achat->hydrateFournisseur();
+                    $achats[] = array('achatDate' => $this->cal->dateFrancais($achat->getAchatDate(), 'jDM'), 'achatDescription' => $achat->getAchatDescription(), 'achatFournisseur' => $achat->getAchatFournisseur()->getFournisseurNom(), 'achatEtat' => $achat->getAchatLivraisonAvancementText());
+                endforeach;
+            else:
+                $achats = array();
+            endif;
+            echo json_encode(array('type' => 'success', 'affectation' => $affect, 'affaire' => $affaire, 'chantier' => $chantier, 'client' => $client, 'personnel' => $personnel, 'heures' => $heures, 'achats' => $achats));
         endif;
     }
 

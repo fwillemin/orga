@@ -439,8 +439,8 @@ $(document).ready(function () {
                     }
 
                     /* Liste des heures */
-                    if (retour.heures.length > 0) {
-                        $('#tableAffectationHeures tbody tr').remove();
+                    $('#tableAffectationHeures tbody tr').remove();
+                    if (retour.heures.length > 0) {                        
                         for (i = 0; i < retour.heures.length; i++) {
                             if (retour.heures[i].heureValide == '1') {
                                 etat = '<i class="fas fa-check"></i>';
@@ -448,6 +448,15 @@ $(document).ready(function () {
                                 etat = '';
                             }
                             $('#tableAffectationHeures tbody').append('<tr><td>' + retour.heures[i].heureDate + '</td><td align="right">' + retour.heures[i].heureDuree + '</td><td>' + etat + '</td></tr>');
+                        }
+                    }
+
+                    /* Liste des livraisons d'achats */
+                    $('#tableAffectationAchats tbody tr').remove();
+                    if (retour.achats.length > 0) {                        
+                        for (i = 0; i < retour.achats.length; i++) {
+                            console.log('ligne');
+                            $('#tableAffectationAchats tbody').append('<tr><td>' + retour.achats[i].achatDescription + '</td><td>' + retour.achats[i].achatFournisseur + '</td><td>' + retour.achats[i].achatDate + '</td><td>' + retour.achats[i].achatEtat + '</td></tr>');
                         }
                     }
 
@@ -461,6 +470,7 @@ $(document).ready(function () {
                         $('#btnCutAffectation').prop('disabled', true);
                         $('#btnDecaleAffectation').prop('disabled', true);
                     }
+                    
                     $('#textAffectationAvancementHeures').css('width', retour.chantier.chantierRatio + '%');
                     $('#textAffectationAvancementHeures').removeClass();
                     $('#textAffectationAvancementHeures').addClass(retour.chantier.chantierProgressBar);
@@ -918,10 +928,10 @@ $(document).ready(function () {
             $('#modalSuiviLivraison').modal('show');
         }, 'json')
     });
-    
+
     $('#tableSuiviLivraisons').on('changed.bs.select','.changeAchatAvancement', function(e){
         e.stopPropagation();
-        var element = $(this);  
+        var element = $(this);
         $.post(chemin + 'chantiers/setAchatLivraisonAvancement', {achatId: $(this).closest('tr').attr('data-achatid'), avancement: $(this).val()}, function(retour){
             switch (retour.type) {
                 case 'error':

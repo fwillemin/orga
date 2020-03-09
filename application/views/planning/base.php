@@ -348,6 +348,24 @@ if ($this->ion_auth->in_group(array(55))):
                     </div>
                 </div>
                 <hr>
+                <h6 style="font-weight:bold;">Livraisons</h6>
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-sm style1" id="tableAffectationAchats">
+                            <thead>
+                                <tr>
+                                    <th>Achat</th>
+                                    <th>Fournisseur</th>
+                                    <th>Date</th>
+                                    <th>Etat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="4">Aucune livraison prévue</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-10">
                         <small class="medium">Affectation planifiée</small> <span id="textAffectationPeriode"></span>

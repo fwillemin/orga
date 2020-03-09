@@ -42,7 +42,8 @@ class Affectation {
     protected $affectationClient;
     protected $affectationHTML;
     protected $affectationHeures;
-    protected $affectationLivraisons;
+//    protected $affectationLivraisons;
+    protected $affectationAchats;
     /* - données optimisées pour l'affichage du planning et générée par la fonction getAffectationsPlanning du model Affectations - */
     protected $affectationAffaireId;
     protected $affectationAffaireEtat;
@@ -150,9 +151,9 @@ class Affectation {
         $this->affectationHeures = $CI->managerHeures->getHeuresByAffectationId($this->affectationId);
     }
 
-    public function hydrateLivraisons() {
+    public function hydrateAchats() {
         $CI = & get_instance();
-        $this->affectationLivraisons = $CI->managerLivraisons->getLivraisonsByAffectationId($this->affectationId);
+        $this->affectationAchats = $CI->managerAchats->getAchatsByAffectationId($this->affectationId);
     }
 
     /* Hydrate les attributs necessaires à la génération de la dvi HTML */
@@ -550,6 +551,14 @@ class Affectation {
 
     function setAffectationClientNom($affectationClientNom) {
         $this->affectationClientNom = $affectationClientNom;
+    }
+
+    function getAffectationAchats() {
+        return $this->affectationAchats;
+    }
+
+    function setAffectationAchats($affectationAchats) {
+        $this->affectationAchats = $affectationAchats;
     }
 
 }
