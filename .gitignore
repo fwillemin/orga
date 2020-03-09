@@ -25,3 +25,4 @@ package-lock.json
 /node_modules/
 /system/
 /.sass-cache/
+/keys.txt

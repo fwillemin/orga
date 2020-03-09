@@ -13,7 +13,7 @@
                 <div class="row" style="margin-top:1px;">
                     <div class="col-2"></div>
                     <div class="col-10" style="font-size:12px; color: steelblue;">
-                        <?= $analyseRapide['nbAffairesEncours'] . ' affaires en cours - ' . $analyseRapide['nbAffairesCloses'] . ' affaires closes - <b>' . number_format($analyseRapide['nbHeuresPlannifiees'], 2, ',', ' ') . '</b> heures plannifiées soit une charge de <b>' . $analyseRapide['chargeSemaines'] . '</b> semaines'; ?>
+                        <?= $analyseRapide['nbAffairesEncours'] . ' affaires en cours - ' . $analyseRapide['nbAffairesCloses'] . ' affaires closes - <b>' . number_format($analyseRapide['nbHeuresPlannifiees'], 2, ',', ' ') . '</b> heures plannifiées soit une charge de <b>' . $analyseRapide['chargePlanifiee'] . '</b> semaines pour une charge totale de <b>' . $analyseRapide['chargeTotale'] . '</b> semaines'; ?>
                     </div>
                 </div>
                 <div class="row">

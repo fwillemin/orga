@@ -40,24 +40,28 @@ class Model_affectations extends MY_model {
      * @return integer Renvoi le nombre d'enregistrements modifiés
      */
     public function editer(Affectation $affectation) {
-        $this->db
-                ->set('affectationOriginId', $affectation->getAffectationOriginId())
-                ->set('affectationChantierId', $affectation->getAffectationChantierId())
-                ->set('affectationPersonnelId', $affectation->getAffectationPersonnelId())
-                ->set('affectationPlaceId', $affectation->getAffectationPlaceId())
-                ->set('affectationNbDemi', $affectation->getAffectationNbDemi())
-                ->set('affectationDebutDate', $affectation->getAffectationDebutDate())
-                ->set('affectationDebutMoment', $affectation->getAffectationDebutMoment())
-                ->set('affectationFinDate', $affectation->getAffectationFinDate())
-                ->set('affectationFinMoment', $affectation->getAffectationFinMoment())
-                ->set('affectationCases', $affectation->getAffectationCases())
-                ->set('affectationHeuresPlanifiees', $affectation->getAffectationHeuresPlanifiees())
+        try {
+            $this->db
+                    ->set('affectationOriginId', $affectation->getAffectationOriginId())
+                    ->set('affectationChantierId', $affectation->getAffectationChantierId())
+                    ->set('affectationPersonnelId', $affectation->getAffectationPersonnelId())
+                    ->set('affectationPlaceId', $affectation->getAffectationPlaceId())
+                    ->set('affectationNbDemi', $affectation->getAffectationNbDemi())
+                    ->set('affectationDebutDate', $affectation->getAffectationDebutDate())
+                    ->set('affectationDebutMoment', $affectation->getAffectationDebutMoment())
+                    ->set('affectationFinDate', $affectation->getAffectationFinDate())
+                    ->set('affectationFinMoment', $affectation->getAffectationFinMoment())
+                    ->set('affectationCases', $affectation->getAffectationCases())
+                    ->set('affectationHeuresPlanifiees', $affectation->getAffectationHeuresPlanifiees())
 //                ->set('affectationHeuresPointees', $affectation->getAffectationHeuresPointees())
-                ->set('affectationCommentaire', $affectation->getAffectationCommentaire())
-                ->set('affectationType', $affectation->getAffectationType())
-                ->set('affectationAffichage', $affectation->getAffectationAffichage())
-                ->where('affectationId', $affectation->getAffectationId())
-                ->update($this->table);
+                    ->set('affectationCommentaire', $affectation->getAffectationCommentaire())
+                    ->set('affectationType', $affectation->getAffectationType())
+                    ->set('affectationAffichage', $affectation->getAffectationAffichage())
+                    ->where('affectationId', $affectation->getAffectationId())
+                    ->update($this->table);
+        } catch (Exception $e) {
+            log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . print_r($e, true));
+        }
         return $this->db->affected_rows();
     }
 

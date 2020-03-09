@@ -35,7 +35,6 @@ class Demo extends My_Controller {
 
             /* Mise à la date du moment de l'activité */
             $this->teleporteDemo();
-
             redirect('organibat/deconnexion');
         } catch (Exception $e) {
             print_r($e);
@@ -190,7 +189,7 @@ class Demo extends My_Controller {
         endforeach;
 
         /* Création des fournisseurs */
-        $dataFournisseur = array(
+        $dataFournisseur1 = array(
             'fournisseurOriginId' => null,
             'fournisseurEtablissementId' => $this->session->userdata('etablissementId'),
             'fournisseurNom' => 'Leroy Merlin',
@@ -200,10 +199,9 @@ class Demo extends My_Controller {
             'fournisseurTelephone' => '03.27.00.00.00',
             'fournisseurEmail' => 'lm@organibat.com'
         );
-        $fournisseur = new Fournisseur($dataFournisseur);
-        $this->managerFournisseurs->ajouter($fournisseur);
+        $this->managerFournisseurs->ajouter(new Fournisseur($dataFournisseur1));
 
-        $dataFournisseur = array(
+        $dataFournisseur2 = array(
             'fournisseurOriginId' => null,
             'fournisseurEtablissementId' => $this->session->userdata('etablissementId'),
             'fournisseurNom' => 'Loxam',
@@ -213,8 +211,7 @@ class Demo extends My_Controller {
             'fournisseurTelephone' => '03.27.00.00.00',
             'fournisseurEmail' => 'loxam@organibat.com'
         );
-        $fournisseur = new Fournisseur($dataFournisseur);
-        $this->managerFournisseurs->ajouter($fournisseur);
+        $this->managerFournisseurs->ajouter(new Fournisseur($dataFournisseur2));
 
         /* Personnels */
         $this->executeSqlFile('demoOrganibat-PersonnelsClientsContacts.sql');
@@ -223,7 +220,7 @@ class Demo extends My_Controller {
 
     private function teleporteDemo() {
         $deltaSemaines = floor((mktime(0, 0, 0, date('m'), date('d'), date('Y')) - 1559512800) / 604800);
-        $delta = $deltaSemaines * 7;
+        $delta = $deltaSemaines * 7 * 86400;
         $affaires = $this->managerAffaires->getAffaires();
         foreach ($affaires as $affaire):
             $affaire->setAffaireCreation($affaire->getAffaireCreation() + $delta);
@@ -251,11 +248,6 @@ class Demo extends My_Controller {
             $achat->setAchatDate($achat->getAchatDate() + $delta);
             $achat->setAchatLivraisonDate($achat->getAchatLivraisonDate() + $delta);
             $this->managerAchats->editer($achat);
-        endforeach;
-        $livraisons = $this->managerLivraisons->getLivraisons();
-        foreach ($livraisons as $livraison):
-            $livraison->setLivraisonDate($livraison->getLivraisonDate() + $delta);
-            $this->managerLivraisons->editer($livraison);
         endforeach;
         $heures = $this->managerHeures->getHeures();
         foreach ($heures as $heure):

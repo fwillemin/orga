@@ -74,7 +74,7 @@ class Planning extends My_Controller {
         $affairesEnCours = $this->managerAffaires->getAffaires(array('affaireEtat' => 2, 'affaireId <>' => $this->session->userdata('affaireDiversId')));
         $affairesTermines = $this->managerAffaires->getAffaires(array('affaireEtat' => 3, 'affaireDateCloture > ' => $this->session->userdata('debutFiscale'), 'affaireId <>' => $this->session->userdata('affaireDiversId')));
 
-        $caEncours = $caClos = $nbEncours = $nbClos = $nbHeuresPlannifiees = 0;
+        $caEncours = $caClos = $nbEncours = $nbClos = $nbHeuresPlannifiees = $nbHeuresPrevues = 0;
 
         if (!empty($affairesTermines)):
             foreach ($affairesTermines as $affaire):
@@ -94,6 +94,7 @@ class Planning extends My_Controller {
                 foreach ($affaire->getAffaireChantiers() as $chantier):
                     if ($chantier->getChantierEtat() == 1):
                         $nbHeuresPlannifiees += max(array($chantier->getChantierHeuresPlanifiees() - $chantier->getChantierHeuresPointees(), 0));
+                        $nbHeuresPrevues += max(array($chantier->getChantierHeuresPrevues() - $chantier->getChantierHeuresPointees(), 0));
                     endif;
                 endforeach;
 
@@ -102,11 +103,12 @@ class Planning extends My_Controller {
         endif;
 
         if ($this->session->userdata('etablissementBaseHebdomadaire') > 0):
-            $charge = round($nbHeuresPlannifiees / $this->session->userdata('etablissementBaseHebdomadaire'), 1);
+            $chargePlanifiee = round($nbHeuresPlannifiees / $this->session->userdata('etablissementBaseHebdomadaire'), 1);
+            $chargeTotale = round($nbHeuresPrevues / $this->session->userdata('etablissementBaseHebdomadaire'), 1);
         else:
-            $charge = 'NC';
+            $charge = $chargeTotale = 'NC';
         endif;
-        return array('nbAffairesEncours' => $nbEncours, 'caEncours' => $caEncours, 'nbAffairesCloses' => $nbClos, 'caClos' => $caClos, 'nbHeuresPlannifiees' => $nbHeuresPlannifiees, 'chargeSemaines' => $charge);
+        return array('nbAffairesEncours' => $nbEncours, 'caEncours' => $caEncours, 'nbAffairesCloses' => $nbClos, 'caClos' => $caClos, 'nbHeuresPlannifiees' => $nbHeuresPlannifiees, 'chargePlanifiee' => $chargePlanifiee, 'chargeTotale' => $chargeTotale);
     }
 
     /**

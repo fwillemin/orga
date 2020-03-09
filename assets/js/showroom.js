@@ -1,5 +1,5 @@
-//var path = 'http://192.168.0.1/ORGANIBAT/organibat2';
-var path = 'https://demo.organibat.com';
+var path = 'http://127.0.0.1/ORGANIBAT/organibat2';
+//var path = 'https://demo.organibat.com';
 //var path = 'https://www.organibat.com';
 var chemin = path + '/index.php/';
 var cheminJs = path + '/assets/js/';
