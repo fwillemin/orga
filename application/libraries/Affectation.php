@@ -250,7 +250,8 @@ class Affectation {
                 . ' background-color:' . $background . ';'
                 . $border
                 . ' width:' . $taille . 'px;'
-                . ' height:' . $hauteurDiv . 'px;"'
+                . ' height:' . $hauteurDiv . 'px;'
+                . ' z-index:50;"'
                 . ' data-affectationid="' . $this->affectationId . '"'
                 . ' data-ligne="' . $ligne . '"'
                 . ' class="' . $classes . '" >'

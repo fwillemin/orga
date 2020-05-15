@@ -35,6 +35,8 @@ class Utilisateurs extends My_Controller {
                     case 4:
                         $utilisateur->setUserType('Accès chantier');
                         break;
+                    default:
+                        $utilisateur->setUserType('Inactif');
                 endswitch;
             endforeach;
         endforeach;
@@ -120,15 +122,17 @@ class Utilisateurs extends My_Controller {
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
         endif;
 
-        if (in_array($this->input->post('groupeId'), [1, 2, 4])):
+        if (in_array($this->input->post('groupeId'), [1, 2, 4, 9])):
             $this->db->where(array('group_id' => 2, 'user_id' => $this->input->post('userId')))->delete('users_groups');
             $this->db->where(array('group_id' => 4, 'user_id' => $this->input->post('userId')))->delete('users_groups');
             $this->db->where(array('group_id' => 1, 'user_id' => $this->input->post('userId')))->delete('users_groups');
+            $this->db->where(array('group_id' => 9, 'user_id' => $this->input->post('userId')))->delete('users_groups');
             $this->db->set('user_id', $this->input->post('userId'))->set('group_id', $this->input->post('groupeId'))->insert('users_groups');
 
             switch ($this->input->post('groupeId')):
                 case 4:
-                    $this->db->where(array('group_id <>' => 4, 'user_id' => $this->input->post('userId')))->delete('users_groups');
+                case 9:
+                    $this->db->where(array('group_id <>' => $this->input->post('groupeId'), 'user_id' => $this->input->post('userId')))->delete('users_groups');
                     break;
             endswitch;
 

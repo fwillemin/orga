@@ -62,6 +62,14 @@
                             Compte de chantier (Accès à la saisie des heures)
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            <input type="radio" name="typeCompte" class="typeCompte" value="9" <?= in_array(9, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?>>
+                        </td>
+                        <td>
+                            Compte Inactif
+                        </td>
+                    </tr>
                     <tr class="alert alert-primary">
                         <td colspan="2">
                             Accès
@@ -69,7 +77,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="3" <?= in_array(3, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="3" <?= in_array(3, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Commercial
@@ -83,7 +91,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="10" <?= in_array(10, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="10" <?= in_array(10, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Accès au module
@@ -91,7 +99,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="11" <?= in_array(11, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="11" <?= in_array(11, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Ajouter, modifier et supprimer des Utilisateurs administratifs
@@ -99,7 +107,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="70" <?= in_array(70, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="70" <?= in_array(70, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Ajouter, modifier et supprimer des Fournisseurs
@@ -112,7 +120,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="20" <?= in_array(20, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="20" <?= in_array(20, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Accès au module
@@ -120,7 +128,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="21" <?= in_array(21, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="21" <?= in_array(21, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Ajouter, modifier et supprimer des Horaires de travail
@@ -133,7 +141,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="40" <?= in_array(40, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="40" <?= in_array(40, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Ajouter, modifier et supprimer des Catégories de chantier
@@ -146,7 +154,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="25" <?= in_array(25, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="25" <?= in_array(25, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Accès au module
@@ -154,7 +162,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="26" <?= in_array(26, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="26" <?= in_array(26, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Ajouter, modifier et supprimer du personnel de chantier
@@ -167,7 +175,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="90" <?= in_array(90, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="90" <?= in_array(90, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Accès au module
@@ -175,7 +183,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" class="changeAcces" value="91" <?= in_array(91, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                            <input type="checkbox" class="changeAcces" value="91" <?= in_array(91, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                         </td>
                         <td>
                             Ajouter, modifier et supprimer des Contacts entrants
@@ -201,7 +209,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="30" <?= in_array(30, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="30" <?= in_array(30, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Accès au module
@@ -209,7 +217,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="31" <?= in_array(31, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="31" <?= in_array(31, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Ajouter et modifier et supprimer des clients
@@ -222,7 +230,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="50" <?= in_array(50, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="50" <?= in_array(50, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Accès au module
@@ -230,7 +238,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="51" <?= in_array(51, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="51" <?= in_array(51, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Ajouter et modifier des affaires
@@ -238,7 +246,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="52" <?= in_array(52, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="52" <?= in_array(52, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Visualiser les analyses et statistiques globales d'une affaire
@@ -246,7 +254,7 @@
                         </tr>
                         <tr class="alert alert-warning">
                             <td>
-                                <input type="checkbox" class="changeAcces" value="57" <?= in_array(57, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="57" <?= in_array(57, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Supprimer des affaires
@@ -259,7 +267,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="53" <?= in_array(53, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="53" <?= in_array(53, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Accès au module
@@ -267,7 +275,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="54" <?= in_array(54, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="54" <?= in_array(54, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Ajouter et modifier des chantiers
@@ -275,7 +283,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="56" <?= in_array(56, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="56" <?= in_array(56, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Visualiser les analyses et statistiques
@@ -283,7 +291,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="55" <?= in_array(55, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="55" <?= in_array(55, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Ajouter, modifier et supprimer des achats
@@ -291,7 +299,7 @@
                         </tr>
                         <tr class="alert alert-warning">
                             <td>
-                                <input type="checkbox" class="changeAcces" value="58" <?= in_array(58, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="58" <?= in_array(58, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Supprimer des chantiers
@@ -304,7 +312,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="60" <?= in_array(60, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="60" <?= in_array(60, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Ajouter, modifier et supprimer des affectations
@@ -312,7 +320,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="61" <?= in_array(61, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="61" <?= in_array(61, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Ajouter, modifier et supprimer des livraisons
@@ -325,7 +333,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="80" <?= in_array(80, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="80" <?= in_array(80, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Accès au module
@@ -333,7 +341,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="81" <?= in_array(81, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="81" <?= in_array(81, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Saisir et valider des heures
@@ -341,7 +349,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="82" <?= in_array(82, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="82" <?= in_array(82, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Visualiser les feuilles de pointages mensuelles
@@ -349,7 +357,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" class="changeAcces" value="83" <?= in_array(83, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
+                                <input type="checkbox" class="changeAcces" value="83" <?= in_array(83, $utilisateur->getUserGroupsIds()) ? 'checked' : ''; ?> <?= in_array(4, $utilisateur->getUserGroupsIds()) || in_array(9, $utilisateur->getUserGroupsIds()) ? 'disabled' : ''; ?>>
                             </td>
                             <td>
                                 Créer et gérer les feuilles de pointages

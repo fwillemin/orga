@@ -7,7 +7,7 @@
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  */
 /*
-
+  INSERT INTO `groups` (`id`, `name`, `description`) VALUES ('9', 'Inactif', 'Compte désactivé');
  */
 class Utilisateur {
 
@@ -16,7 +16,7 @@ class Utilisateur {
     protected $userNom;
     protected $userPrenom;
     protected $userClairMdp;
-    protected $userType; /* Direction, Administratif ou Chantier */
+    protected $userType; /* Direction, Administratif, Chantier ou Inactif */
     protected $userEtablissementId;
     protected $userOriginId;
     protected $email;

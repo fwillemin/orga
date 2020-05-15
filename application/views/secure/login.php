@@ -33,7 +33,9 @@
 
         <div class="col-12 col-sm-7" style="padding:50px 20px 30px 40px;">
             <h1 style="font-weight: bold;">Nouveautés</h1>
-            <h4 style="color:#1cb3fa;"><i class="fas fa-chevron-circle-right"></i> Mars 20</h4>
+            <h4 style="color:#1cb3fa;"><i class="fas fa-chevron-circle-right"></i> Avril 20</h4>
+            - Les indisponibilités sont mise en arrière plan afin de toujours laisser apparaître les affectations.
+            <h5><i class="fas fa-chevron-circle-right"></i> Mars 20</h5>
             - Ajout de la charge totale (incluant les heures non plannifiées) dans les stats
             <br>- Ajout de la liste des livraisons fournisseurs dans le détail d'une affectation sur le planning
             <br>- Correctifs divers

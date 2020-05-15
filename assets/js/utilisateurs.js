@@ -66,7 +66,7 @@ $(document).ready(function () {
             var acces = 0;
         }
         
-        if( $(this).val() == '4'){
+        if( $(this).val() == '4' || $(this).val() == '9'){
             $('.changeAcces').prop('checked', false);
             $('.changeAcces').prop('disabled', true);
         } else{
