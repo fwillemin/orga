@@ -22,10 +22,10 @@
                 if (!empty($utilisateurs)):
                     foreach ($utilisateurs as $user):
                         echo '<tr class="ligneClikable" data-userid="' . $user->getId() . '">'
-                        . '<td style="text-align:center; font-size:15px;">' . ($user->getActive() ? '<label class="badge badge-info">Actif</label>' : '<label class="badge badge-secondary">Inactif</label>') . '</td>'
-                        . '<td>' . $user->getUserNom() . ' ' . $user->getUserPrenom() . '</td>'
-                        . '<td>' . $user->getUsername() . '</td>'
-                        . '<td>' . $user->getUserType() . '</td></tr>';
+                        . '<td style="text-align:center; font-size:15px;">' . ( ($user->getUserType() == 'Inactif') ? '<label class = "badge badge-secondary">Inactif</label>' : '<label class = "badge badge-info">Actif</label>') . '</td>'
+                        . '<td>' . $user->getUserNom() . ' ' . $user->getUserPrenom() . ' </td>'
+                        . ' <td>' . $user->getUsername() . ' </td>'
+                        . ' <td>' . $user->getUserType() . ' </td></tr>';
                     endforeach;
                 endif;
                 ?>

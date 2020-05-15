@@ -35,7 +35,7 @@ class Utilisateurs extends My_Controller {
                     case 4:
                         $utilisateur->setUserType('Accès chantier');
                         break;
-                    default:
+                    case 9:
                         $utilisateur->setUserType('Inactif');
                 endswitch;
             endforeach;
