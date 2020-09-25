@@ -119,7 +119,7 @@
         </div>
         <div class="col-12" style="margin-top:5px;">
             <small class="light">Message global pour les salariés</small>
-            <textarea id="messageGlobal" class="form-control" rows="3" style="font-size:10px;"><?= $this->session->userdata('parametres')['messageEtablissement']; ?></textarea>
+            <textarea id="messageGlobal" class="form-control" rows="3" style="font-size:10px;" <?= $this->ion_auth->in_group(1) ? '' : 'disabled'; ?>><?= $this->session->userdata('parametres')['messageEtablissement']; ?></textarea>
         </div>
     </div>
 </div>

@@ -84,11 +84,13 @@ class Model_personnels extends MY_model {
         return $this->retourne($query, $type, self::classe);
     }
 
-    public function getPersonnelsPlanning($personnelsPlanning = array(), $tri = 'personnelActif DESC, (-personnelEquipeId) DESC, personnelNom, personnelPrenom ASC', $type = 'object') {
+//    public function getPersonnelsPlanning($personnelsPlanning = array(), $tri = 'personnelActif DESC, (-personnelEquipeId) DESC, personnelNom, personnelPrenom ASC', $type = 'object') {
+    public function getPersonnelsPlanning($personnelsPlanning = array(), $tri = "p.personnelActif DESC, COALESCE(e.equipeNom,'zz') ASC, p.personnelNom, p.personnelPrenom ASC", $type = 'object') {
         $query = $this->db->select('*')
-                ->from($this->table)
-                ->where('personnelEtablissementId', $this->session->userdata('etablissementId'))
-                ->where_in('personnelId', $personnelsPlanning)
+                ->from('personnels p')
+                ->join('equipes e', 'p.personnelEquipeId = e.equipeId', 'LEFT')
+                ->where('p.personnelEtablissementId', $this->session->userdata('etablissementId'))
+                ->where_in('p.personnelId', $personnelsPlanning)
                 ->order_by($tri)
                 ->get();
         return $this->retourne($query, $type, self::classe);

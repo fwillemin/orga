@@ -66,10 +66,11 @@ $(document).ready(function () {
             $.post(chemin + 'planning/resizeAffectation/', {nbCases: nbCases, affectationId: affect.attr('data-affectationid')}, function (retour) {
                 if (retour.type === 'error') {
                     $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
-                }
+                } else {
                 affect.remove();
                 $('#divPlanning').append(retour.html);
                 refreshPlanningUI();
+                }
             }, 'json');
         }
     };
@@ -99,10 +100,11 @@ $(document).ready(function () {
                     function (retour) {
                         if (retour.type == 'error') {
                             $.toaster({priority: 'danger', title: '<strong><i class="fas fa-exclamation-triangle"></i> Oups</strong>', message: '<br>' + retour.message});
-                        }
+                        } else {
                         affect.remove();
                         $('#divPlanning').append(retour.html);
                         refreshPlanningUI();
+                        }   
                     }, 'json'
                     );
         }

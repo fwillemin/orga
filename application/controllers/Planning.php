@@ -49,13 +49,17 @@ class Planning extends My_Controller {
     }
 
     public function changeMessageGlobal() {
-        $parametre = $this->managerParametres->getParametres();
-        $parametre->setMessageEtablissement($this->input->post('message'));
-        $this->managerParametres->editer($parametre);
-        /* Mise à jour de la session */
-        $this->session->unset_userdata('parametres');
-        $this->session->set_userdata('parametres', (array) $this->managerParametres->getParametres('array'));
-        echo json_encode(array('type' => 'success'));
+        if ($this->ion_auth->in_group(1)):
+            $parametre = $this->managerParametres->getParametres();
+            $parametre->setMessageEtablissement($this->input->post('message'));
+            $this->managerParametres->editer($parametre);
+            /* Mise à jour de la session */
+            $this->session->unset_userdata('parametres');
+            $this->session->set_userdata('parametres', (array) $this->managerParametres->getParametres('array'));
+            echo json_encode(array('type' => 'success'));
+        else:
+            echo json_encode(array('type' => 'error', 'message' => 'Vous ne pouvez pas modfier ce message'));
+        endif;
     }
 
     /* Permet la selection ou non des chantiers terminés dans le slide gauche */
@@ -237,8 +241,13 @@ class Planning extends My_Controller {
             endif;
 
             if ($affectations):
+                if ($this->ion_auth->in_group(60)):
+                    $droits = TRUE;
+                else:
+                    $droits = FALSE;
+                endif;
                 foreach ($affectations as $affectation):
-                    $affectation->getHTML($premierJourPlanning, $personnelsPlanning, null, $this->hauteur, $this->largeur);
+                    $affectation->getHTML($premierJourPlanning, $personnelsPlanning, null, $this->hauteur, $this->largeur, $droits);
                 endforeach;
                 unset($affectation);
             endif;
@@ -310,13 +319,15 @@ class Planning extends My_Controller {
     public function affectationToggleAffichage() {
         if (!$this->form_validation->run('getAffectation')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
-        else:
+        elseif ($this->ion_auth->in_group(60)):
             $affectation = $this->managerAffectations->getAffectationPlanningById($this->input->post('affectationId'));
             //$affectation->hydrateOrigines();
             $affectation->toggleAffichage();
             $affectation->getHTML($this->session->userdata('premierJourPlanning'), array(), $this->input->post('ligne'), $this->hauteur, $this->largeur);
             $this->managerAffectations->editer($affectation);
             echo json_encode(array('type' => 'success', 'html' => $affectation->getAffectationHTML()));
+        else:
+            echo json_encode(array('type' => 'error', 'message' => 'Vous n\'avez pas les droits pour effectuer cette action.'));
         endif;
     }
 
@@ -533,7 +544,7 @@ class Planning extends My_Controller {
     public function resizeAffectation() {
         if (!$this->form_validation->run('getAffectation')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
-        else:
+        elseif ($this->ion_auth->in_group(60)):
             $affectation = $this->managerAffectations->getAffectationPlanningById($this->input->post('affectationId'));
             $affectation->hydrateChantier();
             if ($affectation->getAffectationChantier()->getChantierEtat() == 2):
@@ -583,13 +594,15 @@ class Planning extends My_Controller {
 
                 endif;
             endif;
+        else:
+            echo json_encode(array('type' => 'error', 'message' => 'Vous n\'avez pas les droits pour effectuer cette action.'));
         endif;
     }
 
     public function dragAffectation() {
         if (!$this->form_validation->run('getAffectation')):
             echo json_encode(array('type' => 'error', 'message' => validation_errors()));
-        else:
+        elseif ($this->ion_auth->in_group(60)):
 
             $affectation = $this->managerAffectations->getAffectationPlanningById($this->input->post('affectationId'));
             $affectation->hydrateChantier();
@@ -652,6 +665,8 @@ class Planning extends My_Controller {
 
                 endif;
             endif;
+        else:
+            echo json_encode(array('type' => 'error', 'message' => 'Vous n\'avez pas les droits pour effectuer cette action.'));
         endif;
     }
 

@@ -178,7 +178,7 @@ class Affectation {
      * @param type $hauteur
      * @param type $largeur
      */
-    public function getHTML($premierJourPlanning = null, $personnelsPlanning = array(), $numLigne = null, $hauteur, $largeur) {
+    public function getHTML($premierJourPlanning = null, $personnelsPlanning = array(), $numLigne = null, $hauteur, $largeur, $droits = TRUE) {
         $CI = & get_instance();
 //        if (empty($this->affectationAffaire) || empty($this->affectationChantier)):
 //            $this->hydrateOrigines();
@@ -202,7 +202,7 @@ class Affectation {
         $taille = $this->affectationCases * ($largeur + 1) - 3;
         $background = $this->affectationChantierCouleur;
         if ($this->affectationChantierEtat == 1):
-            if ($this->affectationDebutDate >= $premierJourPlanning):
+            if ($this->affectationDebutDate >= $premierJourPlanning && $droits):
                 $classes .= ' resizable';
                 if ($this->affectationHeuresPointees == 0):
                     $classes .= ' draggable';

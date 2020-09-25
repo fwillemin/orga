@@ -132,7 +132,7 @@ class showroom extends My_Controller {
         );
         $email = $this->input->post('inscriptionDomaine');
 
-        $groups = $this->db->select('id')->from('groups')->where('id <> ', 2)->where('id <> ', 4)->get()->result();
+        $groups = $this->db->select('id')->from('groups')->where('id <> ', 2)->where('id <> ', 4)->where('id <> ', 9)->get()->result();
         foreach ($groups as $g):
             $group[] = $g->id;
         endforeach;
