@@ -107,7 +107,7 @@
                     . '<td align="right">' . number_format($cout, 2, ',', ' ') . ' €/h</td>'
                     . '</tr>';
                 endforeach;
-                echo '<tr class="alert alert-dark"><td colspan="2" align="right">Totaux</td><td align="right">' . $chantier->getChantierHeuresPlanifiees() . '</td><td align="right">' . $chantier->getChantierHeuresPointees() . '</td><td></td><td align="right">' . number_format($coutMOChantier, 2, ',', ' ') . '€</td></tr>';
+                echo '<tr class="alert alert-dark"><td colspan="2" align="right">Totaux</td><td align="right">' . $chantier->getChantierHeuresPlanifiees() . '</td><td align="right">' . $chantier->getChantierHeuresPointees() . '</td><td align="right">' . number_format(round($coutMOChantier / ($chantier->getChantierEtat() == 1 ? $chantier->getChantierHeuresPlanifiees() : $chantier->getChantierHeuresPointees()), 2), 2, ',', ' ') . '€/h</td><td align="right">' . number_format($coutMOChantier, 2, ',', ' ') . '€</td></tr>';
             endif;
             ?>
         </table>
