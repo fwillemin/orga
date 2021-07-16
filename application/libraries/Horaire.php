@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Classe de gestion des Affaires
- * Manager : Model_raisons
+ * Classe de gestion des Horaires
+ * Manager : Model_horaires
  *
  * @author Xanthellis - WILLEMIN François - http://www.xanthellis.com
  */

@@ -3,7 +3,7 @@
 class Maps {
     /* Clé Google Maps API */
 
-    CONST key = "";
+    CONST key = "AIzaSyBPELHShXnPY85aGN8uEVPZQSoR1ZBuItE";
 
     public function __construct() {
 

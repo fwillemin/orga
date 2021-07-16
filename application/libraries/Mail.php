@@ -122,25 +122,6 @@ ce">
         return $code;
     }
 
-    public function emailBienvenue($client) {
-
-        /* Création du message */
-        $message = $this->enteteEmail($client);
-
-        $message .= '<tr>
-            <td style="text-align: left;">
-            Merci de votre inscription sur notre site qui est aussi le vôtre, ami récifaliste.
-            <br>Vous trouverez sur notre site tout un eventail de produits et matériel de qualité pour votre aquarium marin.
-            <br>Si vous ne trouvez pas un produit en particulier, contactez-nous afin de savoir si nous pourrions le référencer dans le futur.
-            <br><br>Bonne visite
-            </td>
-            </tr>
-            <tr><td height="10" style="font-size:10px; line-height: 10px;">&nbsp;</td></tr>';
-
-        $message .= $this->footerEmail();
-        $this->sendMailSMTP($client->getClientPrenom() . ' ' . $client->getClientNom(), $client->getClientMail(), 'Bienvenue chez Nourris-ton-recif', $message);
-    }
-
     public function emailInscription(Utilisateur $user) {
 
         $message = $this->enteteEmail($user);

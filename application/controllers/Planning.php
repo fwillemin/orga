@@ -110,7 +110,7 @@ class Planning extends My_Controller {
             $chargePlanifiee = round($nbHeuresPlannifiees / $this->session->userdata('etablissementBaseHebdomadaire'), 1);
             $chargeTotale = round($nbHeuresPrevues / $this->session->userdata('etablissementBaseHebdomadaire'), 1);
         else:
-            $charge = $chargeTotale = 'NC';
+            $chargePlanifiee = $chargeTotale = 'NC';
         endif;
         return array('nbAffairesEncours' => $nbEncours, 'caEncours' => $caEncours, 'nbAffairesCloses' => $nbClos, 'caClos' => $caClos, 'nbHeuresPlannifiees' => $nbHeuresPlannifiees, 'chargePlanifiee' => $chargePlanifiee, 'chargeTotale' => $chargeTotale);
     }

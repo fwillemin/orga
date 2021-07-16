@@ -148,49 +148,49 @@ class Clients extends My_Controller {
                     $zone = 6;
                 endif;
 
+
+                if ($this->input->post('addPlaceId')):
+                    $place = $this->managerPlaces->getPlaceById($this->input->post('addPlaceId'));
+                    $place->setPlaceLat($result['latitude']);
+                    $place->setPlaceLon($result['longitude']);
+                    $place->setPlaceAdresse($result['adresse']);
+                    $place->setPlaceVille($result['ville']);
+                    $place->setPlaceGoogleId($result['placeGoogleId']);
+                    $place->setPlaceDistance($result['distance']);
+                    $place->setPlaceDuree($result['duree']);
+                    $place->setPlaceZone($zone);
+                    $place->setPlaceVolOiseau($volOiseau);
+
+                    $this->managerPlaces->editer($place);
+
+                else:
+
+                    $arrayPlace = array(
+                        'placeClientId' => $this->input->post('addPlaceClientId'),
+                        'placeEtablissementId' => $this->session->userdata('etablissementId'),
+                        'placeLat' => $result['latitude'],
+                        'placeLon' => $result['longitude'],
+                        'placeAdresse' => $result['adresse'],
+                        'placeVille' => $result['ville'],
+                        'placeGoogleId' => $result['placeGoogleId'],
+                        'placeDistance' => $result['distance'],
+                        'placeDuree' => $result['duree'],
+                        'placeZone' => $zone,
+                        'placeVolOiseau' => $volOiseau
+                    );
+
+                    $place = new Place($arrayPlace);
+                    $this->managerPlaces->ajouter($place);
+
+                endif;
+                echo json_encode(array(
+                    'type' => 'success',
+                    'place' => $place ? $this->managerPlaces->getPlaceById($place->getPlaceId(), 'array') : false
+                ));
             else:
                 log_message('error', __CLASS__ . '/' . __FUNCTION__ . ' => ' . 'Erreur de geoCodage');
                 echo json_encode(array('type' => 'error', 'message' => 'Erreur lors de l\'encodage de l\'adresse'));
             endif;
-
-            if ($this->input->post('addPlaceId')):
-                $place = $this->managerPlaces->getPlaceById($this->input->post('addPlaceId'));
-                $place->setPlaceLat($result['latitude']);
-                $place->setPlaceLon($result['longitude']);
-                $place->setPlaceAdresse($result['adresse']);
-                $place->setPlaceVille($result['ville']);
-                $place->setPlaceGoogleId($result['placeGoogleId']);
-                $place->setPlaceDistance($result['distance']);
-                $place->setPlaceDuree($result['duree']);
-                $place->setPlaceZone($zone);
-                $place->setPlaceVolOiseau($volOiseau);
-
-                $this->managerPlaces->editer($place);
-
-            else:
-
-                $arrayPlace = array(
-                    'placeClientId' => $this->input->post('addPlaceClientId'),
-                    'placeEtablissementId' => $this->session->userdata('etablissementId'),
-                    'placeLat' => $result['latitude'],
-                    'placeLon' => $result['longitude'],
-                    'placeAdresse' => $result['adresse'],
-                    'placeVille' => $result['ville'],
-                    'placeGoogleId' => $result['placeGoogleId'],
-                    'placeDistance' => $result['distance'],
-                    'placeDuree' => $result['duree'],
-                    'placeZone' => $zone,
-                    'placeVolOiseau' => $volOiseau
-                );
-
-                $place = new Place($arrayPlace);
-                $this->managerPlaces->ajouter($place);
-
-            endif;
-            echo json_encode(array(
-                'type' => 'success',
-                'place' => $place ? $this->managerPlaces->getPlaceById($place->getPlaceId(), 'array') : false
-            ));
 
         endif;
     }

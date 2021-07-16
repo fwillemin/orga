@@ -186,9 +186,9 @@ class Affectation {
         //$this->hydrateHeures();
 
         /* Un décallage de position apparait dans le cas ou la premier jour de planning est en heure d'hiver et que l'affectation est en haure d'été */
-        $positionLeft = floor(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
+        $positionLeft = floor(($this->affectationDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 3) + 2;
         if (date('I', $premierJourPlanning) == 0 && date('I', $this->affectationDebutDate) == 1):
-            $positionLeft += ($largeur * 2 + 2);
+            $positionLeft += ($largeur * 2 + 3);
         endif;
 
         //si on commence de l'aprem, on ajoute une 1/2 journée
@@ -199,7 +199,7 @@ class Affectation {
         $classes = 'affectation';
         //$attributs = 'js-affectationid="' . $this->affectationId . '" js-chantierid="' . $this->affectationChantierId; /* ac signifie affectation du chantier + l'id du chantier associé => utilisé pour mettre toutes les affectations les elements d'un chantier en surbrillance lors du click dans le slide gauche */
         $attributs = '';
-        $taille = $this->affectationCases * ($largeur + 1) - 3;
+        $taille = $this->affectationCases * ($largeur + 1.4) - 3;
         $background = $this->affectationChantierCouleur;
         if ($this->affectationChantierEtat == 1):
             if ($this->affectationDebutDate >= $premierJourPlanning && $droits):

@@ -5,7 +5,7 @@ RewriteEngine on
 RewriteBase /
 
 RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://www.organibat.com/$1 [R=301,L]
+RewriteRule ^(.*)$ https://demo.organibat.com/$1 [R=301,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

@@ -55,8 +55,8 @@
             <h3><a href="<?= site_url('tarifs'); ?>">Tarifs <span style="font-size:12px;">à partir de</span></a></h3>
             <div class="col-12" style="text-align: center; padding-right: 10px;">
 
-                <span style="font-size:68px; color: steelblue; font-weight: bold;">
-                    39</span>
+                <span style="font-size:62px; color: steelblue; font-weight: bold;">
+                    69</span>
                 <span style="font-size:18px;">€HT</span>
                 <br>
                 <span style="font-size:16px; position: relative; top: -15px;">par mois</span>
@@ -69,7 +69,7 @@
                     <li>Aucun frais d'hébergement</li>
                     <li>Aucun frais d'installation</li>
                     <li>Aucun frais de mise à niveau</li>
-                    <li>Paramètrages et formations gratuits*</li>
+                    <li>Formations en ligne gratuites</li>
                 </ul>
                 <div class="col-12 text-center">
                     <a href="<?= site_url('essai-gratuit-logiciel-gestion-chantier'); ?>" class="btn btn-primary">

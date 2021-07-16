@@ -206,13 +206,22 @@
                                                                 <div style="width:25px; float: left;"><i class="fas fa-cog"></i></div> Paramètres
                                                             </a>
                                                         </div>
+                                                        <?php
+                                                    endif;
+                                                    if ($this->session->userdata('etablissementId') == 11):
+                                                        ?>
+                                                        <div class="col-12" style="min-height: 25px;">
+                                                            <a href="<?= site_url('demo/initDemo'); ?>" style="color: lightgrey;">
+                                                                <div style="width:25px; float: left;"><i class="fas fa-fire-extinguisher"></i></div> Réinitialiser
+                                                            </a>
+                                                        </div>
+                                                        <div class="col-12" style="min-height: 25px;">
+                                                            <a href="<?= site_url('demo/teleporteDemo'); ?>" style="color: lightgrey;">
+                                                                <div style="width:25px; float: left;"><i class="fas fa-space-shuttle"></i></div> Téléporter
+                                                            </a>
+                                                            <hr style="border-color: white;">
+                                                        </div>
                                                     <?php endif; ?>
-                                                    <!--                                                    <div class="col-12">
-                                                                                                            <a href="<?= site_url('demo/initDemo'); ?>" style="color: lightgrey;">
-                                                                                                                <div style="width:25px; float: left;"><i class="fas fa-fire-extinguisher"></i></div> Réinitialiser
-                                                                                                            </a>
-                                                                                                            <hr style="border-color: white;">
-                                                                                                        </div>-->
                                                     <div class="col-12">
                                                         <a href="<?= site_url('organibat/deconnexion'); ?>" style="color: orangered;">
                                                             <div style="width:25px; float: left;"><i class="fas fa-sign-out-alt"></i></div> Quitter

@@ -55,9 +55,9 @@ class Indisponibilite {
     public function genereHTML($premierJourPlanning = null, $personnelsPlanning = array(), $numLigne = null, $hauteur, $largeur) {
         $CI = & get_instance();
 
-        $positionLeft = floor(($this->indispoDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 2) + 2;
+        $positionLeft = floor(($this->indispoDebutDate - $premierJourPlanning) / 86400) * ($largeur * 2 + 3) + 2;
         if (date('I', $premierJourPlanning) == 0 && date('I', $this->indispoDebutDate) == 1):
-            $positionLeft += ($largeur * 2 + 2);
+            $positionLeft += ($largeur * 2 + 3);
         endif;
 
         //si on commence de l'aprem, on ajoute une 1/2 journée
@@ -66,7 +66,7 @@ class Indisponibilite {
         }
 
         $classes = 'indispo';
-        $taille = $this->indispoCases * ($largeur + 1) - 3;
+        $taille = $this->indispoCases * ($largeur + 1.4) - 3;
 
         $txt = '<span class="planningIndispoText">'
                 . substr($this->indispoMotif->getMotifNom(), 0, floor($taille / 10))

@@ -3,7 +3,7 @@
         <div class="col-12 col-sm-5" style="padding: 50px 30px;">
             <div class="row" style="border:1px solid grey; border-radius:10px; border: 2px solid #293042; text-align: center; background-color: #FFF;">
                 <div class="col-12" style="background-color: #293042; color: lightgrey; padding:5px; font-weight: bold;">
-                    Compte de Démonstration
+                    Identification Accès
                 </div>
                 <div class="col-12" style="padding:20px">
                     <?= form_open('secure/tryLogin', array('class' => 'form-horizontal', 'id' => 'formLogin')); ?>
@@ -24,8 +24,8 @@
             <br>
             <div class="alert alert-info">
                 <h5>Comment se connecter à la démo</h5>
-                <em>identifiant :</em><b> demo.demo@organibat.com</b>
-                <br><em>Mot de passe :</em><b> demonstration2019</b>
+                Une version de démonstration est disponible à l'adresse :
+                <a href="https://demo.organibat.com"><b>https://demo.organibat.com</b></a>
                 <hr>
                 Vous pouvez aussi <a href="<?= site_url('essai-gratuit-logiciel-gestion-chantier'); ?>">créer un compte gratuitement</a>, <b>sans carte bancaire</b> et tester Organibat pendant 1 mois. Toutes vos données seront conservées au moment de vous abonner.
             </div>

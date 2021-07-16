@@ -14,22 +14,22 @@ class showroom extends My_Controller {
         $this->viewFolder = strtolower(__CLASS__) . '/';
     }
 
-//    public function index() {
-//
-//        $data = array(
-//            'type' => 'website',
-//            'url' => site_url(),
-//            'image' => base_url('assets/img/wallpaper2.jpg'),
-//            'title' => 'Logiciel de planification de chantiers pour les professionnels du bâtiment',
-//            'description' => 'Logiciel de planification des interventions sur chantier pour les entreprises du batiment, de la maintenance industrielle et d\'entretien de locaux',
-//            'content' => $this->viewFolder . __FUNCTION__
-//        );
-//        $this->load->view('template/contentShowroom', $data);
-//    }
-
     public function index() {
-        redirect('secure/login');
+
+        $data = array(
+            'type' => 'website',
+            'url' => site_url(),
+            'image' => base_url('assets/img/wallpaper2.jpg'),
+            'title' => 'Logiciel de planification de chantiers pour les professionnels du bâtiment',
+            'description' => 'Logiciel de planification des interventions sur chantier pour les entreprises du batiment, de la maintenance industrielle et d\'entretien de locaux',
+            'content' => $this->viewFolder . __FUNCTION__
+        );
+        $this->load->view('template/contentShowroom', $data);
     }
+
+//    public function index() {
+//        redirect('secure/login');
+//    }
 
     public function tarifs() {
 

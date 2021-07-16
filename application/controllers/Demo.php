@@ -4,6 +4,10 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
+/**
+ * Le compte de démo se gère à l'adresse demo.organibat.com
+ * Cela evite de poluer la base de données clients.
+ */
 class Demo extends My_Controller {
 
     public function __construct() {
@@ -27,18 +31,16 @@ class Demo extends My_Controller {
     }
 
     public function initDemo() {
-        try {
-            $this->resetDemo();
-            /* Passage des auto-increment à 0 */
-            $this->executeSqlFile('demoOrganibat-ResetAutoincrement.sql');
-            $this->hydrateDemo();
+//        try {
+        $this->resetDemo();
+        /* Passage des auto-increment à 0 */
+        $this->executeSqlFile('demoOrganibat-ResetAutoincrement.sql');
+        $this->hydrateDemo();
 
-            /* Mise à la date du moment de l'activité */
-            $this->teleporteDemo();
-            redirect('organibat/deconnexion');
-        } catch (Exception $e) {
-            print_r($e);
-        }
+        redirect('organibat/deconnexion');
+//        } catch (Exception $e) {
+//            print_r($e);
+//        }
     }
 
     private function resetDemo() {
@@ -120,10 +122,21 @@ class Demo extends My_Controller {
             'userPrenom' => 'Démo',
             'userEtablissementId' => $this->session->userdata('etablissementId'),
             'userOriginId' => null,
-            'userClairMdp' => 'demonstration2019',
+            'userClairMdp' => 'Organibat2021',
             'userCode' => 0000
         );
-        $this->ion_auth->register('demo.demo@organibat.com', 'demonstration2019', 'demo.demo@organibat.com', $additional_data, array(1, 3, 10, 11, 20, 21, 25, 26, 30, 31, 40, 50, 51, 52, 53, 54, 55, 56, 57, 58, 60, 61, 70, 80, 81, 82, 83, 90, 91));
+        $this->ion_auth->register('demo.direction@organibat.com', 'Organibat2021', 'demo.direction@organibat.com', $additional_data, array(1, 3, 10, 11, 20, 21, 25, 26, 30, 31, 40, 50, 51, 52, 53, 54, 55, 56, 57, 58, 60, 61, 70, 80, 81, 82, 83, 90, 91));
+
+        /* création du user demo */
+        $additional_data = array(
+            'userNom' => 'Démo',
+            'userPrenom' => 'Chantier',
+            'userEtablissementId' => $this->session->userdata('etablissementId'),
+            'userOriginId' => null,
+            'userClairMdp' => 'Organibat2021',
+            'userCode' => 0000
+        );
+        $this->ion_auth->register('demo.chantier@organibat.com', 'Organibat2021', 'demo.chantier@organibat.com', $additional_data, array(4));
 
         /* Creation des équipes */
         $arrayEquipe = array(
@@ -218,9 +231,12 @@ class Demo extends My_Controller {
         $this->executeSqlFile('demoOrganibat-Activite.sql');
     }
 
-    private function teleporteDemo() {
-        $deltaSemaines = floor((mktime(0, 0, 0, date('m'), date('d'), date('Y')) - 1559512800) / 604800);
+    public function teleporteDemo() {
+        /* On récupère la date de la première affaire pour evaluer la durée à téléporter */
+        $affaireStart = $this->managerAffaires->getAffaireById(1);
+        $deltaSemaines = floor((mktime(0, 0, 0, date('m'), date('d'), date('Y')) - $affaireStart->getAffaireCreation()) / 604800);
         $delta = $deltaSemaines * 7 * 86400;
+
         $affaires = $this->managerAffaires->getAffaires();
         foreach ($affaires as $affaire):
             $affaire->setAffaireCreation($affaire->getAffaireCreation() + $delta);
@@ -265,6 +281,7 @@ class Demo extends My_Controller {
             $contact->setContactDate($contact->getContactDate() + $delta);
             $this->managerContacts->editer($contact);
         endforeach;
+        redirect('planning/base');
     }
 
 }

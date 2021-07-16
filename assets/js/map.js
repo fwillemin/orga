@@ -14,11 +14,11 @@ $(document).ready(function () {
         async load(element) {
 
             this.map = L.map(element)
-            L.tileLayer('//api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZndpbGxlbWluIiwiYSI6ImNqamdzeGgwbjAzeDIzcnBzZDZzMjZrYzkifQ.cpsDBZY0JEEIAvitXX-UtQ', {
+            L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZndpbGxlbWluIiwiYSI6ImNqamd2eDNldTFraXIza3Ayb3c3a2g5MzUifQ.oQNXaBPv3e-1-l7Kshn4Lw', {
                 attribution: '&copy; Xanthellis compagny',
                 maxZoom: 13,
                 id: 'mapbox.streets',
-                accessToken: 'pk.eyJ1IjoiZndpbGxlbWluIiwiYSI6ImNqamdzeGgwbjAzeDIzcnBzZDZzMjZrYzkifQ.cpsDBZY0JEEIAvitXX-UtQ',
+                accessToken: 'pk.eyJ1IjoiZndpbGxlbWluIiwiYSI6ImNqamd2eDNldTFraXIza3Ayb3c3a2g5MzUifQ.oQNXaBPv3e-1-l7Kshn4Lw',
                 zoomSnap: 0.1
             }).addTo(this.map)
 
