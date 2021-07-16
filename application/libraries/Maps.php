@@ -3,7 +3,7 @@
 class Maps {
     /* Clé Google Maps API */
 
-    CONST key = "AIzaSyBPELHShXnPY85aGN8uEVPZQSoR1ZBuItE";
+    CONST key = "La clé est masquée pour la sauvegarde Git";
 
     public function __construct() {
 
